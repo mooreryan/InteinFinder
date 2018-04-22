@@ -39,6 +39,9 @@ opts = Trollop.options do
   has members of the following superfamilies cl22434 (Hint), cl25944
   (Intein_splicing) and cl00083 (HNHc).
 
+  If there were no blast hits for one of the categories (inteins or
+  conserved domains), the row will have a '1' for best evalue.
+
   IMPORTANT: You should probably not move this file (#{__FILE__}) out
              of this directory (#{__dir__}) as it depends on some
              relative path to some of the assets.
@@ -238,7 +241,7 @@ end
 AbortIf.logger.info { "Writing intein info" }
 
 File.open(intein_info_out, "w") do |f|
-  f.puts %w[seq mmseqs.hits mmseqs.best.evalue rpsblast.hits rpsblast.best.evalue].join "\t"
+  f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
 
   queries.each do |query, info|
     f.puts [query,
