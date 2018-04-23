@@ -371,10 +371,11 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus]) do |li
   evalue = rest[8].to_f
   target_len = rest[11].to_i
 
-  clipping_start_idx = nil
-  clipping_end_idx = nil
+  clipping_start_idx = -100
+  clipping_end_idx = -100
   first_non_gap_idx = nil
   last_non_gap_idx = nil
+  which_region = -1
 
   slen_in_aln = send - sstart + 1
 
@@ -386,8 +387,34 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus]) do |li
     this_query = query_records[query]
     this_intein = intein_records[target]
 
-    clipping_start_idx = qstart-1-PADDING
-    clipping_end_idx = qend-1+PADDING
+    # Need to get the clipping region.  We want to select the 'overall
+    # region' that the qstart-qend falls into.  If it doesn't (it
+    # should) just fall back to this clipping region.
+
+    if true
+      query_middle = (qend + qstart + 1) / 2.0
+      putative_regions = query2regions[query]
+      putative_regions.each do |rid, info|
+        if query_middle >= info[:qstart] && query_middle <= info[:qend]
+          clipping_start_idx = info[:qstart]-1-PADDING
+          clipping_end_idx = info[:qend]-1-PADDING
+          which_region = rid
+          break
+        end
+      end
+
+      assert clipping_start_idx != -100, "#{line}"
+      assert clipping_end_idx != -100
+    else
+      # TODO Is there any reason we should use the homology region
+      # rather than the region we calculated above?  Using the region calculated above def is able to pull more of the wonky seqs.  See intein region 2 (of 0,1,2) of seq_4.
+      clipping_start_idx = qstart-1-PADDING
+      clipping_end_idx = qend-1+PADDING
+    end
+
+    clipping_start_idx = clipping_start_idx < 0 ? 0 : clipping_start_idx
+    # Note that if the clipping_end_idx is passed the length of the string, Ruby will just give us all the way up to the end of the string.
+
     this_clipping_region =
       this_query.seq[clipping_start_idx .. clipping_end_idx]
 
@@ -501,19 +528,19 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus]) do |li
           has_extein_start = "Y"
         end
 
-        out_line = [query, target, region, putative_region_good, has_start, has_end, has_extein_start]
+        out_line = [query, target, which_region, region, putative_region_good, has_start, has_end, has_extein_start]
       end
     end
 
-    FileUtils.rm tmp_aln_in
-    FileUtils.rm tmp_aln_out
+    # FileUtils.rm tmp_aln_in
+    # FileUtils.rm tmp_aln_out
   end
 
   out_line
 end
 
 File.open(intein_conserved_residues_out, "w") do |conserved_f|
-  conserved_f.puts %w[query target aln.region region.good has.start has.end has.extein.start].join "\t"
+  conserved_f.puts %w[query target which.region aln.region region.good has.start has.end has.extein.start].join "\t"
 
   conserved_f_lines.compact.each_with_index do |ary, idx|
     conserved_f.puts ary.join "\t"
