@@ -224,7 +224,8 @@ else
 end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
-cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
+# 5.7, 2
+cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 1 --num-iterations 1 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 
@@ -345,10 +346,16 @@ ParseFasta::SeqFile.open(opts[:inteins]).each_record do |rec|
 end
 
 # Read the mmseqs blast as that is the one with the inteins
+mmseqs_lines = []
+File.open(mmseqs_out, "rt").each_line do |line|
+  mmseqs_lines << line.chomp
+end
+
+conserved_f_lines = nil
 
 File.open(intein_conserved_residues_out, "w") do |conserved_f|
   conserved_f.puts %w[query target correct.region has.start has.end has.extein.start].join "\t"
-  File.open(mmseqs_out, "rt").each_line do |line|
+  mmseqs_lines.each do |line|
     query, target, *rest = line.chomp.split "\t"
 
     tmp_aln_in = File.join opts[:outdir], "tmp_aln_in_#{query}_#{target}.faa"
@@ -371,7 +378,7 @@ File.open(intein_conserved_residues_out, "w") do |conserved_f|
 
     # TODO if you want to use aln len, need to compare region to the
     # full putatitive regions calculated above
-    if true # slen_in_aln >= target_len
+    if slen_in_aln >= target_len
       # TODO check for missing seqs
       this_query = query_records[query]
       this_intein = intein_records[target]
@@ -383,7 +390,9 @@ File.open(intein_conserved_residues_out, "w") do |conserved_f|
 
       clipping_rec = ParseFasta::Record.new header: "clipped___#{this_query.id}",
                                             seq: this_clipping_region
+    end
 
+    if true
       # Write the aln infile
       File.open(tmp_aln_in, "w") do |f|
         f.puts ">" + this_intein.id
@@ -440,7 +449,9 @@ File.open(intein_conserved_residues_out, "w") do |conserved_f|
 
           # TODO compare to the full regions calculated above
           if first_non_gap_idx >= true_pos_to_gapped_pos[clipping_start_idx+1] - 1 && last_non_gap_idx <= true_pos_to_gapped_pos[clipping_end_idx+1] - 1
-            correct_region = "#{gapped_pos_to_true_pos[first_non_gap_idx+1]}-#{gapped_pos_to_true_pos[last_non_gap_idx+1]}"
+            correct_region = "#{gapped_pos_to_true_pos[first_non_gap_idx+1]}-#{gapped_pos_to_true_pos[last_non_gap_idx+1]} (true)"
+          else
+            correct_region = "#{gapped_pos_to_true_pos[first_non_gap_idx+1]}-#{gapped_pos_to_true_pos[last_non_gap_idx+1]} (false)"
           end
 
           # TODO if we go through the exteins by hand to make sure if the index includes part of the extein or not this could be simplified.
