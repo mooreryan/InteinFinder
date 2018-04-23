@@ -2,3 +2,6 @@ TEST_OUTPUT
 assets/intein_sequences/inbase.almost_orig_headers.faa
 SANDBOX
 TEST_OUTPUT_?
+
+assets/intein_superfamily_members/fastas/aligned
+assets/intein_superfamily_members/fastas/unaligned/all
