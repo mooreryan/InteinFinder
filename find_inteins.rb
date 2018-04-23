@@ -9,6 +9,7 @@ require "pp"
 require "set"
 require "trollop"
 require "pasv_lib"
+require "parallel"
 
 PSSM_DIR = File.join __dir__, "assets", "intein_superfamily_members"
 PSSMs = ["cd00081.smp", "cd00085.smp", "cd09643.smp", "COG1372.smp", "COG1403.smp", "COG2356.smp", "pfam01844.smp", "pfam04231.smp", "pfam05551.smp", "pfam07510.smp", "pfam12639.smp", "pfam13391.smp", "pfam13392.smp", "pfam13395.smp", "pfam13403.smp", "pfam14414.smp", "pfam14623.smp", "pfam14890.smp", "PRK11295.smp", "PRK15137.smp", "smart00305.smp", "smart00306.smp", "smart00507.smp", "TIGR01443.smp", "TIGR01445.smp", "TIGR02646.smp"]
@@ -225,7 +226,7 @@ end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
-cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 1 --num-iterations 1 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
+cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 
@@ -338,6 +339,8 @@ end
 # do the alignments to check for conserved residues
 ###################################################
 
+AbortIf.logger.info { "Checking for conserved residues" }
+
 # Read all the intein seqs into memory
 intein_records = {}
 ParseFasta::SeqFile.open(opts[:inteins]).each_record do |rec|
@@ -353,140 +356,171 @@ end
 
 conserved_f_lines = nil
 
-File.open(intein_conserved_residues_out, "w") do |conserved_f|
-  conserved_f.puts %w[query target correct.region has.start has.end has.extein.start].join "\t"
-  mmseqs_lines.each do |line|
-    query, target, *rest = line.chomp.split "\t"
+conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus]) do |line|
+  out_line = nil
+  query, target, *rest = line.chomp.split "\t"
 
-    tmp_aln_in = File.join opts[:outdir], "tmp_aln_in_#{query}_#{target}.faa"
-    tmp_aln_out = File.join opts[:outdir], "tmp_aln_out_#{query}_#{target}.faa"
+  tmp_aln_in = File.join opts[:outdir], "tmp_aln_in_#{query}_#{target}.faa"
+  tmp_aln_out = File.join opts[:outdir], "tmp_aln_out_#{query}_#{target}.faa"
 
-    aln_len = rest[1].to_i
-    qstart = rest[4].to_i # 1-based
-    qend = rest[5].to_i # 1-based
-    sstart = rest[6].to_i
-    send = rest[7].to_i
-    evalue = rest[8].to_f
-    target_len = rest[11].to_i
+  aln_len = rest[1].to_i
+  qstart = rest[4].to_i # 1-based
+  qend = rest[5].to_i # 1-based
+  sstart = rest[6].to_i
+  send = rest[7].to_i
+  evalue = rest[8].to_f
+  target_len = rest[11].to_i
 
-    clipping_start_idx = nil
-    clipping_end_idx = nil
-    first_non_gap_idx = nil
-    last_non_gap_idx = nil
+  clipping_start_idx = nil
+  clipping_end_idx = nil
+  first_non_gap_idx = nil
+  last_non_gap_idx = nil
 
-    slen_in_aln = send - sstart + 1
+  slen_in_aln = send - sstart + 1
 
-    # TODO if you want to use aln len, need to compare region to the
-    # full putatitive regions calculated above
-    if slen_in_aln >= target_len
-      # TODO check for missing seqs
-      this_query = query_records[query]
-      this_intein = intein_records[target]
+  # TODO if you want to use aln len, need to compare region to the
+  # full putatitive regions calculated above
+  # if slen_in_aln >= target_len
+  if true # aln_len >= target_len
+    # TODO check for missing seqs
+    this_query = query_records[query]
+    this_intein = intein_records[target]
 
-      clipping_start_idx = qstart-1-PADDING
-      clipping_end_idx = qend-1+PADDING
-      this_clipping_region =
-        this_query.seq[clipping_start_idx .. clipping_end_idx]
+    clipping_start_idx = qstart-1-PADDING
+    clipping_end_idx = qend-1+PADDING
+    this_clipping_region =
+      this_query.seq[clipping_start_idx .. clipping_end_idx]
 
-      clipping_rec = ParseFasta::Record.new header: "clipped___#{this_query.id}",
-                                            seq: this_clipping_region
+    clipping_rec = ParseFasta::Record.new header: "clipped___#{this_query.id}",
+                                          seq: this_clipping_region
+    # end
+
+    # if true
+    # Write the aln infile
+    File.open(tmp_aln_in, "w") do |f|
+      f.puts ">" + this_intein.id
+      f.puts this_intein.seq
+
+      f.puts ">" + clipping_rec.id
+      f.puts clipping_rec.seq
+
+      f.puts ">" + this_query.id
+      f.puts this_query.seq
     end
 
-    if true
-      # Write the aln infile
-      File.open(tmp_aln_in, "w") do |f|
-        f.puts ">" + this_intein.id
-        f.puts this_intein.seq
+    cmd = "#{opts[:mafft]} --quiet --auto --thread 1 #{tmp_aln_in} > #{tmp_aln_out}"
+    Utils.run_it! cmd
 
-        f.puts ">" + clipping_rec.id
-        f.puts clipping_rec.seq
+    num = 0
+    ParseFasta::SeqFile.open(tmp_aln_out).each_record do |rec|
+      num += 1
 
-        f.puts ">" + this_query.id
-        f.puts this_query.seq
-      end
+      if num == 1 # Intein
+        first_non_gap_idx = -1
+        seq_len = rec.seq.length
+        last_non_gap_idx = -1
 
-      cmd = "#{opts[:mafft]} --quiet --auto --thread #{opts[:cpus]} #{tmp_aln_in} > #{tmp_aln_out}"
-      Utils.run_and_time_it! "Aligning #{query} with #{target}", cmd
+        rec.seq.each_char.with_index do |char, idx|
+          # TODO account for other gap characters
+          if char != "-"
+            first_non_gap_idx = idx
 
-      num = 0
-      ParseFasta::SeqFile.open(tmp_aln_out).each_record do |rec|
-        num += 1
-
-        if num == 1 # Intein
-          first_non_gap_idx = -1
-          seq_len = rec.seq.length
-          last_non_gap_idx = -1
-
-          rec.seq.each_char.with_index do |char, idx|
-            # TODO account for other gap characters
-            if char != "-"
-              first_non_gap_idx = idx
-
-              break
-            end
+            break
           end
-
-          rec.seq.reverse.each_char.with_index do |char, idx|
-            forward_index = seq_len - 1 - idx
-
-            if char != "-"
-              last_non_gap_idx = forward_index
-              break
-            end
-          end
-        elsif num == 3 # This query
-          # TODO account for gaps in the start and end regions of the query seq.
-
-          # TODO check if the alignment actually got into the region that the blast hit said it should be in
-
-          has_start = false
-          has_end = false
-          has_extein_start = false
-          correct_region = false
-
-          true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
-          gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
-
-          # TODO compare to the full regions calculated above
-          if first_non_gap_idx >= true_pos_to_gapped_pos[clipping_start_idx+1] - 1 && last_non_gap_idx <= true_pos_to_gapped_pos[clipping_end_idx+1] - 1
-            correct_region = "#{gapped_pos_to_true_pos[first_non_gap_idx+1]}-#{gapped_pos_to_true_pos[last_non_gap_idx+1]} (true)"
-          else
-            correct_region = "#{gapped_pos_to_true_pos[first_non_gap_idx+1]}-#{gapped_pos_to_true_pos[last_non_gap_idx+1]} (false)"
-          end
-
-          # TODO if we go through the exteins by hand to make sure if the index includes part of the extein or not this could be simplified.
-
-          start_oligo =
-            Set.new(rec.seq.downcase[first_non_gap_idx .. first_non_gap_idx+1].chars)
-
-          if !start_oligo.intersection(Set.new(%w[s t c])).empty?
-            has_start = true
-          end
-
-          end_oligo = rec.seq.downcase[last_non_gap_idx-2 .. last_non_gap_idx]
-
-          first_pair = end_oligo[0..1]
-          second_pair = end_oligo[1..2]
-          if first_pair == "hn" || first_pair == "hq" ||
-             second_pair == "hn" || second_pair == "hq"
-            has_end = true
-          end
-
-          extein_start_oligo =
-            Set.new(rec.seq.downcase[last_non_gap_idx .. last_non_gap_idx+1].chars)
-          if !extein_start_oligo.intersection(Set.new(%w[s t c])).empty?
-            has_extein_start = true
-          end
-
-          conserved_f.puts [query, target, correct_region, has_start, has_end, has_extein_start].join "\t"
         end
+
+        rec.seq.reverse.each_char.with_index do |char, idx|
+          forward_index = seq_len - 1 - idx
+
+          if char != "-"
+            last_non_gap_idx = forward_index
+            break
+          end
+        end
+      elsif num == 3 # This query
+        # TODO account for gaps in the start and end regions of the query seq.
+
+        # TODO check if the alignment actually got into the region that the blast hit said it should be in
+
+        has_start = "N"
+        has_end = "N"
+        has_extein_start = "N"
+        correct_region = "N"
+
+        true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
+        gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
+
+        # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
+
+        unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
+          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region start." }
+          break
+        end
+
+        unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
+          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region end." }
+          break
+        end
+
+        this_region_start = gapped_pos_to_true_pos[first_non_gap_idx+1]
+        this_region_end = gapped_pos_to_true_pos[last_non_gap_idx+1]
+        region = [this_region_start, this_region_end].join "-"
+
+        putative_regions = query2regions[query]
+
+        putative_region_good = "N"
+
+        putative_regions.each_with_index do |(rid, info), idx|
+          if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
+            putative_region_good = "Y"
+            break # it can never be within two separate regions as the regions don't overlap (I think...TODO)
+          end
+        end
+
+        # TODO if we go through the exteins by hand to make sure if the index includes part of the extein or not this could be simplified.
+
+        start_oligo =
+          Set.new(rec.seq.downcase[first_non_gap_idx .. first_non_gap_idx+1].chars)
+
+        if !start_oligo.intersection(Set.new(%w[s t c])).empty?
+          has_start = "Y"
+        end
+
+        end_oligo = rec.seq.downcase[last_non_gap_idx-2 .. last_non_gap_idx]
+
+        first_pair = end_oligo[0..1]
+        second_pair = end_oligo[1..2]
+        if first_pair == "hn" || first_pair == "hq" ||
+           second_pair == "hn" || second_pair == "hq"
+          has_end = "Y"
+        end
+
+        extein_start_oligo =
+          Set.new(rec.seq.downcase[last_non_gap_idx .. last_non_gap_idx+1].chars)
+        if !extein_start_oligo.intersection(Set.new(%w[s t c])).empty?
+          has_extein_start = "Y"
+        end
+
+        out_line = [query, target, region, putative_region_good, has_start, has_end, has_extein_start]
       end
     end
+
+    FileUtils.rm tmp_aln_in
+    FileUtils.rm tmp_aln_out
+  end
+
+  out_line
+end
+
+File.open(intein_conserved_residues_out, "w") do |conserved_f|
+  conserved_f.puts %w[query target aln.region region.good has.start has.end has.extein.start].join "\t"
+
+  conserved_f_lines.compact.each_with_index do |ary, idx|
+    conserved_f.puts ary.join "\t"
   end
 end
 
-# FileUtils.rm tmp_aln_in
-# FileUtils.rm tmp_aln_out
+
 
 ###################################################
 # do the alignments to check for conserved residues
