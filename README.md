@@ -75,3 +75,7 @@ Does not check for:
 - Intein minimum size (though it does check that it spans the putative region)
 - Specific intein domains are present and in the correct order
 - If the only blast hits are to an endonucleaes
+
+## TODO
+
+- Include the sequences from the superfamily CDs in the alignment step.

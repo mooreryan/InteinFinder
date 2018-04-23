@@ -40,7 +40,21 @@ def check_arg opts, arg
                "You must specify --#{arg.to_s.tr('_', '-')}.  Try #{__FILE__} --help for help."
 end
 
+VERSION = "0.1.0"
+COPYRIGHT = "2018 Ryan Moore"
+CONTACT   = "moorer@udel.edu"
+#WEBSITE   = "https://github.com/mooreryan/ZetaHunter"
+LICENSE   = "MIT"
+
+
+VERSION_BANNER = "  # Version:   #{VERSION}
+  # Copyright: #{COPYRIGHT}
+  # Contact:   #{CONTACT}
+  # License:   #{LICENSE}"
+
+
 opts = Trollop.options do
+  version VERSION_BANNER
   banner <<-EOS
 
   Look for possible Inteins.
