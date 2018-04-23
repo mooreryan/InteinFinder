@@ -532,8 +532,8 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus]) do |li
       end
     end
 
-    # FileUtils.rm tmp_aln_in
-    # FileUtils.rm tmp_aln_out
+    FileUtils.rm tmp_aln_in
+    FileUtils.rm tmp_aln_out
   end
 
   out_line
