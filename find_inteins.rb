@@ -170,19 +170,22 @@ tmp_dir = File.join opts[:outdir], "tmp"
 profile_db_dir = File.join opts[:outdir], "profile_db"
 profile_db = File.join profile_db_dir, "intein_db"
 
-rpsblast_out = File.join opts[:outdir], "rpsblast_results.txt"
-mmseqs_out = File.join opts[:outdir], "mmseqs_results.txt"
-mmseqs_log = File.join opts[:outdir], "mmseqs_log.txt"
+details_dir = File.join opts[:outdir], "details"
 
-all_blast_out = File.join opts[:outdir], "all_search_results.txt"
+rpsblast_out = File.join details_dir, "search_results_superfamily_cds.txt"
+mmseqs_out = File.join details_dir, "search_results_inteins.txt"
+mmseqs_log = File.join details_dir, "mmseqs_log.txt"
+
+all_blast_out = File.join details_dir, "all_search_results.txt"
 
 
 query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
-intein_info_out = File.join opts[:outdir], "#{query_basename}.intein_info.txt"
 
-putative_intein_regions_out = File.join opts[:outdir], "#{query_basename}.putative_intein_regions.txt"
-
-intein_conserved_residues_out = File.join opts[:outdir], "#{query_basename}.putative_conserved_residues.txt"
+# Outfiles
+intein_info_out = File.join opts[:outdir], "#{query_basename}.search_info.txt"
+containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions.txt"
+criteria_check_full_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_full.txt"
+criteria_check_condensed_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_condensed.txt"
 
 
 abort_if Dir.exist?(opts[:outdir]),
@@ -191,7 +194,7 @@ abort_if Dir.exist?(opts[:outdir]),
 FileUtils.mkdir_p opts[:outdir]
 FileUtils.mkdir_p profile_db_dir
 FileUtils.mkdir_p tmp_dir
-
+FileUtils.mkdir_p details_dir
 
 
 if opts[:pssm_list]
@@ -329,17 +332,17 @@ end
 
 all_query_ids = queries.keys
 
-File.open(putative_intein_regions_out, "w") do |f|
-  f.puts %w[seq start end].join "\t"
+File.open(containing_regions_out, "w") do |f|
+  f.puts %w[seq region.id start end].join "\t"
 
   all_query_ids.each do |query|
     regions = query2regions[query]
     if regions
       regions.each do |id, info|
-        f.puts [query, info[:qstart], info[:qend]].join "\t"
+        f.puts [query, id, info[:qstart], info[:qend]].join "\t"
       end
     else
-      f.puts [query, "na", "na"].join "\t"
+      # f.puts [query, "na", "na"].join "\t"
     end
   end
 end
@@ -558,7 +561,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
   out_line
 end
 
-File.open(intein_conserved_residues_out, "w") do |conserved_f|
+File.open(criteria_check_full_out, "w") do |conserved_f|
   conserved_f.puts %w[query target which.region aln.region region.good has.start has.end has.extein.start].join "\t"
 
   conserved_f_lines.compact.each_with_index do |ary, idx|
@@ -620,7 +623,7 @@ end
 
 AbortIf.logger.info { "Parsing conserved residue file" }
 query_good = {}
-File.open(intein_conserved_residues_out, "rt").each_line do |line|
+File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
     query, target, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
@@ -660,9 +663,8 @@ File.open(intein_conserved_residues_out, "rt").each_line do |line|
   end
 end
 
-intein_conserved_residues_simple_out = File.join opts[:outdir], "#{query_basename}.putative_conserved_residues_simple.txt"
-File.open(intein_conserved_residues_simple_out, "w") do |f|
-  f.puts %w[seq region all region start end extein].join "\t"
+File.open(criteria_check_condensed_out, "w") do |f|
+  f.puts %w[seq region.id all region start end extein].join "\t"
 
   query_good.each do |query, regions|
     regions.each do |region, info|
@@ -693,8 +695,8 @@ File.open(intein_info_out, "w") do |f|
 
   queries.each do |query, info|
     f.puts [query,
-          info[:mmseqs_hits], info[:mmseqs_best_evalue],
-          info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
+            info[:mmseqs_hits], info[:mmseqs_best_evalue],
+            info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
   end
 end
 
