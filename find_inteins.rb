@@ -627,25 +627,48 @@ File.open(intein_conserved_residues_out, "rt").each_line do |line|
     all_good = region_good == "Y" && start_good == "Y" &&
                end_good == "Y" && extein_good == "Y"
 
-    unless query_good.has_key? query
-      query_good[query] = Hash.new 0
+    unless query_good.has_key?(query)
+      query_good[query] = {}
     end
 
-    if all_good
-      query_good[query][region_idx] += 1
-    else
-      # query_good[query][region_idx] += 0
+    unless query_good[query].has_key?(region_idx)
+      query_good[query][region_idx] = {
+        region_good: "N",
+        start_good: "N",
+        end_good: "N",
+        extein_good: "N"
+      }
     end
+
+
+    if region_good == "Y"
+      query_good[query][region_idx][:region_good] = "Y"
+    end
+
+    if start_good == "Y"
+      query_good[query][region_idx][:start_good] = "Y"
+    end
+
+    if end_good == "Y"
+      query_good[query][region_idx][:end_good] = "Y"
+    end
+
+    if extein_good == "Y"
+      query_good[query][region_idx][:extein_good] = "Y"
+    end
+
   end
 end
 
 intein_conserved_residues_simple_out = File.join opts[:outdir], "#{query_basename}.putative_conserved_residues_simple.txt"
 File.open(intein_conserved_residues_simple_out, "w") do |f|
-  f.puts %w[seq region all.good].join "\t"
+  f.puts %w[seq region all region start end extein].join "\t"
 
-  query_good.each do |query, counts|
-    counts.each do |region, count|
-      f.puts [query, region, count].join "\t"
+  query_good.each do |query, regions|
+    regions.each do |region, info|
+      all = info[:region_good] == "Y" && info[:start_good] == "Y" && info[:end_good] == "Y" && info[:extein_good] == "Y" ? "Y" : "N"
+
+      f.puts [query, region, all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
     end
   end
 end
