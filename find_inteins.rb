@@ -601,6 +601,35 @@ end
 
 
 
+AbortIf.logger.info { "Parsing conserved residue file" }
+query_good = {}
+File.open(intein_conserved_residues_out, "rt").each_line do |line|
+  query, target, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
+
+  all_good = region_good == "Y" && start_good == "Y" &&
+             end_good == "Y" && extein_good == "Y"
+
+  unless query_good.has_key? query
+    query_good[query] = Hash.new 0
+  end
+
+  if all_good
+    query_good[query][region_idx] += 1
+  else
+    query_good[query][region_idx] += 0
+  end
+end
+
+intein_conserved_residues_simple_out = File.join opts[:outdir], "#{query_basename}.putative_conserved_residues_simple.txt"
+File.open(intein_conserved_residues_simple_out, "w") do |f|
+  f.puts %w[seq region all.good].join "\t"
+
+  query_good.each do |query, counts|
+    counts.each do |region, count|
+      f.puts [query, region, count].join "\t"
+    end
+  end
+end
 
 
 
