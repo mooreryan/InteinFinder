@@ -11,6 +11,8 @@ require "trollop"
 require "pasv_lib"
 require "parallel"
 
+require "ruby-progressbar"
+
 PSSM_DIR = File.join __dir__, "assets", "intein_superfamily_members"
 PSSMs = ["cd00081.smp", "cd00085.smp", "cd09643.smp", "COG1372.smp", "COG1403.smp", "COG2356.smp", "pfam01844.smp", "pfam04231.smp", "pfam05551.smp", "pfam07510.smp", "pfam12639.smp", "pfam13391.smp", "pfam13392.smp", "pfam13395.smp", "pfam13403.smp", "pfam14414.smp", "pfam14623.smp", "pfam14890.smp", "PRK11295.smp", "PRK15137.smp", "smart00305.smp", "smart00306.smp", "smart00507.smp", "TIGR01443.smp", "TIGR01445.smp", "TIGR02646.smp"]
 PSSM_PATHS = PSSMs.map { |pssm| File.join PSSM_DIR, pssm }
@@ -356,7 +358,7 @@ end
 
 conserved_f_lines = nil
 
-conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus]) do |line|
+conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progress: "Checking for key residues") do |line|
   out_line = nil
   query, target, *rest = line.chomp.split "\t"
 
