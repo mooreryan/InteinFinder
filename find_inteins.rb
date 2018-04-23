@@ -45,9 +45,26 @@ opts = Trollop.options do
 
   Look for possible Inteins.
 
-  Screens sequences against the 585 sequences from inteins.com as well
-  has members of the following superfamilies cl22434 (Hint), cl25944
-  (Intein_splicing) and cl00083 (HNHc).
+  Screens sequences against:
+
+    - 585 sequences from inteins.com
+    - Conserved domains from superfamilies cl22434 (Hint), cl25944
+      (Intein_splicing) and cl00083 (HNHc).
+
+  Also does some fancy aligning to check for these things:
+
+    - Ser, Thr or Cys at the intein N-terminus
+    - The dipeptide His-Asn or His-Gln at the intein C-terminus
+    - Ser, Thr or Cys following the downstream splice site.
+
+  Does not check for:
+
+    - The conditions listed in the Intein polymorphisms section of
+      http://www.inteins.com
+    - Intein minimum size (though it does check that it spans the
+      putative region)
+    - Specific intein domains are present and in the correct order
+    - If the only blast hits are to an endonucleaes
 
   If there were no blast hits for one of the categories (inteins or
   conserved domains), the row will have a '1' for best evalue.
@@ -604,19 +621,21 @@ end
 AbortIf.logger.info { "Parsing conserved residue file" }
 query_good = {}
 File.open(intein_conserved_residues_out, "rt").each_line do |line|
-  query, target, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
+  unless line.downcase.start_with? "query"
+    query, target, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
-  all_good = region_good == "Y" && start_good == "Y" &&
-             end_good == "Y" && extein_good == "Y"
+    all_good = region_good == "Y" && start_good == "Y" &&
+               end_good == "Y" && extein_good == "Y"
 
-  unless query_good.has_key? query
-    query_good[query] = Hash.new 0
-  end
+    unless query_good.has_key? query
+      query_good[query] = Hash.new 0
+    end
 
-  if all_good
-    query_good[query][region_idx] += 1
-  else
-    query_good[query][region_idx] += 0
+    if all_good
+      query_good[query][region_idx] += 1
+    else
+      # query_good[query][region_idx] += 0
+    end
   end
 end
 
