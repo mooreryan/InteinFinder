@@ -5,6 +5,7 @@ require "aai"
 require "abort_if"
 require "fileutils"
 require "parse_fasta"
+require "pp"
 require "trollop"
 
 PSSM_DIR = File.join __dir__, "assets", "intein_superfamily_members"
@@ -94,6 +95,10 @@ opts = Trollop.options do
       "Path to parallel_blast ruby script",
       default: File.join(__dir__, "bin", "parallel_blast.rb"))
 
+  opt(:look_for_key_residues,
+      "DO THE FANCY THING!",
+      default: false)
+
   opt(:cpus, "Number of cpus to use", default: 1)
   opt(:split_queries, "Split queries for rpsblast if there are enough sequences", default: false)
 
@@ -139,8 +144,14 @@ rpsblast_out = File.join opts[:outdir], "rpsblast_results.txt"
 mmseqs_out = File.join opts[:outdir], "mmseqs_results.txt"
 mmseqs_log = File.join opts[:outdir], "mmseqs_log.txt"
 
+all_blast_out = File.join opts[:outdir], "all_search_results.txt"
+
+
 query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 intein_info_out = File.join opts[:outdir], "#{query_basename}.intein_info.txt"
+
+putative_intein_regions_out = File.join opts[:outdir], "#{query_basename}.rough_putative_intein_regions.txt"
+
 
 abort_if Dir.exist?(opts[:outdir]),
          "The outdir #{opts[:outdir]} already exists!  Specify a different outdir!"
@@ -197,8 +208,113 @@ else
 end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
-cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
+cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
+
+
+
+
+
+
+
+######################################################################
+# get regions
+#############
+
+AbortIf.logger.info { "Getting putative intein regions" }
+
+QSTART_IDX = 6
+QEND_IDX = 7
+PADDING = 10
+
+def new_region regions, qstart, qend
+  regions[regions.count] = { qstart: qstart, qend: qend }
+end
+
+def clipping_region region, padding
+  { qstart: region[:qstart] - padding,
+    qend: region[:qend] + padding }
+end
+
+cmd = "cat #{rpsblast_out} #{mmseqs_out} > #{all_blast_out}"
+Utils.run_and_time_it! "Catting search results", cmd
+
+query2hits = {}
+File.open(all_blast_out, "rt").each_line do |line|
+  unless line.downcase.start_with? "query"
+    ary = line.chomp.split("\t")
+    query = ary[0]
+
+    ary[QSTART_IDX] = ary[QSTART_IDX].to_i
+    ary[QEND_IDX] = ary[QEND_IDX].to_i
+
+    if query2hits.has_key? query
+      query2hits[query] << ary
+    else
+      query2hits[query] = [ary]
+    end
+  end
+end
+
+# Sort by qstart, if tied, break tie with qend
+query2hits.each do |query, hits|
+  hits.sort! do |a, b|
+    comp = a[QSTART_IDX] <=> b[QSTART_IDX]
+
+    comp.zero? ? (a[QEND_IDX] <=> b[QEND_IDX]) : comp
+  end
+end
+
+query2regions = {}
+
+query2hits.each do |query, hits|
+  query2regions[query] = {}
+
+  hits.each do |ary|
+    qstart = ary[QSTART_IDX]
+    qend   = ary[QEND_IDX]
+
+    abort_if qstart == qend,
+             "BAD STUFF (#{qstart}, #{qend})"
+
+    if query2regions[query].empty?
+      new_region query2regions[query], qstart, qend
+    else
+      last_region = query2regions[query].count - 1
+      if qstart >= query2regions[query][last_region][:qend]
+        new_region query2regions[query], qstart, qend
+      elsif qend > query2regions[query][last_region][:qend]
+        query2regions[query][last_region][:qend] = qend
+      end
+    end
+  end
+end
+
+all_query_ids = queries.keys
+
+File.open(putative_intein_regions_out, "w") do |f|
+  f.puts %w[seq start end].join "\t"
+
+  all_query_ids.each do |query|
+    regions = query2regions[query]
+    if regions
+      regions.each do |id, info|
+        f.puts [query, info[:qstart], info[:qend]].join "\t"
+      end
+    else
+      f.puts [query, "na", "na"].join "\t"
+    end
+  end
+end
+
+#############
+# get regions
+######################################################################
+
+
+
+
+
 
 
 
@@ -237,6 +353,23 @@ File.open(mmseqs_out, "rt").each_line do |line|
     queries[query][:mmseqs_best_evalue] = evalue
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 AbortIf.logger.info { "Writing intein info" }
 
