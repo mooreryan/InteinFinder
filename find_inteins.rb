@@ -149,6 +149,8 @@ opts = Trollop.options do
 
   opt(:cpus, "Number of cpus to use", default: 1)
   opt(:split_queries, "Split queries for rpsblast if there are enough sequences", default: false)
+  opt(:mmseqs_sensitivity, "-s for mmseqs", default: 5.7)
+  opt(:mmseqs_iterations, "--num-iterations for mmseqs", default: 2)
 
   opt(:outdir, "Output directory", type: :string, default: ".")
 end
@@ -175,6 +177,13 @@ check_file opts[:queries] # TODO this will pass even if the file is a directory.
 check_arg opts, :inteins
 check_file opts[:inteins]
 
+abort_unless opts[:mmseqs_sensitivity] >= 1 && opts[:mmseqs_sensitivity] <= 7.5,
+             "--mmseqs-sensitivity must be between 1 and 7.5"
+
+abort_unless opts[:mmseqs_iterations] >= 1,
+             "--mmseqs-iterations must be 1 or more"
+
+
 abort_unless opts[:evalue_rpsblast] <= 0.1,
              "--evalue-rpsblast should definetely be <= 0.1"
 abort_unless opts[:evalue_mmseqs] <= 0.1,
@@ -189,6 +198,7 @@ profile_db_dir = File.join opts[:outdir], "profile_db"
 profile_db = File.join profile_db_dir, "intein_db"
 
 details_dir = File.join opts[:outdir], "details"
+aln_dir = File.join details_dir, "alignments"
 
 rpsblast_out = File.join details_dir, "search_results_superfamily_cds.txt"
 mmseqs_out = File.join details_dir, "search_results_inteins.txt"
@@ -217,6 +227,7 @@ FileUtils.mkdir_p opts[:outdir]
 FileUtils.mkdir_p profile_db_dir
 FileUtils.mkdir_p tmp_dir
 FileUtils.mkdir_p details_dir
+FileUtils.mkdir_p aln_dir
 
 
 if opts[:pssm_list]
@@ -297,7 +308,7 @@ end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
-cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
+cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s #{opts[:mmseqs_sensitivity]} --num-iterations #{opts[:mmseqs_iterations]} -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 #################
@@ -477,8 +488,8 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
   out_line = nil
   query, target, *rest = line.chomp.split "\t"
 
-  tmp_aln_in = File.join opts[:outdir], "tmp_aln_in_#{query}_#{target}.faa"
-  tmp_aln_out = File.join opts[:outdir], "tmp_aln_out_#{query}_#{target}.faa"
+  tmp_aln_in = File.join aln_dir, "tmp_aln_in_#{query}_#{target}.faa"
+  tmp_aln_out = File.join aln_dir, "tmp_aln_out_#{query}_#{target}.faa"
 
   aln_len = rest[1].to_i
   qstart = rest[4].to_i # 1-based
@@ -492,7 +503,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
   clipping_end_idx = -100
   first_non_gap_idx = nil
   last_non_gap_idx = nil
-  which_region = -1
+  region_idx = -1
 
   slen_in_aln = send - sstart + 1
 
@@ -515,7 +526,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         if query_middle >= info[:qstart] && query_middle <= info[:qend]
           clipping_start_idx = info[:qstart]-1-PADDING
           clipping_end_idx = info[:qend]-1-PADDING
-          which_region = rid
+          region_idx = rid
           break
         end
       end
@@ -645,7 +656,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
           has_extein_start = "Y"
         end
 
-        out_line = [query, target, which_region, region, putative_region_good, has_start, has_end, has_extein_start]
+        out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start]
       end
     end
 
@@ -654,6 +665,33 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
   end
 
   out_line
+end
+
+# Sort lines by query, then by region, then by evalue.
+conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
+  query_a = a[0]
+  query_b = b[0]
+
+  evalue_a = a[2].to_f
+  evalue_b = b[2].to_f
+
+  region_idx_a = a[3].to_i
+  region_idx_b = b[3].to_i
+
+  query_comp = query_a <=> query_b
+  if query_comp.zero?
+    region_comp = region_idx_a <=> region_idx_b
+
+    if region_comp.zero?
+      evalue_comp = evalue_a <=> evalue_b
+
+      evalue_comp
+    else
+      region_comp
+    end
+  else
+    query_comp
+  end
 end
 
 File.open(criteria_check_full_out, "w") do |conserved_f|
@@ -726,7 +764,7 @@ AbortIf.logger.info { "Parsing conserved residue file" }
 query_good = {}
 File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
-    query, target, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
+    query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
     all_good = region_good == "Y" && start_good == "Y" &&
                end_good == "Y" && extein_good == "Y"
@@ -740,10 +778,19 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
         region_good: "N",
         start_good: "N",
         end_good: "N",
-        extein_good: "N"
+        extein_good: "N",
+        single_target_all_good: "N"
       }
     end
 
+
+    # Because this input file is sorted by query then by region then
+    # by evalue, the targets with the best evalues for that query will
+    # be first.  So if we only keep the first target for that region,
+    # it will be the one with the best evalue.
+    if all_good && query_good[query][region_idx][:single_target_all_good] == "N"
+      query_good[query][region_idx][:single_target_all_good] = target
+    end
 
     if region_good == "Y"
       query_good[query][region_idx][:region_good] = "Y"
@@ -767,7 +814,7 @@ end
 AbortIf.logger.info { "Writing condensed criteria check" }
 
 File.open(criteria_check_condensed_out, "w") do |f|
-  f.puts %w[seq region.id all region start end extein].join "\t"
+  f.puts %w[seq region.id single.target.all multi.target.all region start end extein].join "\t"
 
   query_good.each do |query, regions|
     regions.each do |region, info|
@@ -775,7 +822,7 @@ File.open(criteria_check_condensed_out, "w") do |f|
 
       # This time the query is the original query name as it is read
       # from an outfile.
-      f.puts [query, region, all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
+      f.puts [query, region, info[:single_target_all_good], all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
     end
   end
 end
