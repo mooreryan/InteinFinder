@@ -194,6 +194,9 @@ all_blast_out = File.join details_dir, "all_search_results.txt"
 query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 
 # Outfiles
+queries_simple_name_out = File.join opts[:outdir], "SIMPLE_NAMES"
+query_name_map_out = File.join details_dir, "query_name_map.txt"
+
 intein_info_out = File.join opts[:outdir], "#{query_basename}.search_info.txt"
 containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions.txt"
 criteria_check_full_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_full.txt"
@@ -233,17 +236,33 @@ end
 # Set up the queries hash table
 queries = {}
 query_records = {}
+query_name_map = {}
+n = 0
+File.open(query_name_map_out, "w") do |name_map_f|
+  File.open(queries_simple_name_out, "w") do |f|
+    ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
+      new_name = "user_query___seq_#{n}"
+      n += 1
+      query_name_map[new_name] = rec.header
 
-ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
-  # TODO check for duplicatse
-  query_records[rec.id] = rec
+      # Because the search details will have the new name rather than
+      # the old name.
+      name_map_f.puts [new_name, rec.header].join "\t"
 
-  unless queries.has_key? rec.id
-    queries[rec.id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
-                        rpsblast_hits: 0, rpsblast_best_evalue: 1 }
+      rec.header = new_name
+      rec.id = new_name
+
+      query_records[new_name] = rec
+
+      f.puts rec
+
+      unless queries.has_key? rec.id
+        queries[rec.id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
+                            rpsblast_hits: 0, rpsblast_best_evalue: 1 }
+      end
+    end
   end
 end
-
 
 cmd = "#{opts[:makeprofiledb]} -in #{pssm_list} -out #{profile_db}"
 Utils.run_and_time_it! "Making profile DB", cmd
@@ -253,15 +272,15 @@ num_seqs = queries.count
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus] * 2
   AbortIf.logger.info { "You asked for splits, and we have #{num_seqs} sequences, so we will split the queries before blasting." }
-  cmd = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{opts[:queries]} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
+  cmd = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{queries_simple_name_out} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
 else
   AbortIf.logger.info { "Not splitting the queries before blasting.  Either too few (#{num_seqs}) or you didn't ask for splits." }
-  cmd = "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query #{opts[:queries]} -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out #{rpsblast_out}"
+  cmd = "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query #{queries_simple_name_out} -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out #{rpsblast_out}"
 end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
-cmd = "#{search} #{opts[:queries]} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
+cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 
@@ -294,20 +313,19 @@ Utils.run_and_time_it! "Catting search results", cmd
 
 query2hits = {}
 File.open(all_blast_out, "rt").each_line do |line|
-  unless line.downcase.start_with? "query"
-    ary = line.chomp.split("\t")
-    query = ary[0]
+  ary = line.chomp.split("\t")
+  query = ary[0]
 
-    ary[QSTART_IDX] = ary[QSTART_IDX].to_i
-    ary[QEND_IDX] = ary[QEND_IDX].to_i
+  ary[QSTART_IDX] = ary[QSTART_IDX].to_i
+  ary[QEND_IDX] = ary[QEND_IDX].to_i
 
-    if query2hits.has_key? query
-      query2hits[query] << ary
-    else
-      query2hits[query] = [ary]
-    end
+  if query2hits.has_key? query
+    query2hits[query] << ary
+  else
+    query2hits[query] = [ary]
   end
 end
+
 
 # Sort by qstart, if tied, break tie with qend
 query2hits.each do |query, hits|
@@ -352,7 +370,7 @@ File.open(containing_regions_out, "w") do |f|
     regions = query2regions[query]
     if regions
       regions.each do |id, info|
-        f.puts [query, id, info[:qstart], info[:qend]].join "\t"
+        f.puts [query_name_map[query], id, info[:qstart], info[:qend]].join "\t"
       end
     else
       # f.puts [query, "na", "na"].join "\t"
@@ -515,12 +533,12 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
 
         unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region start." }
+          AbortIf.logger.warn { "Skipping query target pair (#{query_name_map[query]}, #{target}) as we couldn't determine the region start." }
           break
         end
 
         unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region end." }
+          AbortIf.logger.warn { "Skipping query target pair (#{query_name_map[query]}, #{target}) as we couldn't determine the region end." }
           break
         end
 
@@ -563,7 +581,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
           has_extein_start = "Y"
         end
 
-        out_line = [query, target, which_region, region, putative_region_good, has_start, has_end, has_extein_start]
+        out_line = [query_name_map[query], target, which_region, region, putative_region_good, has_start, has_end, has_extein_start]
       end
     end
 
@@ -683,6 +701,8 @@ File.open(criteria_check_condensed_out, "w") do |f|
     regions.each do |region, info|
       all = info[:region_good] == "Y" && info[:start_good] == "Y" && info[:end_good] == "Y" && info[:extein_good] == "Y" ? "Y" : "N"
 
+      # This time the query is the original query name as it is read
+      # from an outfile.
       f.puts [query, region, all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
     end
   end
@@ -707,7 +727,7 @@ File.open(intein_info_out, "w") do |f|
   f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
 
   queries.each do |query, info|
-    f.puts [query,
+    f.puts [query_name_map[query],
             info[:mmseqs_hits], info[:mmseqs_best_evalue],
             info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
   end
@@ -716,6 +736,8 @@ end
 AbortIf.logger.info { "Cleaning up outdir" }
 FileUtils.rm_r profile_db_dir
 FileUtils.rm_r tmp_dir
+
+FileUtils.rm queries_simple_name_out
 
 unless opts[:pssm_list]
   # This is the temporary one we made.
