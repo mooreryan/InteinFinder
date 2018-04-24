@@ -194,7 +194,7 @@ all_blast_out = File.join details_dir, "all_search_results.txt"
 query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 
 # Outfiles
-queries_simple_name_out = File.join opts[:outdir], "SIMPLE_NAMES"
+queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.faa"
 query_name_map_out = File.join details_dir, "query_name_map.txt"
 
 intein_info_out = File.join opts[:outdir], "#{query_basename}.search_info.txt"
@@ -243,7 +243,7 @@ File.open(query_name_map_out, "w") do |name_map_f|
     ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
       new_name = "user_query___seq_#{n}"
       n += 1
-      query_name_map[new_name] = rec.header
+      query_name_map[new_name] = rec.id
 
       # Because the search details will have the new name rather than
       # the old name.

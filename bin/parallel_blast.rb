@@ -84,9 +84,11 @@ infile_splits_glob = File.join opts[:outdir], "#{File.basename(opts[:infile])}.f
 cmd = "#{opts[:split_program]} #{opts[:cpus]} #{opts[:infile]}"
 Process.run_and_time_it! "Splitting infile", cmd
 
-# Move the splits to the outdir
-cmd = "mv #{opts[:infile]}.fold_* #{opts[:outdir]}"
-Process.run_and_time_it! "Moving splits", cmd
+# Move the splits to the outdir if they aren't already there.
+unless File.dirname(opts[:infile]) == opts[:outdir]
+  cmd = "mv #{opts[:infile]}.fold_* #{opts[:outdir]}"
+  Process.run_and_time_it! "Moving splits", cmd
+end
 
 # Run blast on each of the splits
 cmd = "parallel #{opts[:blast_program]} -query {} -db #{opts[:blast_db]} -num_threads 1 -outfmt 6 -out {}.tmp_btab -evalue #{opts[:evalue]} ::: #{infile_splits_glob}"
