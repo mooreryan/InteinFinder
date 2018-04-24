@@ -563,7 +563,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
       f.puts this_query.seq
     end
 
-    cmd = "#{opts[:mafft]} --quiet --auto --thread 1 #{tmp_aln_in} > #{tmp_aln_out}"
+    cmd = "#{opts[:mafft]} --quiet --auto --thread 1 '#{tmp_aln_in}' > '#{tmp_aln_out}'"
     Utils.run_it! cmd
 
     num = 0
