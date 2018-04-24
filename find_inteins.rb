@@ -148,25 +148,23 @@ opts = Trollop.options do
   opt(:outdir, "Output directory", type: :string, default: ".")
 end
 
+# TODO make sure that you have a version of MMseqs2 that has the
+# easy-search pipeline
 search = "#{opts[:mmseqs]} easy-search"
 
+# TODO this only works for the defaults.  If you pass in a full path, it will break.
 Utils.check_command opts[:makeprofiledb]
 Utils.check_command opts[:rpsblast]
 Utils.check_command opts[:mmseqs]
 Utils.check_command opts[:mafft]
 
-
-# Utils.check_command opts[:n_fold_splits]
-# Utils.check_command opts[:parallel_blast]
-
-# TODO better checking for these programs
 check_file opts[:n_fold_splits]
 check_file opts[:parallel_blast]
 
 check_file opts[:pssm_list]
 
 check_arg opts, :queries
-check_file opts[:queries]
+check_file opts[:queries] # TODO this will pass even if the file is a directory.
 
 check_arg opts, :inteins
 check_file opts[:inteins]
@@ -235,6 +233,7 @@ end
 # Set up the queries hash table
 queries = {}
 query_records = {}
+
 ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
   # TODO check for duplicatse
   query_records[rec.id] = rec

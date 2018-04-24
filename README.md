@@ -3,6 +3,14 @@
 Want to screen your sweet peptide sequences for Inteins?  If so,
 you've come to the right place!
 
+## Install
+
+Make sure that you run `bundle install` inside of the source directory
+to get any gems that you may not already have installed.
+
+Don't move the `find_inteins.rb` script out of the source folder as it
+relies on some relative paths.
+
 ## Output files
 
 ## TL;DR
@@ -79,3 +87,5 @@ Does not check for:
 ## TODO
 
 - Include the sequences from the superfamily CDs in the alignment step.
+- Remove the intein and compare the length of the sequences to some of their closest homologs in Uniclust30.
+- Check if gaps are opened when aligning queries to close homologs in Uniclust30.
