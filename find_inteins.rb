@@ -48,9 +48,9 @@ LICENSE   = "MIT"
 
 
 VERSION_BANNER = "  # Version:   #{VERSION}
-  # Copyright: #{COPYRIGHT}
-  # Contact:   #{CONTACT}
-  # License:   #{LICENSE}"
+# Copyright: #{COPYRIGHT}
+# Contact:   #{CONTACT}
+# License:   #{LICENSE}"
 
 
 opts = Trollop.options do
@@ -138,8 +138,13 @@ opts = Trollop.options do
       "Path to mafft binary",
       default: "mafft")
 
-  opt(:look_for_key_residues,
-      "DO THE FANCY THING!",
+  # opt(:look_for_key_residues,
+  #     "DO THE FANCY THING!",
+  #     default: false)
+
+
+  opt(:keep_alignment_files,
+      "Keep the alignment files",
       default: false)
 
   opt(:cpus, "Number of cpus to use", default: 1)
@@ -148,6 +153,7 @@ opts = Trollop.options do
   opt(:outdir, "Output directory", type: :string, default: ".")
 end
 
+AbortIf.logger.info { "Checking arguments" }
 # TODO make sure that you have a version of MMseqs2 that has the
 # easy-search pipeline
 search = "#{opts[:mmseqs]} easy-search"
@@ -195,7 +201,6 @@ query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 
 # Outfiles
 queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.faa"
-query_name_map_out = File.join details_dir, "query_name_map.txt"
 
 intein_info_out = File.join opts[:outdir], "#{query_basename}.search_info.txt"
 containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions.txt"
@@ -205,6 +210,8 @@ criteria_check_condensed_out = File.join opts[:outdir], "#{query_basename}.intei
 
 abort_if Dir.exist?(opts[:outdir]),
          "The outdir #{opts[:outdir]} already exists!  Specify a different outdir!"
+
+AbortIf.logger.info { "Making directories" }
 
 FileUtils.mkdir_p opts[:outdir]
 FileUtils.mkdir_p profile_db_dir
@@ -225,6 +232,8 @@ else
   end
 end
 
+AbortIf.logger.info { "Checking smp files" }
+
 # Check that all the smp files actually exist.
 File.open(pssm_list, "rt").each_line do |line|
   line.chomp.split.each do |smp_fname|
@@ -233,40 +242,48 @@ File.open(pssm_list, "rt").each_line do |line|
   end
 end
 
+
+AbortIf.logger.info { "Setting up queries hash table" }
+
+
 # Set up the queries hash table
 queries = {}
 query_records = {}
 query_name_map = {}
 n = 0
-File.open(query_name_map_out, "w") do |name_map_f|
-  File.open(queries_simple_name_out, "w") do |f|
-    ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
-      new_name = "user_query___seq_#{n}"
-      n += 1
-      query_name_map[new_name] = rec.id
+File.open(queries_simple_name_out, "w") do |f|
+  ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
+    new_name = "user_query___seq_#{n}"
+    old_rec_id = rec.id
+    n += 1
+    query_name_map[new_name] = old_rec_id
 
-      # Because the search details will have the new name rather than
-      # the old name.
-      name_map_f.puts [new_name, rec.header].join "\t"
+    rec.header = new_name
+    rec.id = new_name
 
-      rec.header = new_name
-      rec.id = new_name
+    query_records[old_rec_id] = rec
 
-      query_records[new_name] = rec
+    f.puts rec
 
-      f.puts rec
-
-      unless queries.has_key? rec.id
-        queries[rec.id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
-                            rpsblast_hits: 0, rpsblast_best_evalue: 1 }
-      end
+    unless queries.has_key? old_rec_id
+      queries[old_rec_id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
+                              rpsblast_hits: 0, rpsblast_best_evalue: 1 }
     end
   end
 end
 
+
+
+
+
+######################################################################
+# homology search
+#################
+
+AbortIf.logger.info { "Searching for homology" }
+
 cmd = "#{opts[:makeprofiledb]} -in #{pssm_list} -out #{profile_db}"
 Utils.run_and_time_it! "Making profile DB", cmd
-
 
 num_seqs = queries.count
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
@@ -282,6 +299,51 @@ Utils.run_and_time_it! "Running rpsblast", cmd
 # 5.7, 2
 cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s 5.7 --num-iterations 2 -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
+
+#################
+# homology search
+######################################################################
+
+
+
+
+
+
+
+
+
+######################################################################
+# change the IDs in the search files back
+##########################################
+
+AbortIf.logger.info { "Swapping IDs in search files" }
+
+# We do this so the user can actually read the search details.
+tmpfile = File.join opts[:outdir], "tmptmp"
+File.open(tmpfile, "w") do |f|
+  File.open(rpsblast_out, "rt").each_line do |line|
+    query, *rest = line.chomp.split "\t"
+
+    f.puts [query_name_map[query], rest].join "\t"
+  end
+end
+Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{rpsblast_out}"
+
+tmpfile = File.join opts[:outdir], "tmptmp"
+File.open(tmpfile, "w") do |f|
+  File.open(mmseqs_out, "rt").each_line do |line|
+    query, *rest = line.chomp.split "\t"
+
+    f.puts [query_name_map[query], rest].join "\t"
+  end
+end
+Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{mmseqs_out}"
+
+# From here out, the sequence IDs should be back to normal.
+
+##########################################
+# change the IDs in the search files back
+######################################################################
 
 
 
@@ -361,6 +423,8 @@ query2hits.each do |query, hits|
   end
 end
 
+AbortIf.logger.info { "Writing intein region info" }
+
 all_query_ids = queries.keys
 
 File.open(containing_regions_out, "w") do |f|
@@ -370,7 +434,7 @@ File.open(containing_regions_out, "w") do |f|
     regions = query2regions[query]
     if regions
       regions.each do |id, info|
-        f.puts [query_name_map[query], id, info[:qstart], info[:qend]].join "\t"
+        f.puts [query, id, info[:qstart], info[:qend]].join "\t"
       end
     else
       # f.puts [query, "na", "na"].join "\t"
@@ -533,12 +597,12 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
 
         unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-          AbortIf.logger.warn { "Skipping query target pair (#{query_name_map[query]}, #{target}) as we couldn't determine the region start." }
+          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region start." }
           break
         end
 
         unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-          AbortIf.logger.warn { "Skipping query target pair (#{query_name_map[query]}, #{target}) as we couldn't determine the region end." }
+          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region end." }
           break
         end
 
@@ -581,12 +645,12 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
           has_extein_start = "Y"
         end
 
-        out_line = [query_name_map[query], target, which_region, region, putative_region_good, has_start, has_end, has_extein_start]
+        out_line = [query, target, which_region, region, putative_region_good, has_start, has_end, has_extein_start]
       end
     end
 
     FileUtils.rm tmp_aln_in
-    FileUtils.rm tmp_aln_out
+    FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
   end
 
   out_line
@@ -600,18 +664,15 @@ File.open(criteria_check_full_out, "w") do |conserved_f|
   end
 end
 
-
-
 ###################################################
 # do the alignments to check for conserved residues
 ######################################################################
 
 
 
-
-
-
-
+######################################################################
+# parse blast results
+#####################
 
 AbortIf.logger.info { "Parsing rpsblast results" }
 
@@ -649,8 +710,17 @@ File.open(mmseqs_out, "rt").each_line do |line|
   end
 end
 
+#####################
+# parse blast results
+######################################################################
 
 
+
+
+
+######################################################################
+# condensed criteria check
+##########################
 
 AbortIf.logger.info { "Parsing conserved residue file" }
 query_good = {}
@@ -694,6 +764,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
   end
 end
 
+AbortIf.logger.info { "Writing condensed criteria check" }
+
 File.open(criteria_check_condensed_out, "w") do |f|
   f.puts %w[seq region.id all region start end extein].join "\t"
 
@@ -708,6 +780,10 @@ File.open(criteria_check_condensed_out, "w") do |f|
   end
 end
 
+
+##########################
+# condensed criteria check
+######################################################################
 
 
 
@@ -727,7 +803,7 @@ File.open(intein_info_out, "w") do |f|
   f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
 
   queries.each do |query, info|
-    f.puts [query_name_map[query],
+    f.puts [query,
             info[:mmseqs_hits], info[:mmseqs_best_evalue],
             info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
   end
