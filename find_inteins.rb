@@ -231,6 +231,9 @@ opts = Trollop.options do
   opt(:refinement_strictness,
       "How strict for refining intein regions?",
       default: 1)
+  opt(:use_length_in_refinement,
+      "Use min and max len for refinement",
+      default: false)
 
   opt(:outdir, "Output directory", type: :string, default: ".")
 
@@ -258,9 +261,15 @@ end
 AbortIf.logger.info { "Checking arguments" }
 
 abort_unless Set.new([1,2]).include?(opts[:intein_n_terminus_test_strictness]),
-             "--intein-n-terminus-test-level must be 1 or 2."
+             "--intein-n-terminus-test-strictness must be 1 or 2."
 abort_unless Set.new([1,2]).include?(opts[:intein_c_terminus_dipeptide_test_strictness]),
-             "--intein-c-terminus-dipeptide-test-level must be 1 or 2."
+             "--intein-c-terminus-dipeptide-test-strictness must be 1 or 2."
+# abort_unless Set.new([1,2]).include?(opts[:refinement_strictness]),
+#              "--refinement-strictness must be 1 or 2."
+abort_unless Set.new([1]).include?(opts[:refinement_strictness]),
+             "Currently, the only option for --refinement-strictness is 1."
+
+
 
 # TODO make sure that you have a version of MMseqs2 that has the
 # easy-search pipeline
@@ -1043,32 +1052,39 @@ File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx
   end
 end
 
+REGION_MIN_LEN = 134 - 20
+REGION_MAX_LEN = 608 + 20
+
 File.open(refined_containing_regions_out, "w") do |f|
   f.puts %w[seq region.id start end len refining.target refining.evalue].join "\t"
 
   region_info.each do |seq, ht|
     ht.each do |region_id, info|
-      if info[:has_single_target] == NO
-        f.puts [seq,
-                region_id,
-                info[:start],
-                info[:stop],
-                info[:len],
-                NO,
-                NO].join "\t"
-      else
-        f.puts [seq,
-                region_id,
-                info[:has_single_target][:start],
-                info[:has_single_target][:stop],
-                info[:has_single_target][:len],
-                info[:has_single_target][:target],
-                info[:has_single_target][:evalue]].join "\t"
+      if !opts[:use_length_in_refinement] ||
+         (opts[:use_length_in_refinement] && REGION_MIN_LEN <= len && len <= REGION_MAX_LEN)
+
+        if info[:has_single_target] == NO
+          f.puts [seq,
+                  region_id,
+                  info[:start],
+                  info[:stop],
+                  info[:len],
+                  NO,
+                  NO].join "\t"
+        else
+          f.puts [seq,
+                  region_id,
+                  info[:has_single_target][:start],
+                  info[:has_single_target][:stop],
+                  info[:has_single_target][:len],
+                  info[:has_single_target][:target],
+                  info[:has_single_target][:evalue]].join "\t"
+        end
+
       end
     end
   end
 end
-
 
 ################################
 # refine putative intein regions
