@@ -197,14 +197,14 @@ opts = Trollop.options do
 
   opt(:evalue_rpsblast,
       "Report hits less than this evalue in the rpsblast",
-      default: 1e-5)
+      default: 1e-3)
   opt(:evalue_mmseqs,
       "Report hits less than this evalue in the mmseqs search",
-      default: 1e-5)
+      default: 1e-3)
 
   opt(:evalue_region_refinement,
       "Only use single target hits with evalue less than this for refinement of intein regions.",
-      default: 1e-5)
+      default: 1e-3)
 
 
   # opt(:look_for_key_residues,
@@ -221,11 +221,15 @@ opts = Trollop.options do
   opt(:mmseqs_sensitivity, "-s for mmseqs", default: 5.7)
   opt(:mmseqs_iterations, "--num-iterations for mmseqs", default: 2)
 
-  opt(:intein_n_terminus_test_level,
+  opt(:intein_n_terminus_test_strictness,
       "Which level passes the intein_n_terminus_test?",
       default: 1)
-  opt(:intein_c_terminus_dipeptide_test_level,
+  opt(:intein_c_terminus_dipeptide_test_strictness,
       "Which level passes the intein_c_terminus_dipeptide_test?",
+      default: 1)
+
+  opt(:refinement_strictness,
+      "How strict for refining intein regions?",
       default: 1)
 
   opt(:outdir, "Output directory", type: :string, default: ".")
@@ -253,9 +257,9 @@ end
 
 AbortIf.logger.info { "Checking arguments" }
 
-abort_unless Set.new([1,2]).include?(opts[:intein_n_terminus_test_level]),
+abort_unless Set.new([1,2]).include?(opts[:intein_n_terminus_test_strictness]),
              "--intein-n-terminus-test-level must be 1 or 2."
-abort_unless Set.new([1,2]).include?(opts[:intein_c_terminus_dipeptide_test_level]),
+abort_unless Set.new([1,2]).include?(opts[:intein_c_terminus_dipeptide_test_strictness]),
              "--intein-c-terminus-dipeptide-test-level must be 1 or 2."
 
 # TODO make sure that you have a version of MMseqs2 that has the
@@ -881,8 +885,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
     query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
-    start_test_pass = residue_test_pass? start_good, opts[:intein_n_terminus_test_level]
-    end_test_pass = residue_test_pass? end_good, opts[:intein_c_terminus_dipeptide_test_level]
+    start_test_pass = residue_test_pass? start_good, opts[:intein_n_terminus_test_strictness]
+    end_test_pass = residue_test_pass? end_good, opts[:intein_c_terminus_dipeptide_test_strictness]
 
     all_good = region_good == "L1" && start_test_pass &&
                end_test_pass && extein_good == "L1"
@@ -935,8 +939,8 @@ File.open(criteria_check_condensed_out, "w") do |f|
 
   query_good.each do |query, regions|
     regions.each do |region, info|
-      start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_terminus_test_level]
-      end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_terminus_dipeptide_test_level]
+      start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_terminus_test_strictness]
+      end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_terminus_dipeptide_test_strictness]
 
       all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : NO
 
@@ -1009,10 +1013,11 @@ end
 
 File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx|
   unless idx.zero?
-    seq, region_id, single_target, evalue, region, *rest = line.chomp.split "\t"
-    if single_target == NO
-      AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} does not have a single target.  It won't be refined." }
-    else
+    seq, region_id, single_target, evalue, region, multi_target, *rest = line.chomp.split "\t"
+
+    if single_target == NO && multi_target != NO && opts[:refinement_strictness] > 1
+      AbortIf.logger.debug { "NOT YET IMPLEMENTED" }
+    elsif single_target != NO
       good_start, good_stop = region.split "-"
       good_len = good_stop.to_i - good_start.to_i + 1
 
@@ -1032,6 +1037,8 @@ File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx
           len: good_len
         }
       end
+    else
+      AbortIf.logger.debug { "Not refining seq #{seq} region #{region_id}" }
     end
   end
 end
