@@ -48,11 +48,12 @@ end
 # Use this test if you're not sure which is the first amino acid and
 # you need to check multiple.  Eg. if it is unclear if the InBase
 # sequence had the -1 extein residue or not.
-def intein_n_terminus_set_test aa
-  test_aa = Set.new aa.to_a.map(&:upcase)
 
-  level_1 = Set.new %w[C S A Q P T]
-  level_2 = Set.new %w[V F N G M L]
+n_terminus_level_1 = Set.new %w[C S A Q P T]
+n_terminus_level_2 = Set.new %w[V F N G M L]
+
+def residue_set_test aa, level_1, level_2
+  test_aa = Set.new aa.to_a.map(&:upcase)
 
   if !level_1.intersection(test_aa).empty?
     "L1"
@@ -63,9 +64,51 @@ def intein_n_terminus_set_test aa
   end
 end
 
-def intein_n_terminus_test_pass? result, strictness
+def c_term_dipeptide_test oligo
+  # Currently this will have a first pair and a second pair that it
+  # tries to match too.  As we aren't sure whether all of the inteins
+  # have -1 +1 yet.
+
+  first_pair = oligo[0..1].upcase
+  second_pair = oligo[1..2].upcase
+
+  level_1 = Set.new %w[HN SN GN GQ LD FN]
+  level_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
+
+  if level_1.include?(first_pair) || level_1.include?(second_pair)
+    "L1"
+  elsif level_2.include?(first_pair) || level_2.include?(second_pair)
+    "L2"
+  else
+    "No"
+  end
+end
+
+
+def residue_test_pass? result, strictness
   result == "L1" || (result == "L2" && strictness >= 2)
 end
+
+
+
+# def intein_n_terminus_set_test aa
+#   test_aa = Set.new aa.to_a.map(&:upcase)
+
+#   level_1 = Set.new %w[C S A Q P T]
+#   level_2 = Set.new %w[V F N G M L]
+
+#   if !level_1.intersection(test_aa).empty?
+#     "L1"
+#   elsif !level_2.intersection(test_aa).empty?
+#     "L2"
+#   else
+#     "No"
+#   end
+# end
+
+# def intein_n_terminus_test_pass? result, strictness
+#   result == "L1" || (result == "L2" && strictness >= 2)
+# end
 
 
 def check_file fname
@@ -175,6 +218,9 @@ opts = Trollop.options do
   opt(:intein_n_terminus_test_level,
       "Which level passes the intein_n_terminus_test?",
       default: 1)
+  opt(:intein_c_terminus_dipeptide_test_level,
+      "Which level passes the intein_c_terminus_dipeptide_test?",
+      default: 1)
 
   opt(:outdir, "Output directory", type: :string, default: ".")
 
@@ -203,6 +249,8 @@ AbortIf.logger.info { "Checking arguments" }
 
 abort_unless Set.new([1,2]).include?(opts[:intein_n_terminus_test_level]),
              "--intein-n-terminus-test-level must be 1 or 2."
+abort_unless Set.new([1,2]).include?(opts[:intein_c_terminus_dipeptide_test_level]),
+             "--intein-c-terminus-dipeptide-test-level must be 1 or 2."
 
 # TODO make sure that you have a version of MMseqs2 that has the
 # easy-search pipeline
@@ -685,16 +733,18 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         start_oligo =
           Set.new(rec.seq.downcase[first_non_gap_idx .. first_non_gap_idx+1].chars)
 
-        intein_n_terminus = intein_n_terminus_set_test start_oligo
+        has_start = residue_set_test start_oligo, n_terminus_level_1, n_terminus_level_2
 
         end_oligo = rec.seq.downcase[last_non_gap_idx-2 .. last_non_gap_idx]
 
-        first_pair = end_oligo[0..1]
-        second_pair = end_oligo[1..2]
-        if first_pair == "hn" || first_pair == "hq" ||
-           second_pair == "hn" || second_pair == "hq"
-          has_end = "Y"
-        end
+        has_end = c_term_dipeptide_test end_oligo
+
+        # first_pair = end_oligo[0..1]
+        # second_pair = end_oligo[1..2]
+        # if first_pair == "hn" || first_pair == "hq" ||
+        #    second_pair == "hn" || second_pair == "hq"
+        #   has_end = "Y"
+        # end
 
         extein_start_oligo =
           Set.new(rec.seq.downcase[last_non_gap_idx .. last_non_gap_idx+1].chars)
@@ -702,7 +752,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
           has_extein_start = "Y"
         end
 
-        out_line = [query, target, evalue, region_idx, region, putative_region_good, intein_n_terminus, has_end, has_extein_start]
+        out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start]
       end
     end
 
@@ -812,10 +862,11 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
     query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
-    start_test_pass = intein_n_terminus_test_pass? start_good, opts[:intein_n_terminus_test_level]
+    start_test_pass = residue_test_pass? start_good, opts[:intein_n_terminus_test_level]
+    end_test_pass = residue_test_pass? end_good, opts[:intein_c_terminus_dipeptide_test_level]
 
     all_good = region_good == "Y" && start_test_pass &&
-               end_good == "Y" && extein_good == "Y"
+               end_test_pass && extein_good == "Y"
 
     unless query_good.has_key?(query)
       query_good[query] = {}
@@ -848,8 +899,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
       query_good[query][region_idx][:start_good] = start_good # start good can have multiple levels
     end
 
-    if end_good == "Y"
-      query_good[query][region_idx][:end_good] = "Y"
+    if end_test_pass
+      query_good[query][region_idx][:end_good] = end_good
     end
 
     if extein_good == "Y"
@@ -865,7 +916,10 @@ File.open(criteria_check_condensed_out, "w") do |f|
 
   query_good.each do |query, regions|
     regions.each do |region, info|
-      all = info[:region_good] == "Y" && info[:start_good] == "Y" && info[:end_good] == "Y" && info[:extein_good] == "Y" ? "Y" : "No"
+      start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_terminus_test_level]
+      end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_terminus_dipeptide_test_level]
+
+      all = info[:region_good] == "Y" && start_test_pass && end_test_pass && info[:extein_good] == "Y" ? "Y" : "No"
 
       # This time the query is the original query name as it is read
       # from an outfile.

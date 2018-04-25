@@ -4,6 +4,8 @@ SANDBOX
 TEST_OUTPUT_?
 TEST
 
+*.backup
+
 assets/intein_superfamily_members/fastas/aligned
 assets/intein_superfamily_members/fastas/unaligned/all
 
