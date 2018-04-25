@@ -30,6 +30,61 @@ end
 include AbortIf
 include AbortIf::Assert
 
+def intein_n_terminus_test aa
+  test_aa = aa.upcase
+
+  level_1 = Set.new %w[C S A]
+  level_2 = Set.new %w[Q P T]
+  level_3 = Set.new %w[V F N G M L]
+
+  if level_1.include? test_aa
+    "L1"
+  elsif level_2.include? test_aa
+    "L2"
+  elsif level_3.include? test_aa
+    "L3"
+  else
+    "No"
+  end
+end
+
+# Use this test if you're not sure which is the first amino acid and
+# you need to check multiple.  Eg. if it is unclear if the InBase
+# sequence had the -1 extein residue or not.
+def intein_n_terminus_set_test aa
+  test_aa = Set.new aa.to_a.map(&:upcase)
+
+  level_1 = Set.new %w[C S A]
+  level_2 = Set.new %w[Q P T]
+  level_3 = Set.new %w[V F N G M L]
+
+  if !level_1.intersection(test_aa).empty?
+    "L1"
+  elsif !level_2.intersection(test_aa).empty?
+    "L2"
+  elsif !level_3.intersection(test_aa).empty?
+    "L3"
+  else
+    "No"
+  end
+end
+
+def intein_n_terminus_test_pass? result, strictness
+  if result == "No"
+    false
+  elsif result == "L3" && strictness == 3
+    true
+  elsif result == "L2" && strictness >= 2
+    true
+  elsif result == "L1"
+    true
+  end
+end
+
+
+
+
+
 def check_file fname
   abort_if fname && !File.exist?(fname),
            "#{fname} doesn't exist!  Try #{__FILE__} --help for help."
@@ -119,6 +174,28 @@ opts = Trollop.options do
       "Report hits less than this evalue in the mmseqs search",
       default: 1e-5)
 
+
+  # opt(:look_for_key_residues,
+  #     "DO THE FANCY THING!",
+  #     default: false)
+
+
+  opt(:keep_alignment_files,
+      "Keep the alignment files",
+      default: false)
+
+  opt(:cpus, "Number of cpus to use", default: 1)
+  opt(:split_queries, "Split queries for rpsblast if there are enough sequences", default: false)
+  opt(:mmseqs_sensitivity, "-s for mmseqs", default: 5.7)
+  opt(:mmseqs_iterations, "--num-iterations for mmseqs", default: 2)
+
+  opt(:intein_n_terminus_test_level,
+      "Which level passes the intein_n_terminus_test?",
+      default: 1)
+
+  opt(:outdir, "Output directory", type: :string, default: ".")
+
+  # Binary file locations.
   opt(:makeprofiledb,
       "Path to makeprofiledb binary",
       default: "makeprofiledb")
@@ -137,25 +214,13 @@ opts = Trollop.options do
   opt(:mafft,
       "Path to mafft binary",
       default: "mafft")
-
-  # opt(:look_for_key_residues,
-  #     "DO THE FANCY THING!",
-  #     default: false)
-
-
-  opt(:keep_alignment_files,
-      "Keep the alignment files",
-      default: false)
-
-  opt(:cpus, "Number of cpus to use", default: 1)
-  opt(:split_queries, "Split queries for rpsblast if there are enough sequences", default: false)
-  opt(:mmseqs_sensitivity, "-s for mmseqs", default: 5.7)
-  opt(:mmseqs_iterations, "--num-iterations for mmseqs", default: 2)
-
-  opt(:outdir, "Output directory", type: :string, default: ".")
 end
 
 AbortIf.logger.info { "Checking arguments" }
+
+abort_unless Set.new([1,2,3]).include?(opts[:intein_n_terminus_test_level]),
+             "--intein-n-terminus-test-level must be 1, 2, or 3."
+
 # TODO make sure that you have a version of MMseqs2 that has the
 # easy-search pipeline
 search = "#{opts[:mmseqs]} easy-search"
@@ -597,10 +662,10 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         # TODO check if the alignment actually got into the region that the blast hit said it should be in
 
-        has_start = "N"
-        has_end = "N"
-        has_extein_start = "N"
-        correct_region = "N"
+        intein_n_terminus = "No"
+        has_end = "No"
+        has_extein_start = "No"
+        correct_region = "No"
 
         true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
         gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
@@ -623,7 +688,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         putative_regions = query2regions[query]
 
-        putative_region_good = "N"
+        putative_region_good = "No"
 
         putative_regions.each_with_index do |(rid, info), idx|
           if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
@@ -637,9 +702,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         start_oligo =
           Set.new(rec.seq.downcase[first_non_gap_idx .. first_non_gap_idx+1].chars)
 
-        if !start_oligo.intersection(Set.new(%w[s t c])).empty?
-          has_start = "Y"
-        end
+        intein_n_terminus = intein_n_terminus_set_test start_oligo
 
         end_oligo = rec.seq.downcase[last_non_gap_idx-2 .. last_non_gap_idx]
 
@@ -656,7 +719,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
           has_extein_start = "Y"
         end
 
-        out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start]
+        out_line = [query, target, evalue, region_idx, region, putative_region_good, intein_n_terminus, has_end, has_extein_start]
       end
     end
 
@@ -766,7 +829,9 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
     query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
-    all_good = region_good == "Y" && start_good == "Y" &&
+    start_test_pass = intein_n_terminus_test_pass? start_good, opts[:intein_n_terminus_test_level]
+
+    all_good = region_good == "Y" && start_test_pass &&
                end_good == "Y" && extein_good == "Y"
 
     unless query_good.has_key?(query)
@@ -775,11 +840,11 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
 
     unless query_good[query].has_key?(region_idx)
       query_good[query][region_idx] = {
-        region_good: "N",
-        start_good: "N",
-        end_good: "N",
-        extein_good: "N",
-        single_target_all_good: "N"
+        region_good: "No",
+        start_good: "No",
+        end_good: "No",
+        extein_good: "No",
+        single_target_all_good: "No"
       }
     end
 
@@ -788,7 +853,7 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     # by evalue, the targets with the best evalues for that query will
     # be first.  So if we only keep the first target for that region,
     # it will be the one with the best evalue.
-    if all_good && query_good[query][region_idx][:single_target_all_good] == "N"
+    if all_good && query_good[query][region_idx][:single_target_all_good] == "No"
       query_good[query][region_idx][:single_target_all_good] = target
     end
 
@@ -796,8 +861,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
       query_good[query][region_idx][:region_good] = "Y"
     end
 
-    if start_good == "Y"
-      query_good[query][region_idx][:start_good] = "Y"
+    if start_test_pass
+      query_good[query][region_idx][:start_good] = start_good # start good can have multiple levels
     end
 
     if end_good == "Y"
@@ -807,7 +872,6 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     if extein_good == "Y"
       query_good[query][region_idx][:extein_good] = "Y"
     end
-
   end
 end
 
@@ -818,7 +882,7 @@ File.open(criteria_check_condensed_out, "w") do |f|
 
   query_good.each do |query, regions|
     regions.each do |region, info|
-      all = info[:region_good] == "Y" && info[:start_good] == "Y" && info[:end_good] == "Y" && info[:extein_good] == "Y" ? "Y" : "N"
+      all = info[:region_good] == "Y" && info[:start_good] == "Y" && info[:end_good] == "Y" && info[:extein_good] == "Y" ? "Y" : "No"
 
       # This time the query is the original query name as it is read
       # from an outfile.
