@@ -2,6 +2,13 @@ TEST_OUTPUT
 assets/intein_sequences/inbase.almost_orig_headers.faa
 SANDBOX
 TEST_OUTPUT_?
+TEST
 
 assets/intein_superfamily_members/fastas/aligned
 assets/intein_superfamily_members/fastas/unaligned/all
+
+
+assets/intein_sequences/inbase.almost_orig_headers.not_sure.faa
+assets/intein_sequences/inbase.almost_orig_headers.trimmed_and_good.faa
+assets/intein_sequences/not_1_1.faa
+assets/intein_sequences/special.headers.txt
