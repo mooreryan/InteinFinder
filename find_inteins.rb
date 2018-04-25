@@ -432,13 +432,20 @@ Utils.run_and_time_it! "Running mmseqs", cmd
 
 AbortIf.logger.info { "Swapping IDs in search files" }
 
+# It looks like the evalue cutoff doesn't always work for mmseqs.  So
+# just add an evalue filter to these steps as well.
+
 # We do this so the user can actually read the search details.
 tmpfile = File.join opts[:outdir], "tmptmp"
 File.open(tmpfile, "w") do |f|
   File.open(rpsblast_out, "rt").each_line do |line|
     query, *rest = line.chomp.split "\t"
 
-    f.puts [query_name_map[query], rest].join "\t"
+    evalue = rest[9].to_f
+
+    if evalue <= opts[:evalue_rpsblast]
+      f.puts [query_name_map[query], rest].join "\t"
+    end
   end
 end
 Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{rpsblast_out}"
@@ -448,7 +455,11 @@ File.open(tmpfile, "w") do |f|
   File.open(mmseqs_out, "rt").each_line do |line|
     query, *rest = line.chomp.split "\t"
 
-    f.puts [query_name_map[query], rest].join "\t"
+    evalue = rest[9].to_f
+
+    if evalue <= opts[:evalue_mmseqs]
+      f.puts [query_name_map[query], rest].join "\t"
+    end
   end
 end
 Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{mmseqs_out}"
@@ -929,9 +940,28 @@ File.open(criteria_check_condensed_out, "w") do |f|
 
       all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : NO
 
+      if info[:single_target_all_good] == NO
+        single_target_all = NO
+        single_target_all_evalue = NO
+        single_target_all_region = NO
+      else
+        single_target_all = info[:single_target_all_good][:seq]
+        single_target_all_evalue = info[:single_target_all_good][:evalue]
+        single_target_all_region = info[:single_target_all_good][:region]
+      end
+
       # This time the query is the original query name as it is read
       # from an outfile.
-      f.puts [query, region, info[:single_target_all_good][:seq], info[:single_target_all_good][:evalue], info[:single_target_all_good][:region], all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
+      f.puts [query,
+              region,
+              single_target_all,
+              single_target_all_evalue,
+              single_target_all_region,
+              all,
+              info[:region_good],
+              info[:start_good],
+              info[:end_good],
+              info[:extein_good]].join "\t"
     end
   end
 end
@@ -978,28 +1008,34 @@ end
 File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx|
   unless idx.zero?
     seq, region_id, single_target, evalue, region, *rest = line.chomp.split "\t"
-    good_start, good_stop = region.split "-"
-    good_len = good_stop.to_i - good_start.to_i + 1
+    if single_target == NO
+      AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} does not have a single target.  It won't be refined." }
 
-    if region_info.has_key? seq
-      if region_info[seq].has_key? region_id
-        if evalue.to_f <= opts[:evalue_region_refinement]
-          region_info[seq][region_id][:has_single_target] = {
-            target: single_target,
-            evalue: evalue,
-            start: good_start,
-            stop: good_stop,
-            len: good_len
-          }
 
-          AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, and meets evalue threshold.  Not using it for refinement." }        else
-          AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, but evalue is greater than threshold.  Not using it for refinement." }
+    else
+      good_start, good_stop = region.split "-"
+      good_len = good_stop.to_i - good_start.to_i + 1
+
+      if region_info.has_key? seq
+        if region_info[seq].has_key? region_id
+          if evalue.to_f <= opts[:evalue_region_refinement]
+            region_info[seq][region_id][:has_single_target] = {
+              target: single_target,
+              evalue: evalue,
+              start: good_start,
+              stop: good_stop,
+              len: good_len
+            }
+
+            AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, and meets evalue threshold.  Not using it for refinement." }        else
+            AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, but evalue is greater than threshold.  Not using it for refinement." }
+          end
+        else
+          abort_if true, "Seq-region pair #{seq}-#{region_id} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}"
         end
       else
-        AbortIf.logger.warn { "Seq-region pair #{seq}-#{region_id} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}" }
+        abort_if true, "Seq #{seq} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}"
       end
-    else
-      AbortIf.logger.warn { "Seq #{seq} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}" }
     end
   end
 end
@@ -1010,6 +1046,7 @@ File.open(refined_containing_regions_out, "w") do |f|
   region_info.each do |seq, ht|
     ht.each do |region_id, info|
       if info[:has_single_target] == NO
+        STDERR.puts info.inspect
         f.puts [seq,
                 region_id,
                 info[:start],
