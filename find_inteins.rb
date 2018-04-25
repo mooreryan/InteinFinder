@@ -33,16 +33,13 @@ include AbortIf::Assert
 def intein_n_terminus_test aa
   test_aa = aa.upcase
 
-  level_1 = Set.new %w[C S A]
-  level_2 = Set.new %w[Q P T]
-  level_3 = Set.new %w[V F N G M L]
+  level_1 = Set.new %w[C S A Q P T]
+  level_2 = Set.new %w[V F N G M L]
 
   if level_1.include? test_aa
     "L1"
   elsif level_2.include? test_aa
     "L2"
-  elsif level_3.include? test_aa
-    "L3"
   else
     "No"
   end
@@ -54,35 +51,21 @@ end
 def intein_n_terminus_set_test aa
   test_aa = Set.new aa.to_a.map(&:upcase)
 
-  level_1 = Set.new %w[C S A]
-  level_2 = Set.new %w[Q P T]
-  level_3 = Set.new %w[V F N G M L]
+  level_1 = Set.new %w[C S A Q P T]
+  level_2 = Set.new %w[V F N G M L]
 
   if !level_1.intersection(test_aa).empty?
     "L1"
   elsif !level_2.intersection(test_aa).empty?
     "L2"
-  elsif !level_3.intersection(test_aa).empty?
-    "L3"
   else
     "No"
   end
 end
 
 def intein_n_terminus_test_pass? result, strictness
-  if result == "No"
-    false
-  elsif result == "L3" && strictness == 3
-    true
-  elsif result == "L2" && strictness >= 2
-    true
-  elsif result == "L1"
-    true
-  end
+  result == "L1" || (result == "L2" && strictness >= 2)
 end
-
-
-
 
 
 def check_file fname
@@ -218,8 +201,8 @@ end
 
 AbortIf.logger.info { "Checking arguments" }
 
-abort_unless Set.new([1,2,3]).include?(opts[:intein_n_terminus_test_level]),
-             "--intein-n-terminus-test-level must be 1, 2, or 3."
+abort_unless Set.new([1,2]).include?(opts[:intein_n_terminus_test_level]),
+             "--intein-n-terminus-test-level must be 1 or 2."
 
 # TODO make sure that you have a version of MMseqs2 that has the
 # easy-search pipeline
