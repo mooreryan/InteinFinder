@@ -5,3 +5,6 @@ test:
 
 test_small:
 	rm -r TEST_OUTPUT_SMALL; ./find_inteins.rb --mmseqs-sensitivity 1 --mmseqs-iterations 1 --queries test_files/rnr_seq_4.faa --outdir TEST_OUTPUT_SMALL --split-queries --cpus 32 && tree TEST_OUTPUT_SMALL && head TEST_OUTPUT_SMALL/rnr*
+
+test_small_2:
+	rm -r TEST_OUTPUT_SMALL_2; ./find_inteins.rb --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/rnr_seq_4.faa --outdir TEST_OUTPUT_SMALL_2 --split-queries --cpus 32 && tree TEST_OUTPUT_SMALL_2 && head TEST_OUTPUT_SMALL_2/rnr*

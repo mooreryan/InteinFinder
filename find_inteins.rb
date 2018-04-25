@@ -17,6 +17,8 @@ PSSM_DIR = File.join __dir__, "assets", "intein_superfamily_members"
 PSSMs = ["cd00081.smp", "cd00085.smp", "cd09643.smp", "COG1372.smp", "COG1403.smp", "COG2356.smp", "pfam01844.smp", "pfam04231.smp", "pfam05551.smp", "pfam07510.smp", "pfam12639.smp", "pfam13391.smp", "pfam13392.smp", "pfam13395.smp", "pfam13403.smp", "pfam14414.smp", "pfam14623.smp", "pfam14890.smp", "PRK11295.smp", "PRK15137.smp", "smart00305.smp", "smart00306.smp", "smart00507.smp", "TIGR01443.smp", "TIGR01445.smp", "TIGR02646.smp", "pfam05204.smp", "pfam14528.smp"]
 PSSM_PATHS = PSSMs.map { |pssm| File.join PSSM_DIR, pssm }
 
+NO = "No"
+
 module Utils
   extend Aai::CoreExtensions::Time
   extend Aai::CoreExtensions::Process
@@ -41,7 +43,7 @@ def intein_n_terminus_test aa
   elsif level_2.include? test_aa
     "L2"
   else
-    "No"
+    NO
   end
 end
 
@@ -60,7 +62,7 @@ def residue_set_test aa, level_1, level_2
   elsif !level_2.intersection(test_aa).empty?
     "L2"
   else
-    "No"
+    NO
   end
 end
 
@@ -80,7 +82,7 @@ def c_term_dipeptide_test oligo
   elsif level_2.include?(first_pair) || level_2.include?(second_pair)
     "L2"
   else
-    "No"
+    NO
   end
 end
 
@@ -102,7 +104,7 @@ end
 #   elsif !level_2.intersection(test_aa).empty?
 #     "L2"
 #   else
-#     "No"
+#     NO
 #   end
 # end
 
@@ -314,6 +316,7 @@ queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.fa
 
 intein_info_out = File.join opts[:outdir], "#{query_basename}.search_info.txt"
 containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions.txt"
+refined_containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions_refined.txt"
 criteria_check_full_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_full.txt"
 criteria_check_condensed_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_condensed.txt"
 
@@ -698,10 +701,10 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         # TODO check if the alignment actually got into the region that the blast hit said it should be in
 
-        intein_n_terminus = "No"
-        has_end = "No"
-        has_extein_start = "No"
-        correct_region = "No"
+        intein_n_terminus = NO
+        has_end = NO
+        has_extein_start = NO
+        correct_region = NO
 
         true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
         gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
@@ -724,7 +727,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         putative_regions = query2regions[query]
 
-        putative_region_good = "No"
+        putative_region_good = NO
 
         putative_regions.each_with_index do |(rid, info), idx|
           if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
@@ -879,11 +882,11 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
 
     unless query_good[query].has_key?(region_idx)
       query_good[query][region_idx] = {
-        region_good: "No",
-        start_good: "No",
-        end_good: "No",
-        extein_good: "No",
-        single_target_all_good: "No"
+        region_good: NO,
+        start_good: NO,
+        end_good: NO,
+        extein_good: NO,
+        single_target_all_good: NO
       }
     end
 
@@ -892,8 +895,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     # by evalue, the targets with the best evalues for that query will
     # be first.  So if we only keep the first target for that region,
     # it will be the one with the best evalue.
-    if all_good && query_good[query][region_idx][:single_target_all_good] == "No"
-      query_good[query][region_idx][:single_target_all_good] = { seq: target, evalue: evalue }
+    if all_good && query_good[query][region_idx][:single_target_all_good] == NO
+      query_good[query][region_idx][:single_target_all_good] = { seq: target, evalue: evalue, region: region }
     end
 
     if region_good == "L1"
@@ -917,18 +920,18 @@ end
 AbortIf.logger.info { "Writing condensed criteria check" }
 
 File.open(criteria_check_condensed_out, "w") do |f|
-  f.puts %w[seq region.id single.target.all single.target.all.evalue multi.target.all region start end extein].join "\t"
+  f.puts %w[seq region.id single.target.all single.target.all.evalue single.target.all.region multi.target.all region start end extein].join "\t"
 
   query_good.each do |query, regions|
     regions.each do |region, info|
       start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_terminus_test_level]
       end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_terminus_dipeptide_test_level]
 
-      all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : "No"
+      all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : NO
 
       # This time the query is the original query name as it is read
       # from an outfile.
-      f.puts [query, region, info[:single_target_all_good][:seq], info[:single_target_all_good][:evalue], all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
+      f.puts [query, region, info[:single_target_all_good][:seq], info[:single_target_all_good][:evalue], info[:single_target_all_good][:region], all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
     end
   end
 end
@@ -944,6 +947,93 @@ end
 
 
 
+######################################################################
+# refine putative intein regions
+################################
+
+region_info = {}
+File.open(containing_regions_out, "rt").each_line.with_index do |line, idx|
+  unless idx.zero?
+    seq, region_id, start, stop, len = line.chomp.split "\t"
+
+    unless region_info.has_key? seq
+      region_info[seq] = {}
+    end
+
+    abort_if region_info[seq].has_key?(region_id),
+             "#{seq} - #{region_id} pair is duplicated in #{containing_regions_out}"
+
+    region_info[seq][region_id] = {
+      start: start.to_i,
+      stop: stop.to_i,
+      len: len.to_i,
+      has_single_target: NO
+    }
+  end
+end
+
+# TODO do a size check on the regions.
+# TODO try and join small split regions.
+
+File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx|
+  unless idx.zero?
+    seq, region_id, single_target, evalue, region, *rest = line.chomp.split "\t"
+    good_start, good_stop = region.split "-"
+    good_len = good_stop.to_i - good_start.to_i + 1
+
+    if region_info.has_key? seq
+      if region_info[seq].has_key? region_id
+        if evalue.to_f <= opts[:evalue_region_refinement]
+          region_info[seq][region_id][:has_single_target] = {
+            target: single_target,
+            evalue: evalue,
+            start: good_start,
+            stop: good_stop,
+            len: good_len
+          }
+
+          AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, and meets evalue threshold.  Not using it for refinement." }        else
+          AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, but evalue is greater than threshold.  Not using it for refinement." }
+        end
+      else
+        AbortIf.logger.warn { "Seq-region pair #{seq}-#{region_id} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}" }
+      end
+    else
+      AbortIf.logger.warn { "Seq #{seq} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}" }
+    end
+  end
+end
+
+File.open(refined_containing_regions_out, "w") do |f|
+  f.puts %w[seq region.id start end len refining.target refining.evalue].join "\t"
+
+  region_info.each do |seq, ht|
+    ht.each do |region_id, info|
+      if info[:has_single_target] == NO
+        f.puts [seq,
+                region_id,
+                info[:start],
+                info[:stop],
+                info[:len],
+                NO,
+                NO].join "\t"
+      else
+        f.puts [seq,
+                region_id,
+                info[:has_single_target][:start],
+                info[:has_single_target][:stop],
+                info[:has_single_target][:len],
+                info[:has_single_target][:target],
+                info[:has_single_target][:evalue]].join "\t"
+      end
+    end
+  end
+end
+
+
+################################
+# refine putative intein regions
+######################################################################
 
 
 
