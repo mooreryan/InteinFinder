@@ -4,6 +4,12 @@ SANDBOX
 TEST_OUTPUT_?
 TEST
 
+TEST_OUTPUT_FULL
+TEST_OUTPUT_SMALL
+
+rnr_out
+
+
 *.backup
 
 assets/intein_superfamily_members/fastas/aligned

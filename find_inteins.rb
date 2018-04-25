@@ -200,6 +200,10 @@ opts = Trollop.options do
       "Report hits less than this evalue in the mmseqs search",
       default: 1e-5)
 
+  opt(:evalue_region_refinement,
+      "Only use single target hits with evalue less than this for refinement of intein regions.",
+      default: 1e-5)
+
 
   # opt(:look_for_key_residues,
   #     "DO THE FANCY THING!",
@@ -360,9 +364,9 @@ query_name_map = {}
 n = 0
 File.open(queries_simple_name_out, "w") do |f|
   ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
+    n += 1
     new_name = "user_query___seq_#{n}"
     old_rec_id = rec.id
-    n += 1
     query_name_map[new_name] = old_rec_id
 
     rec.header = new_name
@@ -535,13 +539,14 @@ AbortIf.logger.info { "Writing intein region info" }
 all_query_ids = queries.keys
 
 File.open(containing_regions_out, "w") do |f|
-  f.puts %w[seq region.id start end].join "\t"
+  f.puts %w[seq region.id start end len].join "\t"
 
   all_query_ids.each do |query|
     regions = query2regions[query]
     if regions
       regions.each do |id, info|
-        f.puts [query, id, info[:qstart], info[:qend]].join "\t"
+        len = info[:qend] - info[:qstart] + 1
+        f.puts [query, id, info[:qstart], info[:qend], len].join "\t"
       end
     else
       # f.puts [query, "na", "na"].join "\t"
@@ -723,7 +728,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         putative_regions.each_with_index do |(rid, info), idx|
           if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
-            putative_region_good = "Y"
+            putative_region_good = "L1"
             break # it can never be within two separate regions as the regions don't overlap (I think...TODO)
           end
         end
@@ -743,13 +748,13 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         # second_pair = end_oligo[1..2]
         # if first_pair == "hn" || first_pair == "hq" ||
         #    second_pair == "hn" || second_pair == "hq"
-        #   has_end = "Y"
+        #   has_end = "L1"
         # end
 
         extein_start_oligo =
           Set.new(rec.seq.downcase[last_non_gap_idx .. last_non_gap_idx+1].chars)
         if !extein_start_oligo.intersection(Set.new(%w[s t c])).empty?
-          has_extein_start = "Y"
+          has_extein_start = "L1"
         end
 
         out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start]
@@ -791,7 +796,7 @@ conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
 end
 
 File.open(criteria_check_full_out, "w") do |conserved_f|
-  conserved_f.puts %w[query target which.region aln.region region.good has.start has.end has.extein.start].join "\t"
+  conserved_f.puts %w[query target evalue which.region aln.region region.good has.start has.end has.extein.start].join "\t"
 
   conserved_f_lines.compact.each_with_index do |ary, idx|
     conserved_f.puts ary.join "\t"
@@ -865,8 +870,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     start_test_pass = residue_test_pass? start_good, opts[:intein_n_terminus_test_level]
     end_test_pass = residue_test_pass? end_good, opts[:intein_c_terminus_dipeptide_test_level]
 
-    all_good = region_good == "Y" && start_test_pass &&
-               end_test_pass && extein_good == "Y"
+    all_good = region_good == "L1" && start_test_pass &&
+               end_test_pass && extein_good == "L1"
 
     unless query_good.has_key?(query)
       query_good[query] = {}
@@ -888,11 +893,11 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     # be first.  So if we only keep the first target for that region,
     # it will be the one with the best evalue.
     if all_good && query_good[query][region_idx][:single_target_all_good] == "No"
-      query_good[query][region_idx][:single_target_all_good] = target
+      query_good[query][region_idx][:single_target_all_good] = { seq: target, evalue: evalue }
     end
 
-    if region_good == "Y"
-      query_good[query][region_idx][:region_good] = "Y"
+    if region_good == "L1"
+      query_good[query][region_idx][:region_good] = "L1"
     end
 
     if start_test_pass
@@ -903,8 +908,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
       query_good[query][region_idx][:end_good] = end_good
     end
 
-    if extein_good == "Y"
-      query_good[query][region_idx][:extein_good] = "Y"
+    if extein_good == "L1"
+      query_good[query][region_idx][:extein_good] = "L1"
     end
   end
 end
@@ -912,18 +917,18 @@ end
 AbortIf.logger.info { "Writing condensed criteria check" }
 
 File.open(criteria_check_condensed_out, "w") do |f|
-  f.puts %w[seq region.id single.target.all multi.target.all region start end extein].join "\t"
+  f.puts %w[seq region.id single.target.all single.target.all.evalue multi.target.all region start end extein].join "\t"
 
   query_good.each do |query, regions|
     regions.each do |region, info|
       start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_terminus_test_level]
       end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_terminus_dipeptide_test_level]
 
-      all = info[:region_good] == "Y" && start_test_pass && end_test_pass && info[:extein_good] == "Y" ? "Y" : "No"
+      all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : "No"
 
       # This time the query is the original query name as it is read
       # from an outfile.
-      f.puts [query, region, info[:single_target_all_good], all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
+      f.puts [query, region, info[:single_target_all_good][:seq], info[:single_target_all_good][:evalue], all, info[:region_good], info[:start_good], info[:end_good], info[:extein_good]].join "\t"
     end
   end
 end
@@ -960,6 +965,8 @@ end
 AbortIf.logger.info { "Cleaning up outdir" }
 FileUtils.rm_r profile_db_dir
 FileUtils.rm_r tmp_dir
+FileUtils.rm_r aln_dir unless opts[:keep_alignment_files]
+
 
 FileUtils.rm queries_simple_name_out
 
