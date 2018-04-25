@@ -981,6 +981,8 @@ end
 # refine putative intein regions
 ################################
 
+AbortIf.logger.info { "Refining putative intein regions" }
+
 region_info = {}
 File.open(containing_regions_out, "rt").each_line.with_index do |line, idx|
   unless idx.zero?
@@ -1010,31 +1012,25 @@ File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx
     seq, region_id, single_target, evalue, region, *rest = line.chomp.split "\t"
     if single_target == NO
       AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} does not have a single target.  It won't be refined." }
-
-
     else
       good_start, good_stop = region.split "-"
       good_len = good_stop.to_i - good_start.to_i + 1
 
-      if region_info.has_key? seq
-        if region_info[seq].has_key? region_id
-          if evalue.to_f <= opts[:evalue_region_refinement]
-            region_info[seq][region_id][:has_single_target] = {
-              target: single_target,
-              evalue: evalue,
-              start: good_start,
-              stop: good_stop,
-              len: good_len
-            }
+      abort_unless region_info.has_key?(seq),
+                   "Seq #{seq} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}"
+      abort_unless region_info[seq].has_key?(region_id),
+                   "Seq-region pair #{seq}-#{region_id} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}"
 
-            AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, and meets evalue threshold.  Not using it for refinement." }        else
-            AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, but evalue is greater than threshold.  Not using it for refinement." }
-          end
-        else
-          abort_if true, "Seq-region pair #{seq}-#{region_id} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}"
-        end
+      if evalue.to_f > opts[:evalue_region_refinement]
+        AbortIf.logger.debug { "Seq-region pair #{seq}-#{region_id} is present, but evalue is greater than threshold.  Not using it for refinement." }
       else
-        abort_if true, "Seq #{seq} is present in #{criteria_check_condensed_out} but not in #{containing_regions_out}"
+        region_info[seq][region_id][:has_single_target] = {
+          target: single_target,
+          evalue: evalue,
+          start: good_start,
+          stop: good_stop,
+          len: good_len
+        }
       end
     end
   end
@@ -1046,7 +1042,6 @@ File.open(refined_containing_regions_out, "w") do |f|
   region_info.each do |seq, ht|
     ht.each do |region_id, info|
       if info[:has_single_target] == NO
-        STDERR.puts info.inspect
         f.puts [seq,
                 region_id,
                 info[:start],
