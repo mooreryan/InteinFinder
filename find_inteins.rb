@@ -482,7 +482,7 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{mmseqs_out}"
+Utils.run_and_time_it! "Changing IDs in mmseqs search", "mv #{tmpfile} #{mmseqs_out}"
 
 # From here out, the sequence IDs should be back to normal.
 
@@ -1177,19 +1177,12 @@ end
 # check the sequences that were trimmed
 #######################################
 
-AbortIf.logger.info { "Checking the trimmed sequences" }
+AbortIf.logger.info { "Checking the trimmed sequences against superfamilies" }
 
 trimmed_queries_rpsblast_out =
   File.join search_results_dir, "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_superfamily_cds.txt"
 trimmed_inteins_rpsblast_out =
   File.join search_results_dir, "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_superfamily_cds.txt"
-
-trimmed_queries_mmsqes_out =
-  File.join search_results_dir,
-            "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_inteins.txt"
-trimmed_inteins_mmseqs_out =
-  File.join search_results_dir,
-            "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_inteins.txt"
 
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus] * 2
@@ -1204,8 +1197,82 @@ else
   rpsblast_search! trimmed_inteins_out, trimmed_inteins_rpsblast_out
 end
 
+AbortIf.logger.info { "Checking trimmed seqs against inteins" }
+
+# First convert the headers
+
+n = 0
+new_query_name_map = {}
+trimmed_queries_simple_headers_out = trimmed_queries_out + ".simple_headers"
+File.open(trimmed_queries_simple_headers_out, "w") do |f|
+  ParseFasta::SeqFile.open(trimmed_queries_out).each_record do |rec|
+    n += 1
+    new_name = "query_seq_#{n}"
+
+    new_query_name_map[new_name] = rec.id
+
+    f.puts ">#{new_name}"
+    f.puts rec.seq
+  end
+end
+
+n = 0
+new_intein_name_map = {}
+trimmed_inteins_simple_headers_out = trimmed_inteins_out + ".simple_headers"
+File.open(trimmed_inteins_simple_headers_out, "w") do |f|
+  ParseFasta::SeqFile.open(trimmed_inteins_out).each_record do |rec|
+    n += 1
+    new_name = "intein_seq_#{n}"
+
+    new_intein_name_map[new_name] = rec.id
+
+    f.puts ">#{new_name}"
+    f.puts rec.seq
+  end
+end
+
+
 # For the mmseqs, we need to change to simple headers as it will do
 # weird stuff if they have headers like 'gi|23423|blah blab'
+trimmed_queries_mmseqs_out =
+  File.join search_results_dir,
+            "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_inteins.txt"
+trimmed_inteins_mmseqs_out =
+  File.join search_results_dir,
+            "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_inteins.txt"
+
+# Now do the search
+
+mmseqs_search! trimmed_queries_simple_headers_out, trimmed_queries_mmseqs_out
+mmseqs_search! trimmed_inteins_simple_headers_out, trimmed_inteins_mmseqs_out
+
+# Now map the names back to how they were.
+
+File.open(tmpfile, "w") do |f|
+  File.open(trimmed_queries_mmseqs_out, "rt").each_line do |line|
+    query, *rest = line.chomp.split "\t"
+
+    evalue = rest[9].to_f
+
+    if evalue <= opts[:evalue_mmseqs]
+      f.puts [new_query_name_map[query], rest].join "\t"
+    end
+  end
+end
+Utils.run_and_time_it! "Changing IDs in query mmseqs search", "mv #{tmpfile} #{trimmed_queries_mmseqs_out}"
+
+File.open(tmpfile, "w") do |f|
+  File.open(trimmed_inteins_mmseqs_out, "rt").each_line do |line|
+    intein, *rest = line.chomp.split "\t"
+
+    evalue = rest[9].to_f
+
+    if evalue <= opts[:evalue_mmseqs]
+      f.puts [new_intein_name_map[intein], rest].join "\t"
+    end
+  end
+end
+Utils.run_and_time_it! "Changing IDs in intein mmseqs search", "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
 
 #######################################
 # check the sequences that were trimmed
