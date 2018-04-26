@@ -77,6 +77,12 @@ VERSION_BANNER = "  # Version:   #{VERSION}
 # methods
 #########
 
+# name can be either a name or a path to the program.
+def check_program name
+  abort_unless File.exists?(name) || Utils.command?(name),
+               "Either #{name} doesn't exist or it is not a command."
+end
+
 def residue_test aa, level_1, level_2
   test_aa = aa.upcase
 
@@ -242,14 +248,12 @@ abort_unless Set.new([1]).include?(opts[:refinement_strictness]),
 # easy-search pipeline
 search = "#{opts[:mmseqs]} easy-search"
 
-# TODO this only works for the defaults.  If you pass in a full path, it will break.
-Utils.check_command opts[:makeprofiledb]
-Utils.check_command opts[:rpsblast]
-Utils.check_command opts[:mmseqs]
-Utils.check_command opts[:mafft]
-
-check_file opts[:n_fold_splits]
-check_file opts[:parallel_blast]
+check_program opts[:makeprofiledb]
+check_program opts[:rpsblast]
+check_program opts[:mmseqs]
+check_program opts[:mafft]
+check_program opts[:n_fold_splits]
+check_program opts[:parallel_blast]
 
 check_file opts[:pssm_list]
 
@@ -279,26 +283,26 @@ tmp_dir = File.join opts[:outdir], "tmp"
 profile_db_dir = File.join opts[:outdir], "profile_db"
 profile_db = File.join profile_db_dir, "intein_db"
 
+search_results_dir = File.join opts[:outdir], "search_results"
+aln_dir = File.join search_results_dir, "alignments"
 details_dir = File.join opts[:outdir], "details"
-aln_dir = File.join details_dir, "alignments"
+results_dir = File.join opts[:outdir], "results"
 
-rpsblast_out = File.join details_dir, "search_results_superfamily_cds.txt"
-mmseqs_out = File.join details_dir, "search_results_inteins.txt"
-mmseqs_log = File.join details_dir, "mmseqs_log.txt"
-
-all_blast_out = File.join details_dir, "all_search_results.txt"
-
+rpsblast_out = File.join search_results_dir, "search_results_superfamily_cds.txt"
+mmseqs_out = File.join search_results_dir, "search_results_inteins.txt"
+mmseqs_log = File.join search_results_dir, "mmseqs_log.txt"
+all_blast_out = File.join search_results_dir, "search_results_all.txt"
+search_results_summary_out = File.join search_results_dir, "search_results_summary.txt"
 
 query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 
-# Outfiles
 queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.faa"
 
-intein_info_out = File.join opts[:outdir], "#{query_basename}.search_info.txt"
-containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions.txt"
-refined_containing_regions_out = File.join opts[:outdir], "#{query_basename}.intein_containing_regions_refined.txt"
-criteria_check_full_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_full.txt"
-criteria_check_condensed_out = File.join opts[:outdir], "#{query_basename}.intein_criteria_check_condensed.txt"
+# Outfiles
+containing_regions_out = File.join details_dir, "#{query_basename}.intein_regions.txt"
+refined_containing_regions_out = File.join results_dir, "#{query_basename}.intein_regions_refined.txt"
+criteria_check_full_out = File.join details_dir, "#{query_basename}.intein_criteria_check.txt"
+criteria_check_condensed_out = File.join results_dir, "#{query_basename}.intein_criteria_check_condensed.txt"
 
 
 abort_if Dir.exist?(opts[:outdir]),
@@ -309,8 +313,10 @@ AbortIf.logger.info { "Making directories" }
 FileUtils.mkdir_p opts[:outdir]
 FileUtils.mkdir_p profile_db_dir
 FileUtils.mkdir_p tmp_dir
-FileUtils.mkdir_p details_dir
+FileUtils.mkdir_p search_results_dir
 FileUtils.mkdir_p aln_dir
+FileUtils.mkdir_p details_dir
+FileUtils.mkdir_p results_dir
 
 
 if opts[:pssm_list]
@@ -566,8 +572,8 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
   out_line = nil
   query, target, *rest = line.chomp.split "\t"
 
-  tmp_aln_in = File.join aln_dir, "tmp_aln_in_#{query}_#{target}.faa"
-  tmp_aln_out = File.join aln_dir, "tmp_aln_out_#{query}_#{target}.faa"
+  tmp_aln_in = File.join aln_dir, "aln_in_#{query}_#{target}.faa"
+  tmp_aln_out = File.join aln_dir, "aln_out_#{query}_#{target}.faa"
 
   aln_len = rest[1].to_i
   qstart = rest[4].to_i # 1-based
@@ -1026,7 +1032,7 @@ end
 
 AbortIf.logger.info { "Writing intein info" }
 
-File.open(intein_info_out, "w") do |f|
+File.open(search_results_summary_out, "w") do |f|
   f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
 
   queries.each do |query, info|
