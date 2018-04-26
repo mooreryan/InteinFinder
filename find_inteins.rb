@@ -34,74 +34,6 @@ end
 include AbortIf
 include AbortIf::Assert
 
-# def intein_n_terminus_test aa
-#   test_aa = aa.upcase
-
-#   level_1 = Set.new %w[C S A Q P T]
-#   level_2 = Set.new %w[V F N G M L]
-
-#   if level_1.include? test_aa
-#     "L1"
-#   elsif level_2.include? test_aa
-#     "L2"
-#   else
-#     NO
-#   end
-# end
-
-
-# def residue_set_test aa, level_1, level_2
-#   test_aa = Set.new aa.to_a.map(&:upcase)
-
-#   if !level_1.intersection(test_aa).empty?
-#     "L1"
-#   elsif !level_2.intersection(test_aa).empty?
-#     "L2"
-#   else
-#     NO
-#   end
-# end
-
-# def c_term_dipeptide_test oligo
-#   # Currently this will have a first pair and a second pair that it
-#   # tries to match too.  As we aren't sure whether all of the inteins
-#   # have -1 +1 yet.
-
-#   first_pair = oligo[0..1].upcase
-#   second_pair = oligo[1..2].upcase
-
-#   level_1 = Set.new %w[HN SN GN GQ LD FN]
-#   level_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
-
-#   if level_1.include?(first_pair) || level_1.include?(second_pair)
-#     "L1"
-#   elsif level_2.include?(first_pair) || level_2.include?(second_pair)
-#     "L2"
-#   else
-#     NO
-#   end
-# end
-
-# def intein_n_term_set_test aa
-#   test_aa = Set.new aa.to_a.map(&:upcase)
-
-#   level_1 = Set.new %w[C S A Q P T]
-#   level_2 = Set.new %w[V F N G M L]
-
-#   if !level_1.intersection(test_aa).empty?
-#     "L1"
-#   elsif !level_2.intersection(test_aa).empty?
-#     "L2"
-#   else
-#     NO
-#   end
-# end
-
-# def intein_n_term_test_pass? result, strictness
-#   result == "L1" || (result == "L2" && strictness >= 2)
-# end
-
-
 N_TERM_LEVEL_1 = Set.new %w[C S A Q P T]
 N_TERM_LEVEL_2 = Set.new %w[V F N G M L]
 C_TERM_LEVEL_1 = Set.new %w[HN SN GN GQ LD FN]
@@ -219,12 +151,6 @@ opts = Trollop.options do
       "Only use single target hits with evalue less than this for refinement of intein regions.",
       default: 1e-3)
 
-
-  # opt(:look_for_key_residues,
-  #     "DO THE FANCY THING!",
-  #     default: false)
-
-
   opt(:keep_alignment_files,
       "Keep the alignment files",
       default: false)
@@ -277,8 +203,6 @@ abort_unless Set.new([1,2]).include?(opts[:intein_n_term_test_strictness]),
              "--intein-n-term-test-strictness must be 1 or 2."
 abort_unless Set.new([1,2]).include?(opts[:intein_c_term_dipeptide_test_strictness]),
              "--intein-c-term-dipeptide-test-strictness must be 1 or 2."
-# abort_unless Set.new([1,2]).include?(opts[:refinement_strictness]),
-#              "--refinement-strictness must be 1 or 2."
 abort_unless Set.new([1]).include?(opts[:refinement_strictness]),
              "Currently, the only option for --refinement-strictness is 1."
 
@@ -413,9 +337,6 @@ File.open(queries_simple_name_out, "w") do |f|
 end
 
 
-
-
-
 ######################################################################
 # homology search
 #################
@@ -443,12 +364,6 @@ Utils.run_and_time_it! "Running mmseqs", cmd
 #################
 # homology search
 ######################################################################
-
-
-
-
-
-
 
 
 
@@ -495,10 +410,6 @@ Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{mmseqs_out}"
 ##########################################
 # change the IDs in the search files back
 ######################################################################
-
-
-
-
 
 
 
@@ -597,10 +508,6 @@ end
 #############
 # get regions
 ######################################################################
-
-
-
-
 
 
 
@@ -781,13 +688,6 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
         has_end = residue_test end_oligo, C_TERM_LEVEL_1, C_TERM_LEVEL_2
 
-        # first_pair = end_oligo[0..1]
-        # second_pair = end_oligo[1..2]
-        # if first_pair == "hn" || first_pair == "hq" ||
-        #    second_pair == "hn" || second_pair == "hq"
-        #   has_end = "L1"
-        # end
-
         # need to get one past the last thing in the intein
         extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
 
@@ -893,8 +793,6 @@ end
 
 
 
-
-
 ######################################################################
 # condensed criteria check
 ##########################
@@ -994,11 +892,6 @@ end
 ##########################
 # condensed criteria check
 ######################################################################
-
-
-
-
-
 
 
 ######################################################################
@@ -1102,10 +995,6 @@ end
 ################################
 # refine putative intein regions
 ######################################################################
-
-
-
-
 
 
 AbortIf.logger.info { "Writing intein info" }
