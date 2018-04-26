@@ -732,7 +732,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
           has_extein_start = L1
         end
 
-        out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start]
+        out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start, start_residue, end_oligo, extein_start_residue]
       end
     end
 
@@ -771,7 +771,7 @@ conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
 end
 
 File.open(criteria_check_full_out, "w") do |conserved_f|
-  conserved_f.puts %w[query target evalue which.region aln.region region.good has.start has.end has.extein.start].join "\t"
+  conserved_f.puts %w[query target evalue which.region aln.region region.good has.start has.end has.extein.start intein.n.term intein.c.term c.extein].join "\t"
 
   conserved_f_lines.compact.each_with_index do |ary, idx|
     conserved_f.puts ary.join "\t"
