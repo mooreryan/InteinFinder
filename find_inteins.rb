@@ -77,6 +77,7 @@ VERSION_BANNER = "  # Version:   #{VERSION}
 # methods
 #########
 
+
 # name can be either a name or a path to the program.
 def check_program name
   abort_unless File.exists?(name) || Utils.command?(name),
@@ -317,6 +318,47 @@ FileUtils.mkdir_p search_results_dir
 FileUtils.mkdir_p aln_dir
 FileUtils.mkdir_p details_dir
 FileUtils.mkdir_p results_dir
+
+
+######################################################################
+# search constants
+##################
+
+# first -- infile
+# second -- outfile
+MMSEQS_SEARCH = "#{search} %s #{opts[:inteins]} %s #{tmp_dir} --format-mode 2 -s #{opts[:mmseqs_sensitivity]} --num-iterations #{opts[:mmseqs_iterations]} -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} >> #{mmseqs_log}"
+
+# first -- infile
+# second -- outfile
+RPSBLAST_SEARCH =  "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query %s -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out %s"
+
+RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{queries_simple_name_out} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
+
+def mmseqs_search! infile, outfile
+  cmd = sprintf MMSEQS_SEARCH, infile, outfile
+
+  Utils.run_and_time_it! "Running mmseqs", cmd
+end
+
+def rpsblast_search! infile, outfile
+
+  cmd = sprintf RPSBLAST_SEARCH, infile, outfile
+
+  Utils.run_and_time_it! "Running rpsblast", cmd
+end
+
+def rpsblast_search_parallel! infile, outfile
+  cmd = sprintf RPSBLAST_SEARCH_PARALLEL, infile, outfile
+
+  Utils.run_and_time_it! "Running rpsblast", cmd
+end
+
+##################
+# search constants
+######################################################################
+
+
+
 
 
 if opts[:pssm_list]
@@ -1061,6 +1103,7 @@ trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
 
 intein_count_info = { n_term: Hash.new(0), c_term: Hash.new(0) }
 
+num_inteins_written = 0
 File.open(trimmed_queries_out, "w") do |queries_f|
   File.open(trimmed_inteins_out, "w") do |inteins_f|
     query_records.each do |rec_id, rec|
@@ -1092,6 +1135,7 @@ File.open(trimmed_queries_out, "w") do |queries_f|
 
             inteins_f.puts ">#{rec.id}___intein_#{region_id} n_term___#{intein_first} c_term___#{intein_dipep}"
             inteins_f.puts intein_seq
+            num_inteins_written += 1
 
             intein_seqs << intein_seq
           end
@@ -1127,6 +1171,44 @@ end
 
 ################################################
 # trim out inteins from sequences that have them
+######################################################################
+
+######################################################################
+# check the sequences that were trimmed
+#######################################
+
+AbortIf.logger.info { "Checking the trimmed sequences" }
+
+trimmed_queries_rpsblast_out =
+  File.join search_results_dir, "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_superfamily_cds.txt"
+trimmed_inteins_rpsblast_out =
+  File.join search_results_dir, "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_superfamily_cds.txt"
+
+trimmed_queries_mmsqes_out =
+  File.join search_results_dir,
+            "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_inteins.txt"
+trimmed_inteins_mmseqs_out =
+  File.join search_results_dir,
+            "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_inteins.txt"
+
+# there are enough seqs for parallel blast to be worth it and the user asked for splits
+if opts[:split_queries] && num_seqs > opts[:cpus] * 2
+  rpsblast_search_parallel! trimmed_queries_out, trimmed_queries_rpsblast_out
+else
+  rpsblast_search! trimmed_queries_out, trimmed_queries_rpsblast_out
+end
+
+if opts[:split_queries] && num_inteins_written > opts[:cpus] * 2
+  rpsblast_search_parallel! trimmed_inteins_out, trimmed_inteins_rpsblast_out
+else
+  rpsblast_search! trimmed_inteins_out, trimmed_inteins_rpsblast_out
+end
+
+# For the mmseqs, we need to change to simple headers as it will do
+# weird stuff if they have headers like 'gi|23423|blah blab'
+
+#######################################
+# check the sequences that were trimmed
 ######################################################################
 
 
