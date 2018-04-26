@@ -1050,10 +1050,14 @@ end
 # trim out inteins from sequences that have them
 ################################################
 
+AbortIf.logger.info { "Trimming inteins from queries" }
+
 seq_dir = File.join opts[:outdir], "sequences"
 FileUtils.mkdir_p seq_dir
 trimmed_queries_out = File.join seq_dir, "#{query_basename}.inteins_removed.faa"
 trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
+
+intein_count_info = { n_term: Hash.new(0), c_term: Hash.new(0) }
 
 File.open(trimmed_queries_out, "w") do |queries_f|
   File.open(trimmed_inteins_out, "w") do |inteins_f|
@@ -1077,6 +1081,9 @@ File.open(trimmed_queries_out, "w") do |queries_f|
           intein_seq = rec.seq[start_idx .. stop_idx]
           intein_first = intein_seq[0]
           intein_dipep = intein_seq[intein_seq.length - 2, 2]
+
+          intein_count_info[:n_term][intein_first] += 1
+          intein_count_info[:c_term][intein_dipep] += 1
 
           inteins_f.puts ">#{rec.id}___intein_#{region_id} n_term___#{intein_first} c_term___#{intein_dipep}"
           inteins_f.puts intein_seq
@@ -1118,6 +1125,25 @@ end
 
 
 AbortIf.logger.info { "Writing intein info" }
+
+c_term_residue_counts_out = File.join details_dir, "intein_c_term_residue_counts.txt"
+n_term_residue_counts_out = File.join details_dir, "intein_n_term_residue_counts.txt"
+File.open(c_term_residue_counts_out, "w") do |cf|
+  File.open(n_term_residue_counts_out, "w") do |nf|
+    cf.puts %w[location oligo count perc].join "\t"
+    nf.puts %w[location oligo count perc].join "\t"
+
+    intein_count_info.each do |location, counts|
+      f = location == :n_term ? nf : cf
+      total = counts.values.reduce(:+).to_f
+
+      counts.sort_by { |aa, count| count.to_i }.reverse.each do |aa, count|
+        perc = (count / total * 100).round(2)
+        f.puts [location, aa, count, count / total * 100].join "\t"
+      end
+    end
+  end
+end
 
 File.open(search_results_summary_out, "w") do |f|
   f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
