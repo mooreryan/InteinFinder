@@ -288,6 +288,8 @@ search_results_dir = File.join opts[:outdir], "search_results"
 aln_dir = File.join search_results_dir, "alignments"
 details_dir = File.join opts[:outdir], "details"
 results_dir = File.join opts[:outdir], "results"
+seq_dir = File.join opts[:outdir], "sequences"
+
 
 mmseqs_log = File.join search_results_dir, "mmseqs_log.txt"
 
@@ -301,10 +303,11 @@ query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.faa"
 
 # Outfiles
-containing_regions_out = File.join details_dir, "intein_regions.txt"
-refined_containing_regions_out = File.join results_dir, "intein_regions_refined.txt"
+containing_regions_out = File.join details_dir, "intein_regions_putative.txt"
+refined_containing_regions_out = File.join details_dir, "intein_regions_refined.txt"
+refined_containing_regions_simple_out = File.join results_dir, "intein_regions_refined_condensed.txt"
 criteria_check_full_out = File.join details_dir, "intein_criteria_check.txt"
-criteria_check_condensed_out = File.join results_dir, "intein_criteria_check_condensed.txt"
+criteria_check_condensed_out = File.join details_dir, "intein_criteria_check_condensed.txt"
 
 
 abort_if Dir.exist?(opts[:outdir]),
@@ -319,6 +322,8 @@ FileUtils.mkdir_p search_results_dir
 FileUtils.mkdir_p aln_dir
 FileUtils.mkdir_p details_dir
 FileUtils.mkdir_p results_dir
+FileUtils.mkdir_p seq_dir
+
 
 
 ######################################################################
@@ -333,7 +338,9 @@ MMSEQS_SEARCH = "#{search} %s #{opts[:inteins]} %s #{tmp_dir} --format-mode 2 -s
 # second -- outfile
 RPSBLAST_SEARCH =  "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query %s -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out %s"
 
-RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{queries_simple_name_out} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
+# first -- infile
+# second -- outfile
+RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile %s --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile %s --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
 
 def mmseqs_search! infile, outfile
   cmd = sprintf MMSEQS_SEARCH, infile, outfile
@@ -360,7 +367,7 @@ end
 
 
 
-
+AbortIf.logger.info { "Writing smp list file" }
 
 if opts[:pssm_list]
   pssm_list = opts[:pssm_list]
@@ -1038,50 +1045,76 @@ end
 
 info_for_trimming = {}
 
-File.open(refined_containing_regions_out, "w") do |f|
-  f.puts %w[seq region.id start end len refining.target refining.evalue].join "\t"
+File.open(refined_containing_regions_simple_out, "w") do |simple_f|
+  File.open(refined_containing_regions_out, "w") do |f|
+    simple_f.puts %w[seq region.id start end len trimmable].join "\t"
+    f.puts %w[seq region.id start end len trimmable refining.target refining.evalue].join "\t"
 
-  region_info.each do |seq, ht|
-    unless info_for_trimming.has_key? seq
-      info_for_trimming[seq] = {}
-    end
+    region_info.each do |seq, ht|
+      unless info_for_trimming.has_key? seq
+        info_for_trimming[seq] = {}
+      end
 
-    ht.each do |region_id, info|
-      abort_if info_for_trimming[seq].has_key?(region_id),
-               "#{seq}-#{region_id} pair was repeated in region_info table"
+      ht.each do |region_id, info|
+        abort_if info_for_trimming[seq].has_key?(region_id),
+                 "#{seq}-#{region_id} pair was repeated in region_info table"
 
-      len = info[:has_single_target] == NO ? info[:len] : info[:has_single_target][:len]
+        len = info[:has_single_target] == NO ? info[:len] : info[:has_single_target][:len]
 
-      if !opts[:use_length_in_refinement] ||
-         (opts[:use_length_in_refinement] && REGION_MIN_LEN <= len && len <= REGION_MAX_LEN)
+        if !opts[:use_length_in_refinement] ||
+           (opts[:use_length_in_refinement] && REGION_MIN_LEN <= len && len <= REGION_MAX_LEN)
 
-        if info[:has_single_target] == NO
-          info_for_trimming[seq][region_id] = NO
+          if info[:has_single_target] == NO
+            info_for_trimming[seq][region_id] = NO
 
-          f.puts [seq,
-                  region_id,
-                  info[:start],
-                  info[:stop],
-                  info[:len],
-                  NO,
-                  NO].join "\t"
-        else
-          # If we get here, we are refining regions, so we should be
-          # pretty confident in them.
-          info_for_trimming[seq][region_id] = {
-            start: info[:has_single_target][:start],
-            stop: info[:has_single_target][:stop]
-          }
+            simple_f.puts [
+              seq,
+              region_id,
+              info[:start],
+              info[:stop],
+              info[:len],
+              NO,
+            ].join "\t"
 
-          f.puts [seq,
-                  region_id,
-                  info[:has_single_target][:start],
-                  info[:has_single_target][:stop],
-                  info[:has_single_target][:len],
-                  info[:has_single_target][:target],
-                  info[:has_single_target][:evalue]].join "\t"
+            f.puts [
+              seq,
+              region_id,
+              info[:start],
+              info[:stop],
+              info[:len],
+              NO,
+              NO,
+              NO,
+            ].join "\t"
+          else
+            # If we get here, we are refining regions, so we should be
+            # pretty confident in them.
+            info_for_trimming[seq][region_id] = {
+              start: info[:has_single_target][:start],
+              stop: info[:has_single_target][:stop]
+            }
+
+            simple_f.puts [
+              seq,
+              region_id,
+              info[:has_single_target][:start],
+              info[:has_single_target][:stop],
+              info[:has_single_target][:len],
+              "Yes",
+            ].join "\t"
+
+            f.puts [
+              seq,
+              region_id,
+              info[:has_single_target][:start],
+              info[:has_single_target][:stop],
+              info[:has_single_target][:len],
+              "Yes",
+              info[:has_single_target][:target],
+              info[:has_single_target][:evalue],
+            ].join "\t"
+          end
         end
-
       end
     end
   end
@@ -1097,8 +1130,6 @@ end
 
 AbortIf.logger.info { "Trimming inteins from queries" }
 
-seq_dir = File.join opts[:outdir], "sequences"
-FileUtils.mkdir_p seq_dir
 trimmed_queries_out = File.join seq_dir, "#{query_basename}.inteins_removed.faa"
 trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
 
