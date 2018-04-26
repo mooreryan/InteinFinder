@@ -999,13 +999,22 @@ File.open(refined_containing_regions_out, "w") do |f|
   f.puts %w[seq region.id start end len refining.target refining.evalue].join "\t"
 
   region_info.each do |seq, ht|
+    unless info_for_trimming.has_key? seq
+      info_for_trimming[seq] = {}
+    end
+
     ht.each do |region_id, info|
+      abort_if info_for_trimming[seq].has_key?(region_id),
+               "#{seq}-#{region_id} pair was repeated in region_info table"
+
       len = info[:has_single_target] == NO ? info[:len] : info[:has_single_target][:len]
 
       if !opts[:use_length_in_refinement] ||
          (opts[:use_length_in_refinement] && REGION_MIN_LEN <= len && len <= REGION_MAX_LEN)
 
         if info[:has_single_target] == NO
+          info_for_trimming[seq][region_id] = NO
+
           f.puts [seq,
                   region_id,
                   info[:start],
@@ -1016,13 +1025,6 @@ File.open(refined_containing_regions_out, "w") do |f|
         else
           # If we get here, we are refining regions, so we should be
           # pretty confident in them.
-          unless info_for_trimming.has_key? seq
-            info_for_trimming[seq] = {}
-          end
-
-          abort_if info_for_trimming[seq].has_key?(region_id),
-                   "#{seq}-#{region_id} pair was repeated in region_info table"
-
           info_for_trimming[seq][region_id] = {
             start: info[:has_single_target][:start],
             stop: info[:has_single_target][:stop]
@@ -1064,32 +1066,35 @@ File.open(trimmed_queries_out, "w") do |queries_f|
     query_records.each do |rec_id, rec|
       if info_for_trimming.has_key? rec.id
         intein_seqs = []
+        total_inteins = 0
 
         info_for_trimming[rec.id].each do |region_id, info|
-          # These are 1-based
-          start_idx = info[:start].to_i - 1
-          stop_idx  = info[:stop].to_i  - 1
+          total_inteins += 1
+          unless info == NO
+            # These are 1-based
+            start_idx = info[:start].to_i - 1
+            stop_idx  = info[:stop].to_i  - 1
 
-          # Sanity checks
-          abort_unless start_idx >= 0,
-                       "bad start idx for #{rec.id}-#{region_id}"
-          abort_unless start_idx < stop_idx,
-                       "start idx not less than stop idx for #{rec.id}-#{region_id}"
-          abort_unless stop_idx < rec.seq.length,
-                       "bad stop idx for #{rec.id}-#{region_id}"
+            # Sanity checks
+            abort_unless start_idx >= 0,
+                         "bad start idx for #{rec.id}-#{region_id}"
+            abort_unless start_idx < stop_idx,
+                         "start idx not less than stop idx for #{rec.id}-#{region_id}"
+            abort_unless stop_idx < rec.seq.length,
+                         "bad stop idx for #{rec.id}-#{region_id}"
 
-          intein_seq = rec.seq[start_idx .. stop_idx]
-          intein_first = intein_seq[0]
-          intein_dipep = intein_seq[intein_seq.length - 2, 2]
+            intein_seq = rec.seq[start_idx .. stop_idx]
+            intein_first = intein_seq[0]
+            intein_dipep = intein_seq[intein_seq.length - 2, 2]
 
-          intein_count_info[:n_term][intein_first] += 1
-          intein_count_info[:c_term][intein_dipep] += 1
+            intein_count_info[:n_term][intein_first] += 1
+            intein_count_info[:c_term][intein_dipep] += 1
 
-          inteins_f.puts ">#{rec.id}___intein_#{region_id} n_term___#{intein_first} c_term___#{intein_dipep}"
-          inteins_f.puts intein_seq
+            inteins_f.puts ">#{rec.id}___intein_#{region_id} n_term___#{intein_first} c_term___#{intein_dipep}"
+            inteins_f.puts intein_seq
 
-          intein_seqs << intein_seq
-
+            intein_seqs << intein_seq
+          end
         end
 
         # Make sure the intein isn't repeated.  It will break the splicing if it is.
@@ -1101,7 +1106,7 @@ File.open(trimmed_queries_out, "w") do |queries_f|
         regex = Regexp.new intein_seqs.join("|")
         trimmed_query_seq = rec.seq.split(regex).join
 
-        queries_f.puts ">#{rec.id} num_inteins_trimmed___#{intein_seqs.count}"
+        queries_f.puts ">#{rec.id} inteins_removed___#{intein_seqs.count}_of_#{total_inteins}"
         queries_f.puts trimmed_query_seq
 
         # More sanity checks
