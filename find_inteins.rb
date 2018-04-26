@@ -289,21 +289,22 @@ aln_dir = File.join search_results_dir, "alignments"
 details_dir = File.join opts[:outdir], "details"
 results_dir = File.join opts[:outdir], "results"
 
-rpsblast_out = File.join search_results_dir, "search_results_superfamily_cds.txt"
-mmseqs_out = File.join search_results_dir, "search_results_inteins.txt"
 mmseqs_log = File.join search_results_dir, "mmseqs_log.txt"
-all_blast_out = File.join search_results_dir, "search_results_all.txt"
-search_results_summary_out = File.join search_results_dir, "search_results_summary.txt"
+
+rpsblast_out = File.join search_results_dir, "initial_queries_search_superfamilies.txt"
+mmseqs_out = File.join search_results_dir, "initial_queries_search_inteins.txt"
+all_blast_out = File.join search_results_dir, "initial_queries_search.txt"
+search_results_summary_out = File.join search_results_dir, "initial_queries_search_summary.txt"
 
 query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
 
 queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.faa"
 
 # Outfiles
-containing_regions_out = File.join details_dir, "#{query_basename}.intein_regions.txt"
-refined_containing_regions_out = File.join results_dir, "#{query_basename}.intein_regions_refined.txt"
-criteria_check_full_out = File.join details_dir, "#{query_basename}.intein_criteria_check.txt"
-criteria_check_condensed_out = File.join results_dir, "#{query_basename}.intein_criteria_check_condensed.txt"
+containing_regions_out = File.join details_dir, "intein_regions.txt"
+refined_containing_regions_out = File.join results_dir, "intein_regions_refined.txt"
+criteria_check_full_out = File.join details_dir, "intein_criteria_check.txt"
+criteria_check_condensed_out = File.join results_dir, "intein_criteria_check_condensed.txt"
 
 
 abort_if Dir.exist?(opts[:outdir]),
@@ -437,7 +438,7 @@ end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
-cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s #{opts[:mmseqs_sensitivity]} --num-iterations #{opts[:mmseqs_iterations]} -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} > #{mmseqs_log}"
+cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s #{opts[:mmseqs_sensitivity]} --num-iterations #{opts[:mmseqs_iterations]} -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} >> #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 #################
@@ -1179,10 +1180,14 @@ end
 
 AbortIf.logger.info { "Checking the trimmed sequences against superfamilies" }
 
-trimmed_queries_rpsblast_out =
-  File.join search_results_dir, "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_superfamily_cds.txt"
-trimmed_inteins_rpsblast_out =
-  File.join search_results_dir, "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_superfamily_cds.txt"
+trimmed_queries_rpsblast_out = File.join search_results_dir, "trimmed_queries_search_superfamilies.txt"
+trimmed_inteins_rpsblast_out = File.join search_results_dir, "trimmed_inteins_search_superfamilies.txt"
+
+trimmed_queries_mmseqs_out = File.join search_results_dir, "trimmed_queries_search_inteins.txt"
+trimmed_inteins_mmseqs_out = File.join search_results_dir, "trimmed_inteins_search_inteins.txt"
+
+trimmed_queries_all_search_out = File.join search_results_dir, "trimmed_queries_search.txt"
+trimmed_inteins_all_search_out = File.join search_results_dir, "trimmed_inteins_search.txt"
 
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus] * 2
@@ -1234,12 +1239,6 @@ end
 
 # For the mmseqs, we need to change to simple headers as it will do
 # weird stuff if they have headers like 'gi|23423|blah blab'
-trimmed_queries_mmseqs_out =
-  File.join search_results_dir,
-            "#{File.basename(trimmed_queries_out, File.extname(trimmed_queries_out))}.search_results_inteins.txt"
-trimmed_inteins_mmseqs_out =
-  File.join search_results_dir,
-            "#{File.basename(trimmed_inteins_out, File.extname(trimmed_inteins_out))}.search_results_inteins.txt"
 
 # Now do the search
 
@@ -1273,6 +1272,12 @@ File.open(tmpfile, "w") do |f|
   end
 end
 Utils.run_and_time_it! "Changing IDs in intein mmseqs search", "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
+
+cmd = "cat #{trimmed_queries_rpsblast_out} #{trimmed_queries_mmseqs_out} > #{trimmed_queries_all_search_out}"
+Utils.run_and_time_it! "Catting query search results", cmd
+
+cmd = "cat #{trimmed_inteins_rpsblast_out} #{trimmed_inteins_mmseqs_out} > #{trimmed_inteins_all_search_out}"
+Utils.run_and_time_it! "Catting intein search results", cmd
 
 #######################################
 # check the sequences that were trimmed
@@ -1316,6 +1321,14 @@ FileUtils.rm_r profile_db_dir
 FileUtils.rm_r tmp_dir
 FileUtils.rm_r aln_dir unless opts[:keep_alignment_files]
 
+# Remove the first search intermediate files
+FileUtils.rm [rpsblast_out, mmseqs_out]
+
+# Remove the second search intermediate files
+FileUtils.rm [trimmed_inteins_rpsblast_out, trimmed_inteins_mmseqs_out,
+              trimmed_queries_rpsblast_out, trimmed_queries_mmseqs_out]
+
+FileUtils.rm [trimmed_queries_simple_headers_out, trimmed_inteins_simple_headers_out]
 
 FileUtils.rm queries_simple_name_out
 
