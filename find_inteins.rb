@@ -693,12 +693,12 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
 
         unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region start." }
+          AbortIf.logger.debug { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region start." }
           break
         end
 
         unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-          AbortIf.logger.warn { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region end." }
+          AbortIf.logger.debug { "Skipping query target pair (#{query}, #{target}) as we couldn't determine the region end." }
           break
         end
 
@@ -1110,13 +1110,15 @@ File.open(trimmed_queries_out, "w") do |queries_f|
         queries_f.puts trimmed_query_seq
 
         # More sanity checks
-        total_intein_length = intein_seqs.map(&:length).reduce(:+)
-        abort_unless total_intein_length + trimmed_query_seq.length == rec.seq.length,
-                     "Pre trimming length and post trimming length plus intein length  don't match up for seq #{rec.id}"
+        if intein_seqs.count > 0
+          total_intein_length = intein_seqs.map(&:length).reduce(:+)
+          abort_unless total_intein_length + trimmed_query_seq.length == rec.seq.length,
+                       "Pre trimming length and post trimming length plus intein length  don't match up for seq #{rec.id}"
+        end
 
       else
         # this record has no inteins we can trim out
-        queries_f.puts ">#{rec.id} num_inteins_trimmed___0"
+        queries_f.puts ">#{rec.id}"
         queries_f.puts rec.seq
       end
     end
