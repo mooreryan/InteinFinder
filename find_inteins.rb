@@ -18,6 +18,8 @@ PSSMs = ["cd00081.smp", "cd00085.smp", "cd09643.smp", "COG1372.smp", "COG1403.sm
 PSSM_PATHS = PSSMs.map { |pssm| File.join PSSM_DIR, pssm }
 
 NO = "No"
+L1 = "L1"
+L2 = "L2"
 
 module Utils
   extend Aai::CoreExtensions::Time
@@ -32,68 +34,55 @@ end
 include AbortIf
 include AbortIf::Assert
 
-def intein_n_terminus_test aa
-  test_aa = aa.upcase
+# def intein_n_terminus_test aa
+#   test_aa = aa.upcase
 
-  level_1 = Set.new %w[C S A Q P T]
-  level_2 = Set.new %w[V F N G M L]
+#   level_1 = Set.new %w[C S A Q P T]
+#   level_2 = Set.new %w[V F N G M L]
 
-  if level_1.include? test_aa
-    "L1"
-  elsif level_2.include? test_aa
-    "L2"
-  else
-    NO
-  end
-end
-
-# Use this test if you're not sure which is the first amino acid and
-# you need to check multiple.  Eg. if it is unclear if the InBase
-# sequence had the -1 extein residue or not.
-
-n_terminus_level_1 = Set.new %w[C S A Q P T]
-n_terminus_level_2 = Set.new %w[V F N G M L]
-
-def residue_set_test aa, level_1, level_2
-  test_aa = Set.new aa.to_a.map(&:upcase)
-
-  if !level_1.intersection(test_aa).empty?
-    "L1"
-  elsif !level_2.intersection(test_aa).empty?
-    "L2"
-  else
-    NO
-  end
-end
-
-def c_term_dipeptide_test oligo
-  # Currently this will have a first pair and a second pair that it
-  # tries to match too.  As we aren't sure whether all of the inteins
-  # have -1 +1 yet.
-
-  first_pair = oligo[0..1].upcase
-  second_pair = oligo[1..2].upcase
-
-  level_1 = Set.new %w[HN SN GN GQ LD FN]
-  level_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
-
-  if level_1.include?(first_pair) || level_1.include?(second_pair)
-    "L1"
-  elsif level_2.include?(first_pair) || level_2.include?(second_pair)
-    "L2"
-  else
-    NO
-  end
-end
+#   if level_1.include? test_aa
+#     "L1"
+#   elsif level_2.include? test_aa
+#     "L2"
+#   else
+#     NO
+#   end
+# end
 
 
-def residue_test_pass? result, strictness
-  result == "L1" || (result == "L2" && strictness >= 2)
-end
+# def residue_set_test aa, level_1, level_2
+#   test_aa = Set.new aa.to_a.map(&:upcase)
 
+#   if !level_1.intersection(test_aa).empty?
+#     "L1"
+#   elsif !level_2.intersection(test_aa).empty?
+#     "L2"
+#   else
+#     NO
+#   end
+# end
 
+# def c_term_dipeptide_test oligo
+#   # Currently this will have a first pair and a second pair that it
+#   # tries to match too.  As we aren't sure whether all of the inteins
+#   # have -1 +1 yet.
 
-# def intein_n_terminus_set_test aa
+#   first_pair = oligo[0..1].upcase
+#   second_pair = oligo[1..2].upcase
+
+#   level_1 = Set.new %w[HN SN GN GQ LD FN]
+#   level_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
+
+#   if level_1.include?(first_pair) || level_1.include?(second_pair)
+#     "L1"
+#   elsif level_2.include?(first_pair) || level_2.include?(second_pair)
+#     "L2"
+#   else
+#     NO
+#   end
+# end
+
+# def intein_n_term_set_test aa
 #   test_aa = Set.new aa.to_a.map(&:upcase)
 
 #   level_1 = Set.new %w[C S A Q P T]
@@ -108,9 +97,33 @@ end
 #   end
 # end
 
-# def intein_n_terminus_test_pass? result, strictness
+# def intein_n_term_test_pass? result, strictness
 #   result == "L1" || (result == "L2" && strictness >= 2)
 # end
+
+
+N_TERM_LEVEL_1 = Set.new %w[C S A Q P T]
+N_TERM_LEVEL_2 = Set.new %w[V F N G M L]
+C_TERM_LEVEL_1 = Set.new %w[HN SN GN GQ LD FN]
+C_TERM_LEVEL_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
+C_EXTEIN_START = Set.new %w[S T C]
+
+def residue_test aa, level_1, level_2
+  test_aa = aa.upcase
+
+  if level_1.include? test_aa
+    L1
+  elsif level_2.include? test_aa
+    L2
+  else
+    NO
+  end
+end
+
+def residue_test_pass? result, strictness
+  result == L1 || (result == L2 && strictness >= 2)
+end
+
 
 
 def check_file fname
@@ -221,11 +234,11 @@ opts = Trollop.options do
   opt(:mmseqs_sensitivity, "-s for mmseqs", default: 5.7)
   opt(:mmseqs_iterations, "--num-iterations for mmseqs", default: 2)
 
-  opt(:intein_n_terminus_test_strictness,
-      "Which level passes the intein_n_terminus_test?",
+  opt(:intein_n_term_test_strictness,
+      "Which level passes the intein_n_term_test?",
       default: 1)
-  opt(:intein_c_terminus_dipeptide_test_strictness,
-      "Which level passes the intein_c_terminus_dipeptide_test?",
+  opt(:intein_c_term_dipeptide_test_strictness,
+      "Which level passes the intein_c_term_dipeptide_test?",
       default: 1)
 
   opt(:refinement_strictness,
@@ -260,10 +273,10 @@ end
 
 AbortIf.logger.info { "Checking arguments" }
 
-abort_unless Set.new([1,2]).include?(opts[:intein_n_terminus_test_strictness]),
-             "--intein-n-terminus-test-strictness must be 1 or 2."
-abort_unless Set.new([1,2]).include?(opts[:intein_c_terminus_dipeptide_test_strictness]),
-             "--intein-c-terminus-dipeptide-test-strictness must be 1 or 2."
+abort_unless Set.new([1,2]).include?(opts[:intein_n_term_test_strictness]),
+             "--intein-n-term-test-strictness must be 1 or 2."
+abort_unless Set.new([1,2]).include?(opts[:intein_c_term_dipeptide_test_strictness]),
+             "--intein-c-term-dipeptide-test-strictness must be 1 or 2."
 # abort_unless Set.new([1,2]).include?(opts[:refinement_strictness]),
 #              "--refinement-strictness must be 1 or 2."
 abort_unless Set.new([1]).include?(opts[:refinement_strictness]),
@@ -725,7 +738,7 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         # TODO check if the alignment actually got into the region that the blast hit said it should be in
 
-        intein_n_terminus = NO
+        intein_n_term = NO
         has_end = NO
         has_extein_start = NO
         correct_region = NO
@@ -755,21 +768,18 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
 
         putative_regions.each_with_index do |(rid, info), idx|
           if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
-            putative_region_good = "L1"
+            putative_region_good = L1
             break # it can never be within two separate regions as the regions don't overlap (I think...TODO)
           end
         end
 
-        # TODO if we go through the exteins by hand to make sure if the index includes part of the extein or not this could be simplified.
 
-        start_oligo =
-          Set.new(rec.seq.downcase[first_non_gap_idx .. first_non_gap_idx+1].chars)
+        start_residue = rec.seq[first_non_gap_idx]
+        has_start = residue_test start_residue, N_TERM_LEVEL_1, N_TERM_LEVEL_2
 
-        has_start = residue_set_test start_oligo, n_terminus_level_1, n_terminus_level_2
-
-        end_oligo = rec.seq.downcase[last_non_gap_idx-2 .. last_non_gap_idx]
-
-        has_end = c_term_dipeptide_test end_oligo
+        # Take last two residues
+        end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
+        has_end = residue_test end_oligo, C_TERM_LEVEL_1, C_TERM_LEVEL_2
 
         # first_pair = end_oligo[0..1]
         # second_pair = end_oligo[1..2]
@@ -778,10 +788,11 @@ conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progre
         #   has_end = "L1"
         # end
 
-        extein_start_oligo =
-          Set.new(rec.seq.downcase[last_non_gap_idx .. last_non_gap_idx+1].chars)
-        if !extein_start_oligo.intersection(Set.new(%w[s t c])).empty?
-          has_extein_start = "L1"
+        # need to get one past the last thing in the intein
+        extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
+
+        if C_EXTEIN_START.include? extein_start_residue
+          has_extein_start = L1
         end
 
         out_line = [query, target, evalue, region_idx, region, putative_region_good, has_start, has_end, has_extein_start]
@@ -894,8 +905,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
     query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
-    start_test_pass = residue_test_pass? start_good, opts[:intein_n_terminus_test_strictness]
-    end_test_pass = residue_test_pass? end_good, opts[:intein_c_terminus_dipeptide_test_strictness]
+    start_test_pass = residue_test_pass? start_good, opts[:intein_n_term_test_strictness]
+    end_test_pass = residue_test_pass? end_good, opts[:intein_c_term_dipeptide_test_strictness]
 
     all_good = region_good == "L1" && start_test_pass &&
                end_test_pass && extein_good == "L1"
@@ -944,12 +955,12 @@ end
 AbortIf.logger.info { "Writing condensed criteria check" }
 
 File.open(criteria_check_condensed_out, "w") do |f|
-  f.puts %w[seq region.id single.target.all single.target.all.evalue single.target.all.region multi.target.all region start end extein].join "\t"
+  f.puts %w[seq region.id single.target single.target.evalue single.target.region multi.target region start end extein].join "\t"
 
   query_good.each do |query, regions|
     regions.each do |region, info|
-      start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_terminus_test_strictness]
-      end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_terminus_dipeptide_test_strictness]
+      start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_term_test_strictness]
+      end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_term_dipeptide_test_strictness]
 
       all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : NO
 
