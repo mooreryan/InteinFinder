@@ -1060,6 +1060,8 @@ File.open(refined_containing_regions_out, "w") do |f|
 
   region_info.each do |seq, ht|
     ht.each do |region_id, info|
+      len = info[:has_single_target] == NO ? info[:len] : info[:has_single_target][:len]
+
       if !opts[:use_length_in_refinement] ||
          (opts[:use_length_in_refinement] && REGION_MIN_LEN <= len && len <= REGION_MAX_LEN)
 
