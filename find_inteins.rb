@@ -355,18 +355,19 @@ File.open(queries_simple_name_out, "w") do |f|
   ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
     n += 1
     new_name = "user_query___seq_#{n}"
-    old_rec_id = rec.id
-    query_name_map[new_name] = old_rec_id
+    orig_rec_id = rec.id
+    query_name_map[new_name] = orig_rec_id
 
-    rec.header = new_name
-    rec.id = new_name
+    query_records[orig_rec_id] = rec
 
-    query_records[old_rec_id] = rec
+    # rec.header = new_name
+    # rec.id = new_name
 
-    f.puts rec
+    f.puts ">#{new_name}"
+    f.puts rec.seq
 
-    unless queries.has_key? old_rec_id
-      queries[old_rec_id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
+    unless queries.has_key? orig_rec_id
+      queries[orig_rec_id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
                               rpsblast_hits: 0, rpsblast_best_evalue: 1 }
     end
   end
@@ -992,6 +993,8 @@ File.open(criteria_check_condensed_out, "rt").each_line.with_index do |line, idx
   end
 end
 
+info_for_trimming = {}
+
 File.open(refined_containing_regions_out, "w") do |f|
   f.puts %w[seq region.id start end len refining.target refining.evalue].join "\t"
 
@@ -1011,6 +1014,20 @@ File.open(refined_containing_regions_out, "w") do |f|
                   NO,
                   NO].join "\t"
         else
+          # If we get here, we are refining regions, so we should be
+          # pretty confident in them.
+          unless info_for_trimming.has_key? seq
+            info_for_trimming[seq] = {}
+          end
+
+          abort_if info_for_trimming[seq].has_key?(region_id),
+                   "#{seq}-#{region_id} pair was repeated in region_info table"
+
+          info_for_trimming[seq][region_id] = {
+            start: info[:has_single_target][:start],
+            stop: info[:has_single_target][:stop]
+          }
+
           f.puts [seq,
                   region_id,
                   info[:has_single_target][:start],
@@ -1028,6 +1045,76 @@ end
 ################################
 # refine putative intein regions
 ######################################################################
+
+######################################################################
+# trim out inteins from sequences that have them
+################################################
+
+seq_dir = File.join opts[:outdir], "sequences"
+FileUtils.mkdir_p seq_dir
+trimmed_queries_out = File.join seq_dir, "#{query_basename}.inteins_removed.faa"
+trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
+
+File.open(trimmed_queries_out, "w") do |queries_f|
+  File.open(trimmed_inteins_out, "w") do |inteins_f|
+    query_records.each do |rec_id, rec|
+      if info_for_trimming.has_key? rec.id
+        intein_seqs = []
+
+        info_for_trimming[rec.id].each do |region_id, info|
+          # These are 1-based
+          start_idx = info[:start].to_i - 1
+          stop_idx  = info[:stop].to_i  - 1
+
+          # Sanity checks
+          abort_unless start_idx >= 0,
+                       "bad start idx for #{rec.id}-#{region_id}"
+          abort_unless start_idx < stop_idx,
+                       "start idx not less than stop idx for #{rec.id}-#{region_id}"
+          abort_unless stop_idx < rec.seq.length,
+                       "bad stop idx for #{rec.id}-#{region_id}"
+
+          intein_seq = rec.seq[start_idx .. stop_idx]
+          intein_first = intein_seq[0]
+          intein_dipep = intein_seq[intein_seq.length - 2, 2]
+
+          inteins_f.puts ">#{rec.id}___intein_#{region_id} n_term___#{intein_first} c_term___#{intein_dipep}"
+          inteins_f.puts intein_seq
+
+          intein_seqs << intein_seq
+
+        end
+
+        # Make sure the intein isn't repeated.  It will break the splicing if it is.
+        intein_seqs.each do |iseq|
+          abort_unless rec.seq.scan(iseq).count == 1,
+                       "An intein was present more than once in #{rec.id}"
+        end
+
+        regex = Regexp.new intein_seqs.join("|")
+        trimmed_query_seq = rec.seq.split(regex).join
+
+        queries_f.puts ">#{rec.id} num_inteins_trimmed___#{intein_seqs.count}"
+        queries_f.puts trimmed_query_seq
+
+        # More sanity checks
+        total_intein_length = intein_seqs.map(&:length).reduce(:+)
+        abort_unless total_intein_length + trimmed_query_seq.length == rec.seq.length,
+                     "Pre trimming length and post trimming length plus intein length  don't match up for seq #{rec.id}"
+
+      else
+        # this record has no inteins we can trim out
+        queries_f.puts ">#{rec.id} num_inteins_trimmed___0"
+        queries_f.puts rec.seq
+      end
+    end
+  end
+end
+
+################################################
+# trim out inteins from sequences that have them
+######################################################################
+
 
 
 AbortIf.logger.info { "Writing intein info" }
