@@ -1136,10 +1136,15 @@ trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
 
 intein_count_info = { n_term: Hash.new(0), c_term: Hash.new(0) }
 
+intein_trim_info = {}
+
 num_inteins_written = 0
 File.open(trimmed_queries_out, "w") do |queries_f|
   File.open(trimmed_inteins_out, "w") do |inteins_f|
     query_records.each do |rec_id, rec|
+      abort_if intein_trim_info.has_key?(rec.id),
+               "#{rec.id} was repeated in intein_trim_info hash table"
+
       if info_for_trimming.has_key? rec.id
         intein_seqs = []
         total_inteins = 0
@@ -1183,6 +1188,8 @@ File.open(trimmed_queries_out, "w") do |queries_f|
         regex = Regexp.new intein_seqs.join("|")
         trimmed_query_seq = rec.seq.split(regex).join
 
+        # TODO sometimes total_inteins is 0...when will this happen?
+        intein_trim_info[rec.id] = "#{intein_seqs.count}_of_#{total_inteins}"
         queries_f.puts ">#{rec.id} inteins_removed___#{intein_seqs.count}_of_#{total_inteins}"
         queries_f.puts trimmed_query_seq
 
@@ -1195,6 +1202,7 @@ File.open(trimmed_queries_out, "w") do |queries_f|
 
       else
         # this record has no inteins we can trim out
+        intein_trim_info[rec.id] = NO
         queries_f.puts ">#{rec.id}"
         queries_f.puts rec.seq
       end
@@ -1315,6 +1323,56 @@ Utils.run_and_time_it! "Catting intein search results", cmd
 # check the sequences that were trimmed
 ######################################################################
 
+######################################################################
+# summarize 2nd blast
+#####################
+
+intein_trim_info.each do |rec_id, inteins_removed|
+  if inteins_removed == NO
+    #
+  else
+    num_removed, total = inteins_removed.split "_of_"
+  end
+end
+
+second_blast_summary_queries = {}
+File.open(trimmed_queries_all_search_out, "rt").each_line do |line|
+  query, target, *rest = line.chomp.split "\t"
+
+  evalue = rest[8].to_f
+
+  unless second_blast_summary_queries.has_key? query
+    abort_unless intein_trim_info.has_key?(query),
+                 "#{query} missing from intein_trim_info hash table"
+
+    inteins_removed = intein_trim_info[query]
+    second_blast_summary_queries[query] = {
+      inteins_removed: inteins_removed,
+      num_hits: 0,
+      best_evalue: 1,
+    }
+  end
+
+  second_blast_summary_queries[query][:num_hits] += 1
+
+  if evalue < second_blast_summary_queries[query][:best_evalue]
+    second_blast_summary_queries[query][:best_evalue] = evalue
+  end
+end
+
+second_blast_summary_queries_out = File.join search_results_dir, "trimmed_queries_search_summary.txt"
+
+File.open(second_blast_summary_queries_out, "w") do |f|
+  f.puts %w[seq iteins.removed hits best.evalue].join "\t"
+
+  second_blast_summary_queries.each do |rec_id, info|
+    f.puts [rec_id, info[:inteins_removed], info[:num_hits], info[:best_evalue]].join "\t"
+  end
+end
+
+#####################
+# summarize 2nd blast
+######################################################################
 
 
 AbortIf.logger.info { "Writing intein info" }
