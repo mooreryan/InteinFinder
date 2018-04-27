@@ -1327,13 +1327,7 @@ Utils.run_and_time_it! "Catting intein search results", cmd
 # summarize 2nd blast
 #####################
 
-intein_trim_info.each do |rec_id, inteins_removed|
-  if inteins_removed == NO
-    #
-  else
-    num_removed, total = inteins_removed.split "_of_"
-  end
-end
+AbortIf.logger.info { "Summarizing 2nd query search" }
 
 second_blast_summary_queries = {}
 File.open(trimmed_queries_all_search_out, "rt").each_line do |line|
@@ -1369,6 +1363,40 @@ File.open(second_blast_summary_queries_out, "w") do |f|
     f.puts [rec_id, info[:inteins_removed], info[:num_hits], info[:best_evalue]].join "\t"
   end
 end
+
+AbortIf.logger.info { "Summarizing 2nd intein search" }
+
+second_blast_summary_inteins = {}
+File.open(trimmed_inteins_all_search_out, "rt").each_line do |line|
+  query, target, *rest = line.chomp.split "\t"
+
+  evalue = rest[8].to_f
+
+  unless second_blast_summary_inteins.has_key? query
+    second_blast_summary_inteins[query] = {
+      num_hits: 0,
+      best_evalue: 1,
+    }
+  end
+
+  second_blast_summary_inteins[query][:num_hits] += 1
+
+  if evalue < second_blast_summary_inteins[query][:best_evalue]
+    second_blast_summary_inteins[query][:best_evalue] = evalue
+  end
+end
+
+second_blast_summary_inteins_out = File.join search_results_dir,
+                                             "trimmed_inteins_search_summary.txt"
+
+File.open(second_blast_summary_inteins_out, "w") do |f|
+  f.puts %w[seq hits best.evalue].join "\t"
+
+  second_blast_summary_inteins.each do |rec_id, info|
+    f.puts [rec_id, info[:num_hits], info[:best_evalue]].join "\t"
+  end
+end
+
 
 #####################
 # summarize 2nd blast
