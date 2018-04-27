@@ -40,7 +40,8 @@ PSSMs = ["cd00081.smp", "cd00085.smp", "cd09643.smp", "COG1372.smp",
          "pfam14623.smp", "pfam14890.smp", "PRK11295.smp",
          "PRK15137.smp", "smart00305.smp", "smart00306.smp",
          "smart00507.smp", "TIGR01443.smp", "TIGR01445.smp",
-         "TIGR02646.smp", "pfam05204.smp", "pfam14528.smp"]
+         "TIGR02646.smp", "pfam05204.smp", "pfam14528.smp",
+         "pfam14527.smp"]
 
 PSSM_PATHS = PSSMs.map { |pssm| File.join PSSM_DIR, pssm }
 
