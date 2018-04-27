@@ -16,3 +16,7 @@ assets/intein_superfamily_members/fastas/aligned
 assets/intein_superfamily_members/fastas/unaligned/all
 
 assets/intein_sequences/work_dir
+assets/intein_sequences/other_work_dir
+
+snazzy_proteins_out/
+test_files/snazzy_proteins.faa

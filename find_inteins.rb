@@ -172,7 +172,7 @@ opts = Trollop.options do
 
   opt(:inteins,
       "Input fasta file with Inteins",
-      default: File.join(__dir__, "assets", "intein_sequences", "inbase.faa"))
+      default: File.join(__dir__, "assets", "intein_sequences", "all.faa"))
   opt(:pssm_list,
       "Input file that contains a list of smp files (delimited by space, tab or newline).  Don't pass this argument to use the default.",
       type: :string)
@@ -1130,7 +1130,7 @@ end
 
 AbortIf.logger.info { "Trimming inteins from queries" }
 
-trimmed_queries_out = File.join seq_dir, "#{query_basename}.inteins_removed.faa"
+trimmed_queries_out = File.join seq_dir, "#{query_basename}.query_seqs_with_inteins_removed.faa"
 trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
 
 intein_count_info = { n_term: Hash.new(0), c_term: Hash.new(0) }
