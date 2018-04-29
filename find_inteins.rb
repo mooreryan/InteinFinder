@@ -620,7 +620,7 @@ end
 #   mmseqs_lines << line.chomp
 # end
 
-mmseqs_lines = []
+mmseqs_hits = []
 File.open(mmseqs_out, "rt").each_line do |line|
   blast_record = InteinFinder::BlastRecord.new line
 
@@ -668,12 +668,12 @@ File.open(mmseqs_out, "rt").each_line do |line|
   # hit = [query, target, rest, region_idx, clipping_start_idx, clipping_end_idx].flatten
   hit = [blast_record, clipping_region]
 
-  mmseqs_lines << hit
+  mmseqs_hits << hit
 end
 
 # Sort by query, then by region, then by evalue.
 # br = BlastRecord, cr = ClippingRecord
-mmseqs_lines.sort! do |(br1, cr1), (br2, cr2)|
+mmseqs_hits.sort! do |(br1, cr1), (br2, cr2)|
   query_comp = br1.query <=> br2.query
   if query_comp.zero?
     region_comp = cr1.id <=> cr2.id
@@ -688,7 +688,7 @@ mmseqs_lines.sort! do |(br1, cr1), (br2, cr2)|
   end
 end
 
-# mmseqs_lines.each do |(br, cr)|
+# mmseqs_hits.each do |(br, cr)|
 #   puts [br, cr.to_s].join "\t"
 # end
 
@@ -701,188 +701,197 @@ good_stuff = Set.new
 num_aligned = 0
 num_skipped = 0
 
+mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
+
 progbar = ProgressBar.create title: "Checking conserved residues",
                              starting_at: 0,
-                             total: mmseqs_lines.count,
+                             total: mmseqs_hits.count,
                              format: "%t%e |%B|"
 
-# conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progress: "Checking for key residues") do |(blast_record, clipping_region)|
-conserved_f_lines = mmseqs_lines.map do |(blast_record, clipping_region)|
-  progbar.increment
+MAX_ALIGNMENTS_BEFORE_ALL = 5
 
-  out_line = nil
-  if good_stuff.include? [blast_record.query, clipping_region.id]
-    num_skipped += 1
-  else
-    num_aligned += 1
 
-    tmp_aln_in = File.join aln_dir, "aln_in_#{blast_record.query}_#{blast_record.subject}.faa"
-    tmp_aln_out = File.join aln_dir, "aln_out_#{blast_record.query}_#{blast_record.subject}.faa"
+# conserved_f_lines = Parallel.map(mmseqs_hits, in_processes: opts[:cpus], progress: "Checking for key residues") do |(blast_record, clipping_region)|
+# conserved_f_lines = mmseqs_hits.map do |(blast_record, clipping_region)|
+conserved_f_lines = []
+mmseqs_hit_groups.each do |group, items|
 
-    clipping_start_idx = clipping_region.start - 1
-    clipping_end_idx = clipping_region.stop - 1
+  items.each do |(blast_record, clipping_region)| # START HERE
+    progbar.increment
 
-    first_non_gap_idx = nil
-    last_non_gap_idx = nil
-    # clipping_region.id = -1
+    if good_stuff.include? [blast_record.query, clipping_region.id]
+      num_skipped += 1
+    else
+      num_aligned += 1
 
-    slen_in_aln = blast_record.send - blast_record.sstart + 1
+      tmp_aln_in = File.join aln_dir, "aln_in_#{blast_record.query}_#{blast_record.subject}.faa"
+      tmp_aln_out = File.join aln_dir, "aln_out_#{blast_record.query}_#{blast_record.subject}.faa"
 
-    # TODO if you want to use aln len, need to compare region to the
-    # full putatitive regions calculated above
-    # if slen_in_aln >= blast_record.slen
-    if true # blast_record.alen >= blast_record.slen
-      # TODO check for missing seqs
-      this_query = query_records[blast_record.query]
-      this_intein = intein_records[blast_record.subject]
+      clipping_start_idx = clipping_region.start - 1
+      clipping_end_idx = clipping_region.stop - 1
 
-      # Need to get the clipping region.  We want to select the 'overall
-      # region' that the blast_record.qstart-blast_record.qend falls into.  If it doesn't (it
-      # should) just fall back to this clipping region.
+      first_non_gap_idx = nil
+      last_non_gap_idx = nil
+      # clipping_region.id = -1
 
-      # if true
-      #   query_middle = (blast_record.qend + blast_record.qstart + 1) / 2.0
-      #   putative_regions = query2regions[blast_record.query]
-      #   putative_regions.each do |rid, info|
-      #     if query_middle >= info[:qstart] && query_middle <= info[:qend]
-      #       clipping_start_idx = info[:qstart]-1-PADDING
-      #       clipping_end_idx = info[:qend]-1-PADDING
-      #       clipping_region.id = rid
-      #       break
-      #     end
-      #   end
+      slen_in_aln = blast_record.send - blast_record.sstart + 1
 
-      #   assert clipping_start_idx != -100, "#{line}"
-      #   assert clipping_end_idx != -100
-      # else
-      #   # TODO Is there any reason we should use the homology region
-      #   # rather than the region we calculated above?  Using the region calculated above def is able to pull more of the wonky seqs.  See intein region 2 (of 0,1,2) of seq_4.
-      #   clipping_start_idx = blast_record.qstart-1-PADDING
-      #   clipping_end_idx = blast_record.qend-1+PADDING
-      # end
+      # TODO if you want to use aln len, need to compare region to the
+      # full putatitive regions calculated above
+      # if slen_in_aln >= blast_record.slen
+      if true # blast_record.alen >= blast_record.slen
+        # TODO check for missing seqs
+        this_query = query_records[blast_record.query]
+        this_intein = intein_records[blast_record.subject]
 
-      # clipping_start_idx = clipping_start_idx < 0 ? 0 : clipping_start_idx
-      # Note that if the clipping_end_idx is passed the length of the string, Ruby will just give us all the way up to the end of the string.
+        # Need to get the clipping region.  We want to select the 'overall
+        # region' that the blast_record.qstart-blast_record.qend falls into.  If it doesn't (it
+        # should) just fall back to this clipping region.
 
-      this_clipping_region =
-        this_query.seq[clipping_start_idx .. clipping_end_idx]
+        # if true
+        #   query_middle = (blast_record.qend + blast_record.qstart + 1) / 2.0
+        #   putative_regions = query2regions[blast_record.query]
+        #   putative_regions.each do |rid, info|
+        #     if query_middle >= info[:qstart] && query_middle <= info[:qend]
+        #       clipping_start_idx = info[:qstart]-1-PADDING
+        #       clipping_end_idx = info[:qend]-1-PADDING
+        #       clipping_region.id = rid
+        #       break
+        #     end
+        #   end
 
-      clipping_rec = ParseFasta::Record.new header: "clipped___#{this_query.id}",
-                                            seq: this_clipping_region
-      # end
+        #   assert clipping_start_idx != -100, "#{line}"
+        #   assert clipping_end_idx != -100
+        # else
+        #   # TODO Is there any reason we should use the homology region
+        #   # rather than the region we calculated above?  Using the region calculated above def is able to pull more of the wonky seqs.  See intein region 2 (of 0,1,2) of seq_4.
+        #   clipping_start_idx = blast_record.qstart-1-PADDING
+        #   clipping_end_idx = blast_record.qend-1+PADDING
+        # end
 
-      # if true
-      # Write the aln infile
-      File.open(tmp_aln_in, "w") do |f|
-        f.puts ">" + this_intein.id
-        f.puts this_intein.seq
+        # clipping_start_idx = clipping_start_idx < 0 ? 0 : clipping_start_idx
+        # Note that if the clipping_end_idx is passed the length of the string, Ruby will just give us all the way up to the end of the string.
 
-        f.puts ">" + clipping_rec.id
-        f.puts clipping_rec.seq
+        this_clipping_region =
+          this_query.seq[clipping_start_idx .. clipping_end_idx]
 
-        f.puts ">" + this_query.id
-        f.puts this_query.seq
-      end
+        clipping_rec = ParseFasta::Record.new header: "clipped___#{this_query.id}",
+                                              seq: this_clipping_region
+        # end
 
-      cmd = "#{opts[:mafft]} --quiet --auto --thread 1 '#{tmp_aln_in}' > '#{tmp_aln_out}'"
-      Utils.run_it! cmd
+        # if true
+        # Write the aln infile
+        File.open(tmp_aln_in, "w") do |f|
+          f.puts ">" + this_intein.id
+          f.puts this_intein.seq
 
-      num = 0
-      ParseFasta::SeqFile.open(tmp_aln_out).each_record do |rec|
-        num += 1
+          f.puts ">" + clipping_rec.id
+          f.puts clipping_rec.seq
 
-        if num == 1 # Intein
-          first_non_gap_idx = -1
-          seq_len = rec.seq.length
-          last_non_gap_idx = -1
+          f.puts ">" + this_query.id
+          f.puts this_query.seq
+        end
 
-          rec.seq.each_char.with_index do |char, idx|
-            # TODO account for other gap characters
-            if char != "-"
-              first_non_gap_idx = idx
+        cmd = "#{opts[:mafft]} --quiet --auto --thread 1 '#{tmp_aln_in}' > '#{tmp_aln_out}'"
+        Utils.run_it! cmd
 
+        num = 0
+        ParseFasta::SeqFile.open(tmp_aln_out).each_record do |rec|
+          num += 1
+
+          if num == 1 # Intein
+            first_non_gap_idx = -1
+            seq_len = rec.seq.length
+            last_non_gap_idx = -1
+
+            rec.seq.each_char.with_index do |char, idx|
+              # TODO account for other gap characters
+              if char != "-"
+                first_non_gap_idx = idx
+
+                break
+              end
+            end
+
+            rec.seq.reverse.each_char.with_index do |char, idx|
+              forward_index = seq_len - 1 - idx
+
+              if char != "-"
+                last_non_gap_idx = forward_index
+                break
+              end
+            end
+          elsif num == 3 # This query
+            # TODO account for gaps in the start and end regions of the query seq.
+
+            # TODO check if the alignment actually got into the region that the blast hit said it should be in
+
+            intein_n_term = NO
+            has_end = NO
+            has_extein_start = NO
+            correct_region = NO
+
+            true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
+            gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
+
+            # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
+
+            unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
+              AbortIf.logger.debug { "Skipping query target pair (#{blast_record.query}, #{blast_record.subject}) as we couldn't determine the region start." }
               break
             end
-          end
 
-          rec.seq.reverse.each_char.with_index do |char, idx|
-            forward_index = seq_len - 1 - idx
-
-            if char != "-"
-              last_non_gap_idx = forward_index
+            unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
+              AbortIf.logger.debug { "Skipping query target pair (#{blast_record.query}, #{blast_record.subject}) as we couldn't determine the region end." }
               break
             end
-          end
-        elsif num == 3 # This query
-          # TODO account for gaps in the start and end regions of the query seq.
 
-          # TODO check if the alignment actually got into the region that the blast hit said it should be in
+            this_region_start = gapped_pos_to_true_pos[first_non_gap_idx+1]
+            this_region_end = gapped_pos_to_true_pos[last_non_gap_idx+1]
+            region = [this_region_start, this_region_end].join "-"
 
-          intein_n_term = NO
-          has_end = NO
-          has_extein_start = NO
-          correct_region = NO
+            putative_regions = query2regions[blast_record.query]
 
-          true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
-          gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
+            putative_region_good = NO
 
-          # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
-
-          unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-            AbortIf.logger.debug { "Skipping query target pair (#{blast_record.query}, #{blast_record.subject}) as we couldn't determine the region start." }
-            break
-          end
-
-          unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-            AbortIf.logger.debug { "Skipping query target pair (#{blast_record.query}, #{blast_record.subject}) as we couldn't determine the region end." }
-            break
-          end
-
-          this_region_start = gapped_pos_to_true_pos[first_non_gap_idx+1]
-          this_region_end = gapped_pos_to_true_pos[last_non_gap_idx+1]
-          region = [this_region_start, this_region_end].join "-"
-
-          putative_regions = query2regions[blast_record.query]
-
-          putative_region_good = NO
-
-          putative_regions.each_with_index do |(rid, info), idx|
-            if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
-              putative_region_good = L1
-              break # it can never be within two separate regions as the regions don't overlap (I think...TODO)
+            putative_regions.each_with_index do |(rid, info), idx|
+              if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
+                putative_region_good = L1
+                break # it can never be within two separate regions as the regions don't overlap (I think...TODO)
+              end
             end
-          end
 
 
-          start_residue = rec.seq[first_non_gap_idx]
-          has_start = residue_test start_residue, N_TERM_LEVEL_1, N_TERM_LEVEL_2
+            start_residue = rec.seq[first_non_gap_idx]
+            has_start = residue_test start_residue, N_TERM_LEVEL_1, N_TERM_LEVEL_2
 
-          # Take last two residues
-          end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
-          has_end = residue_test end_oligo, C_TERM_LEVEL_1, C_TERM_LEVEL_2
+            # Take last two residues
+            end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
+            has_end = residue_test end_oligo, C_TERM_LEVEL_1, C_TERM_LEVEL_2
 
-          # need to get one past the last thing in the intein
-          extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
+            # need to get one past the last thing in the intein
+            extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
 
-          if C_EXTEIN_START.include? extein_start_residue
-            has_extein_start = L1
-          end
+            if C_EXTEIN_START.include? extein_start_residue
+              has_extein_start = L1
+            end
 
-          out_line = [blast_record.query, blast_record.subject, blast_record.evalue, clipping_region.id, region, putative_region_good, has_start, has_end, has_extein_start, start_residue, end_oligo, extein_start_residue]
+            out_line = [blast_record.query, blast_record.subject, blast_record.evalue, clipping_region.id, region, putative_region_good, has_start, has_end, has_extein_start, start_residue, end_oligo, extein_start_residue]
 
-          all_good = [putative_region_good, has_start, has_end, has_extein_start].all? { |test| test != NO }
-          if all_good
-            good_stuff << [blast_record.query, clipping_region.id]
+            conserved_f_lines << out_line
+
+            all_good = [putative_region_good, has_start, has_end, has_extein_start].all? { |test| test != NO }
+            if all_good
+              good_stuff << [blast_record.query, clipping_region.id]
+            end
           end
         end
-      end
 
-      FileUtils.rm tmp_aln_in
-      FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+        FileUtils.rm tmp_aln_in
+        FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+      end
     end
   end
-
-  out_line
 end
 
 perc_aligned = (num_aligned.to_f / (num_aligned + num_skipped)).round(2) * 100
