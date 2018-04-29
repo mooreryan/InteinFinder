@@ -567,12 +567,8 @@ mmseqs_hits.sort! do |(br1, cr1), (br2, cr2)|
   end
 end
 
-conserved_f_lines = nil
-
-good_stuff = Set.new
-
 num_aligned = 0
-num_skipped = 0
+total_items = 0
 
 mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 
@@ -585,57 +581,58 @@ conserved_f_lines = []
 mmseqs_hit_groups.each do |group, items|
   progbar.increment
 
+  total_items += items.count
+
   found_good_hit = false
 
   subset_1 = items.take MAX_ALIGNMENTS_BEFORE_ALL
   subset_2 = items.drop MAX_ALIGNMENTS_BEFORE_ALL
 
+  # Most seqs have a good hit in the first couple, so trying a few
+  # single threaded before jumping to doing multiple alignments at a
+  # time will actually give you better efficiency (sometimes up to
+  # half as many alignments).
   subset_1.each do |(blast_record, clipping_region)|
-    if good_stuff.include? [blast_record.query, clipping_region.id]
-      num_skipped += 1
-    else
-      tmp_aln_in = File.join aln_dir,
-                             "aln_in_#{blast_record.query}" +
-                             "_#{blast_record.subject}.faa"
-      tmp_aln_out = File.join aln_dir,
-                              "aln_out_#{blast_record.query}" +
-                              "_#{blast_record.subject}.faa"
+    break if found_good_hit
 
-      # TODO check for missing seqs
-      this_query = query_records[blast_record.query]
-      this_intein = intein_records[blast_record.subject]
+    num_aligned += 1
 
-      write_aln_in tmp_aln_in,
-                   this_intein,
-                   this_query,
-                   clipping_region
+    tmp_aln_in = File.join aln_dir,
+                           "aln_in_#{blast_record.query}" +
+                           "_#{blast_record.subject}.faa"
+    tmp_aln_out = File.join aln_dir,
+                            "aln_out_#{blast_record.query}" +
+                            "_#{blast_record.subject}.faa"
 
-      align! tmp_aln_in, tmp_aln_out
+    # TODO check for missing seqs
+    this_query = query_records[blast_record.query]
+    this_intein = intein_records[blast_record.subject]
+
+    write_aln_in tmp_aln_in,
+                 this_intein,
+                 this_query,
+                 clipping_region
+
+    align! tmp_aln_in, tmp_aln_out
 
 
-      all_good, out_line = parse_aln_out tmp_aln_out,
-                                         blast_record,
-                                         clipping_region,
-                                         query2regions
+    all_good, out_line = parse_aln_out tmp_aln_out,
+                                       blast_record,
+                                       clipping_region,
+                                       query2regions
 
-      conserved_f_lines << out_line
+    conserved_f_lines << out_line
 
-      FileUtils.rm tmp_aln_in
-      FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+    FileUtils.rm tmp_aln_in
+    FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
 
-      if all_good
-        good_stuff << [blast_record.query, clipping_region.id]
-        found_good_hit = true
-      end
-
-      num_aligned += 1
+    if all_good
+      found_good_hit = true
     end
   end
 
-  if found_good_hit
-    num_skipped += subset_2.count
-  elsif subset_2.count > 0
-    # If there is nothing in subset 2 there is nothing more to do.
+
+  if !found_good_hit && subset_2.count > 0
     seq_name = group[0]
     region_name =  group[1]
     AbortIf.logger.debug do
@@ -679,6 +676,9 @@ mmseqs_hit_groups.each do |group, items|
                                            clipping_region,
                                            query2regions
 
+        FileUtils.rm tmp_aln_in
+        FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+
         [all_good, out_line]
       end
 
@@ -696,7 +696,7 @@ mmseqs_hit_groups.each do |group, items|
 end
 
 perc_aligned = (
-  num_aligned.to_f / (num_aligned + num_skipped)
+  num_aligned.to_f / total_items
 ).round(2) * 100
 
 AbortIf.logger.debug { "Percent aligned: #{perc_aligned}" }
