@@ -42,7 +42,6 @@ module InteinFinder
   end
 
   # Also has 1-based start and end to match BlastRecord.
-  ClippingRegion = Struct.new :id, :start, :end
   class ClippingRegion
     attr_accessor :id, :start, :stop
 

@@ -760,9 +760,111 @@ def parse_intein_aln rec
   [first_non_gap_idx, last_non_gap_idx]
 end
 
+def parse_query_aln rec,
+                    blast_record,
+                    first_non_gap_idx,
+                    last_non_gap_idx,
+                    query2regions
 
-# conserved_f_lines = Parallel.map(mmseqs_hits, in_processes: opts[:cpus], progress: "Checking for key residues") do |(blast_record, clipping_region)|
-# conserved_f_lines = mmseqs_hits.map do |(blast_record, clipping_region)|
+  # TODO check if the alignment actually got into the region
+  # that the blast hit said it should be in
+
+  intein_n_term = NO
+  end_good = NO
+  extein_good = NO
+  correct_region = NO
+
+  true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
+  gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
+
+  # TODO if the non_gap_idx is not present in the
+  # gapped_pos_to_true_pos hash table, then this query
+  # probably has a gap at that location?
+  unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
+    AbortIf.logger.debug do
+      "Skipping query target pair (#{blast_record.query}," \
+      "#{blast_record.subject}) as we couldn't determine" \
+      "the region start."
+    end
+
+    return nil
+  end
+
+  unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
+    AbortIf.logger.debug do
+      "Skipping query target pair (#{blast_record.query}," \
+      " #{blast_record.subject}) as we couldn't determine" \
+      " the region end."
+    end
+
+    return nil
+  end
+
+  this_region_start =
+    gapped_pos_to_true_pos[first_non_gap_idx+1]
+  this_region_end =
+    gapped_pos_to_true_pos[last_non_gap_idx+1]
+
+  region = [this_region_start, this_region_end].join "-"
+
+  putative_regions = query2regions[blast_record.query]
+
+  region_good = NO
+
+  putative_regions.each_with_index do |(rid, info), idx|
+    if this_region_start >= info[:qstart] &&
+       this_region_end <= info[:qend]
+
+      region_good = L1
+
+      # It can never be within two separate regions as the
+      # regions don't overlap (I think...TODO)
+      break
+    end
+  end
+
+
+  start_residue = rec.seq[first_non_gap_idx]
+  start_good = residue_test start_residue,
+                           N_TERM_LEVEL_1,
+                           N_TERM_LEVEL_2
+
+  # Take last two residues
+  end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
+  end_good = residue_test end_oligo,
+                         C_TERM_LEVEL_1,
+                         C_TERM_LEVEL_2
+
+  # need to get one past the last thing in the intein
+  extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
+
+  if C_EXTEIN_START.include? extein_start_residue
+    extein_good = L1
+  end
+
+  all_good = [
+    region_good,
+    start_good,
+    end_good,
+    extein_good,
+  ].all? { |test| test != NO }
+
+
+  h = {
+    region: region,
+    all_good: all_good,
+    region_good: region_good,
+    start_good: start_good,
+    end_good: end_good,
+    extein_good: extein_good,
+    start_residue: start_residue,
+    end_oligo: end_oligo,
+    extein_start_residue: extein_start_residue
+  }
+
+  return h
+end
+
 conserved_f_lines = []
 mmseqs_hit_groups.each do |group, items|
   aln_count = 0
@@ -785,8 +887,12 @@ mmseqs_hit_groups.each do |group, items|
 
       num_aligned += 1
 
-      tmp_aln_in = File.join aln_dir, "aln_in_#{blast_record.query}_#{blast_record.subject}.faa"
-      tmp_aln_out = File.join aln_dir, "aln_out_#{blast_record.query}_#{blast_record.subject}.faa"
+      tmp_aln_in = File.join aln_dir,
+                             "aln_in_#{blast_record.query}" +
+                             "_#{blast_record.subject}.faa"
+      tmp_aln_out = File.join aln_dir,
+                              "aln_out_#{blast_record.query}" +
+                              "_#{blast_record.subject}.faa"
 
       first_non_gap_idx = nil
       last_non_gap_idx = nil
@@ -798,7 +904,10 @@ mmseqs_hit_groups.each do |group, items|
         this_query = query_records[blast_record.query]
         this_intein = intein_records[blast_record.subject]
 
-        write_aln_in tmp_aln_in, this_intein, this_query, clipping_region
+        write_aln_in tmp_aln_in,
+                     this_intein,
+                     this_query,
+                     clipping_region
 
         align! tmp_aln_in, tmp_aln_out
 
@@ -812,65 +921,34 @@ mmseqs_hit_groups.each do |group, items|
           elsif num == 3
             # This query
 
-            # TODO check if the alignment actually got into the region that the blast hit said it should be in
+            result = parse_query_aln rec,
+                                     blast_record,
+                                     first_non_gap_idx,
+                                     last_non_gap_idx,
+                                     query2regions
 
-            intein_n_term = NO
-            has_end = NO
-            has_extein_start = NO
-            correct_region = NO
+            if result
+              out_line = [
+                blast_record.query,
+                blast_record.subject,
+                blast_record.evalue,
+                clipping_region.id,
+                result[:region],
+                # result[:all_good],
+                result[:region_good],
+                result[:start_good],
+                result[:end_good],
+                result[:extein_good],
+                result[:start_residue],
+                result[:end_oligo],
+                result[:extein_start_residue]
+              ]
 
-            true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
-            gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
+              conserved_f_lines << out_line
 
-            # if the non_gap_idx is not present in the gapped_pos_to_true_pos hash table, then this query probably has a gap at that location?
-
-            unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-              AbortIf.logger.debug { "Skipping query target pair (#{blast_record.query}, #{blast_record.subject}) as we couldn't determine the region start." }
-              break
-            end
-
-            unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-              AbortIf.logger.debug { "Skipping query target pair (#{blast_record.query}, #{blast_record.subject}) as we couldn't determine the region end." }
-              break
-            end
-
-            this_region_start = gapped_pos_to_true_pos[first_non_gap_idx+1]
-            this_region_end = gapped_pos_to_true_pos[last_non_gap_idx+1]
-            region = [this_region_start, this_region_end].join "-"
-
-            putative_regions = query2regions[blast_record.query]
-
-            putative_region_good = NO
-
-            putative_regions.each_with_index do |(rid, info), idx|
-              if this_region_start >= info[:qstart] && this_region_end <= info[:qend]
-                putative_region_good = L1
-                break # it can never be within two separate regions as the regions don't overlap (I think...TODO)
+              if result[:all_good]
+                good_stuff << [blast_record.query, clipping_region.id]
               end
-            end
-
-
-            start_residue = rec.seq[first_non_gap_idx]
-            has_start = residue_test start_residue, N_TERM_LEVEL_1, N_TERM_LEVEL_2
-
-            # Take last two residues
-            end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
-            has_end = residue_test end_oligo, C_TERM_LEVEL_1, C_TERM_LEVEL_2
-
-            # need to get one past the last thing in the intein
-            extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
-
-            if C_EXTEIN_START.include? extein_start_residue
-              has_extein_start = L1
-            end
-
-            out_line = [blast_record.query, blast_record.subject, blast_record.evalue, clipping_region.id, region, putative_region_good, has_start, has_end, has_extein_start, start_residue, end_oligo, extein_start_residue]
-
-            conserved_f_lines << out_line
-
-            all_good = [putative_region_good, has_start, has_end, has_extein_start].all? { |test| test != NO }
-            if all_good
-              good_stuff << [blast_record.query, clipping_region.id]
             end
           end
         end
@@ -882,7 +960,9 @@ mmseqs_hit_groups.each do |group, items|
   end
 end
 
-perc_aligned = (num_aligned.to_f / (num_aligned + num_skipped)).round(2) * 100
+perc_aligned = (
+  num_aligned.to_f / (num_aligned + num_skipped)
+).round(2) * 100
 
 AbortIf.logger.debug { "Percent aligned: #{perc_aligned}" }
 
