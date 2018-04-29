@@ -710,11 +710,38 @@ progbar = ProgressBar.create title: "Checking conserved residues",
 
 MAX_ALIGNMENTS_BEFORE_ALL = 5
 
+def write_aln_in fname, intein, query, clipping_region
+  clipping_start_idx = clipping_region.start - 1
+  clipping_stop_idx = clipping_region.stop - 1
+
+  clipped_seq = query.seq[clipping_start_idx .. clipping_stop_idx]
+
+  clipped_seq_id = "clipped___#{query.id}"
+
+  File.open(fname, "w") do |f|
+    f.printf ">%s\n%s\n", intein.id, intein.seq
+    f.printf ">%s\n%s\n", clipped_seq_id, clipped_seq
+    f.printf ">%s\n%s\n", query.id, query.seq
+  end
+end
+
+MAFFT = "#{opts[:mafft]} --quiet --auto --thread 1 '%s' > '%s'"
+
+def align! aln_in, aln_out
+  cmd = sprintf MAFFT, aln_in, aln_out
+
+  Utils.run_it! cmd
+end
+
 
 # conserved_f_lines = Parallel.map(mmseqs_hits, in_processes: opts[:cpus], progress: "Checking for key residues") do |(blast_record, clipping_region)|
 # conserved_f_lines = mmseqs_hits.map do |(blast_record, clipping_region)|
 conserved_f_lines = []
 mmseqs_hit_groups.each do |group, items|
+  aln_count = 0
+
+  subset_1 = items.take MAX_ALIGNMENTS_BEFORE_ALL
+  subest_2 = items.drop MAX_ALIGNMENTS_BEFORE_ALL
 
   items.each do |(blast_record, clipping_region)| # START HERE
     progbar.increment
@@ -722,78 +749,31 @@ mmseqs_hit_groups.each do |group, items|
     if good_stuff.include? [blast_record.query, clipping_region.id]
       num_skipped += 1
     else
+      aln_count += 1
+
+      if aln_count > MAX_ALIGNMENTS_BEFORE_ALL
+        # pass
+      else
+      end
+
       num_aligned += 1
 
       tmp_aln_in = File.join aln_dir, "aln_in_#{blast_record.query}_#{blast_record.subject}.faa"
       tmp_aln_out = File.join aln_dir, "aln_out_#{blast_record.query}_#{blast_record.subject}.faa"
 
-      clipping_start_idx = clipping_region.start - 1
-      clipping_end_idx = clipping_region.stop - 1
-
       first_non_gap_idx = nil
       last_non_gap_idx = nil
-      # clipping_region.id = -1
 
       slen_in_aln = blast_record.send - blast_record.sstart + 1
 
-      # TODO if you want to use aln len, need to compare region to the
-      # full putatitive regions calculated above
-      # if slen_in_aln >= blast_record.slen
-      if true # blast_record.alen >= blast_record.slen
+      if true
         # TODO check for missing seqs
         this_query = query_records[blast_record.query]
         this_intein = intein_records[blast_record.subject]
 
-        # Need to get the clipping region.  We want to select the 'overall
-        # region' that the blast_record.qstart-blast_record.qend falls into.  If it doesn't (it
-        # should) just fall back to this clipping region.
+        write_aln_in tmp_aln_in, this_intein, this_query, clipping_region
 
-        # if true
-        #   query_middle = (blast_record.qend + blast_record.qstart + 1) / 2.0
-        #   putative_regions = query2regions[blast_record.query]
-        #   putative_regions.each do |rid, info|
-        #     if query_middle >= info[:qstart] && query_middle <= info[:qend]
-        #       clipping_start_idx = info[:qstart]-1-PADDING
-        #       clipping_end_idx = info[:qend]-1-PADDING
-        #       clipping_region.id = rid
-        #       break
-        #     end
-        #   end
-
-        #   assert clipping_start_idx != -100, "#{line}"
-        #   assert clipping_end_idx != -100
-        # else
-        #   # TODO Is there any reason we should use the homology region
-        #   # rather than the region we calculated above?  Using the region calculated above def is able to pull more of the wonky seqs.  See intein region 2 (of 0,1,2) of seq_4.
-        #   clipping_start_idx = blast_record.qstart-1-PADDING
-        #   clipping_end_idx = blast_record.qend-1+PADDING
-        # end
-
-        # clipping_start_idx = clipping_start_idx < 0 ? 0 : clipping_start_idx
-        # Note that if the clipping_end_idx is passed the length of the string, Ruby will just give us all the way up to the end of the string.
-
-        this_clipping_region =
-          this_query.seq[clipping_start_idx .. clipping_end_idx]
-
-        clipping_rec = ParseFasta::Record.new header: "clipped___#{this_query.id}",
-                                              seq: this_clipping_region
-        # end
-
-        # if true
-        # Write the aln infile
-        File.open(tmp_aln_in, "w") do |f|
-          f.puts ">" + this_intein.id
-          f.puts this_intein.seq
-
-          f.puts ">" + clipping_rec.id
-          f.puts clipping_rec.seq
-
-          f.puts ">" + this_query.id
-          f.puts this_query.seq
-        end
-
-        cmd = "#{opts[:mafft]} --quiet --auto --thread 1 '#{tmp_aln_in}' > '#{tmp_aln_out}'"
-        Utils.run_it! cmd
+        align! tmp_aln_in, tmp_aln_out
 
         num = 0
         ParseFasta::SeqFile.open(tmp_aln_out).each_record do |rec|
