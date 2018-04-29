@@ -733,6 +733,33 @@ def align! aln_in, aln_out
   Utils.run_it! cmd
 end
 
+def parse_intein_aln rec
+  first_non_gap_idx = -1
+  last_non_gap_idx = -1
+
+  seq_len = rec.seq.length
+
+  rec.seq.each_char.with_index do |char, idx|
+    # TODO account for other gap characters
+    if char != "-"
+      first_non_gap_idx = idx
+
+      break
+    end
+  end
+
+  rec.seq.reverse.each_char.with_index do |char, idx|
+    forward_index = seq_len - 1 - idx
+
+    if char != "-"
+      last_non_gap_idx = forward_index
+      break
+    end
+  end
+
+  [first_non_gap_idx, last_non_gap_idx]
+end
+
 
 # conserved_f_lines = Parallel.map(mmseqs_hits, in_processes: opts[:cpus], progress: "Checking for key residues") do |(blast_record, clipping_region)|
 # conserved_f_lines = mmseqs_hits.map do |(blast_record, clipping_region)|
@@ -779,30 +806,11 @@ mmseqs_hit_groups.each do |group, items|
         ParseFasta::SeqFile.open(tmp_aln_out).each_record do |rec|
           num += 1
 
-          if num == 1 # Intein
-            first_non_gap_idx = -1
-            seq_len = rec.seq.length
-            last_non_gap_idx = -1
-
-            rec.seq.each_char.with_index do |char, idx|
-              # TODO account for other gap characters
-              if char != "-"
-                first_non_gap_idx = idx
-
-                break
-              end
-            end
-
-            rec.seq.reverse.each_char.with_index do |char, idx|
-              forward_index = seq_len - 1 - idx
-
-              if char != "-"
-                last_non_gap_idx = forward_index
-                break
-              end
-            end
-          elsif num == 3 # This query
-            # TODO account for gaps in the start and end regions of the query seq.
+          if num == 1
+            # Intein
+            first_non_gap_idx, last_non_gap_idx = parse_intein_aln rec
+          elsif num == 3
+            # This query
 
             # TODO check if the alignment actually got into the region that the blast hit said it should be in
 

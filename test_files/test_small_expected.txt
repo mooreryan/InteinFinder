@@ -1,0 +1,4 @@
+seq	region.id	start	end	len	trimmable
+seq_4	0	298	735	438	Yes
+seq_4	1	885	1291	407	Yes
+seq_4	2	1608	1960	353	No
