@@ -493,25 +493,9 @@ ParseFasta::SeqFile.open(opts[:inteins]).each_record do |rec|
   intein_records[rec.id] = rec
 end
 
-# Read the mmseqs blast as that is the one with the inteins
-# mmseqs_lines = []
-# File.open(mmseqs_out, "rt").each_line do |line|
-#   mmseqs_lines << line.chomp
-# end
-
 mmseqs_hits = []
 File.open(mmseqs_out, "rt").each_line do |line|
   blast_record = InteinFinder::BlastRecord.new line
-
-  # query, target, *rest = line.chomp.split("\t")
-
-  # aln_len = rest[1].to_i
-  # qstart = rest[4].to_i # 1-based
-  # qend = rest[5].to_i # 1-based
-  # sstart = rest[6].to_i
-  # send = rest[7].to_i
-  # evalue = rest[8].to_f
-  # target_len = rest[11].to_i
 
   clipping_start_idx = -100
   clipping_end_idx = -100
@@ -695,11 +679,15 @@ mmseqs_hit_groups.each do |group, items|
   end
 end
 
-perc_aligned = (
-  num_aligned.to_f / total_items
-).round(2) * 100
+if total_items > 0
+  perc_aligned = (
+    num_aligned.to_f / total_items
+  ).round(2) * 100
+else
+  perc_aligned = 0
+end
 
-AbortIf.logger.debug { "Percent aligned: #{perc_aligned}" }
+AbortIf.logger.debug { "Percent aligned: #{perc_aligned}%" }
 
 # Sort lines by query, then by region, then by evalue.
 conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
@@ -1125,7 +1113,7 @@ end
 # check the sequences that were trimmed
 #######################################
 
-AbortIf.logger.info { "Checking the trimmed sequences against superfamilies" }
+AbortIf.logger.info { "Checking the trimmed sequences against superfamilies and intein DB" }
 
 trimmed_queries_rpsblast_out = File.join search_results_dir, "trimmed_queries_search_superfamilies.txt"
 trimmed_inteins_rpsblast_out = File.join search_results_dir, "trimmed_inteins_search_superfamilies.txt"
@@ -1143,15 +1131,9 @@ else
   rpsblast_search! trimmed_queries_out, trimmed_queries_rpsblast_out
 end
 
-if opts[:split_queries] && num_inteins_written > opts[:cpus] * 2
-  rpsblast_search_parallel! trimmed_inteins_out, trimmed_inteins_rpsblast_out
-else
-  rpsblast_search! trimmed_inteins_out, trimmed_inteins_rpsblast_out
-end
-
-AbortIf.logger.info { "Checking trimmed seqs against inteins" }
-
-# First convert the headers
+# First convert the headers. For the mmseqs, we need to change to
+# simple headers as it will do weird stuff if they have headers like
+# 'gi|23423|blah blab'
 
 n = 0
 new_query_name_map = {}
@@ -1168,32 +1150,9 @@ File.open(trimmed_queries_simple_headers_out, "w") do |f|
   end
 end
 
-n = 0
-new_intein_name_map = {}
-trimmed_inteins_simple_headers_out = trimmed_inteins_out + ".simple_headers"
-File.open(trimmed_inteins_simple_headers_out, "w") do |f|
-  ParseFasta::SeqFile.open(trimmed_inteins_out).each_record do |rec|
-    n += 1
-    new_name = "intein_seq_#{n}"
-
-    new_intein_name_map[new_name] = rec.id
-
-    f.puts ">#{new_name}"
-    f.puts rec.seq
-  end
-end
-
-
-# For the mmseqs, we need to change to simple headers as it will do
-# weird stuff if they have headers like 'gi|23423|blah blab'
-
-# Now do the search
-
 mmseqs_search! trimmed_queries_simple_headers_out, trimmed_queries_mmseqs_out
-mmseqs_search! trimmed_inteins_simple_headers_out, trimmed_inteins_mmseqs_out
 
 # Now map the names back to how they were.
-
 File.open(tmpfile, "w") do |f|
   File.open(trimmed_queries_mmseqs_out, "rt").each_line do |line|
     query, *rest = line.chomp.split "\t"
@@ -1207,32 +1166,8 @@ File.open(tmpfile, "w") do |f|
 end
 Utils.run_and_time_it! "Changing IDs in query mmseqs search", "mv #{tmpfile} #{trimmed_queries_mmseqs_out}"
 
-File.open(tmpfile, "w") do |f|
-  File.open(trimmed_inteins_mmseqs_out, "rt").each_line do |line|
-    intein, *rest = line.chomp.split "\t"
-
-    evalue = rest[9].to_f
-
-    if evalue <= opts[:evalue_mmseqs]
-      f.puts [new_intein_name_map[intein], rest].join "\t"
-    end
-  end
-end
-Utils.run_and_time_it! "Changing IDs in intein mmseqs search", "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
-
 cmd = "cat #{trimmed_queries_rpsblast_out} #{trimmed_queries_mmseqs_out} > #{trimmed_queries_all_search_out}"
 Utils.run_and_time_it! "Catting query search results", cmd
-
-cmd = "cat #{trimmed_inteins_rpsblast_out} #{trimmed_inteins_mmseqs_out} > #{trimmed_inteins_all_search_out}"
-Utils.run_and_time_it! "Catting intein search results", cmd
-
-#######################################
-# check the sequences that were trimmed
-######################################################################
-
-######################################################################
-# summarize 2nd blast
-#####################
 
 AbortIf.logger.info { "Summarizing 2nd query search" }
 
@@ -1271,44 +1206,89 @@ File.open(second_blast_summary_queries_out, "w") do |f|
   end
 end
 
-AbortIf.logger.info { "Summarizing 2nd intein search" }
 
-second_blast_summary_inteins = {}
-File.open(trimmed_inteins_all_search_out, "rt").each_line do |line|
-  query, target, *rest = line.chomp.split "\t"
 
-  evalue = rest[8].to_f
+if num_inteins_written.zero?
+  AbortIf.logger.info { "We couldn't trim out any inteins, so the 2nd round searching won't happen." }
+else
+  # We actually have inteins to search against.
 
-  unless second_blast_summary_inteins.has_key? query
-    second_blast_summary_inteins[query] = {
-      num_hits: 0,
-      best_evalue: 1,
-    }
+  if opts[:split_queries] && num_inteins_written > opts[:cpus] * 2
+    rpsblast_search_parallel! trimmed_inteins_out, trimmed_inteins_rpsblast_out
+  else
+    rpsblast_search! trimmed_inteins_out, trimmed_inteins_rpsblast_out
   end
 
-  second_blast_summary_inteins[query][:num_hits] += 1
+  n = 0
+  new_intein_name_map = {}
+  trimmed_inteins_simple_headers_out = trimmed_inteins_out + ".simple_headers"
+  File.open(trimmed_inteins_simple_headers_out, "w") do |f|
+    ParseFasta::SeqFile.open(trimmed_inteins_out).each_record do |rec|
+      n += 1
+      new_name = "intein_seq_#{n}"
 
-  if evalue < second_blast_summary_inteins[query][:best_evalue]
-    second_blast_summary_inteins[query][:best_evalue] = evalue
+      new_intein_name_map[new_name] = rec.id
+
+      f.puts ">#{new_name}"
+      f.puts rec.seq
+    end
+  end
+
+  mmseqs_search! trimmed_inteins_simple_headers_out, trimmed_inteins_mmseqs_out
+
+  File.open(tmpfile, "w") do |f|
+    File.open(trimmed_inteins_mmseqs_out, "rt").each_line do |line|
+      intein, *rest = line.chomp.split "\t"
+
+      evalue = rest[9].to_f
+
+      if evalue <= opts[:evalue_mmseqs]
+        f.puts [new_intein_name_map[intein], rest].join "\t"
+      end
+    end
+  end
+  Utils.run_and_time_it! "Changing IDs in intein mmseqs search", "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
+
+  cmd = "cat #{trimmed_inteins_rpsblast_out} #{trimmed_inteins_mmseqs_out} > #{trimmed_inteins_all_search_out}"
+  Utils.run_and_time_it! "Catting intein search results", cmd
+
+  AbortIf.logger.info { "Summarizing 2nd intein search" }
+
+  second_blast_summary_inteins = {}
+  File.open(trimmed_inteins_all_search_out, "rt").each_line do |line|
+    query, target, *rest = line.chomp.split "\t"
+
+    evalue = rest[8].to_f
+
+    unless second_blast_summary_inteins.has_key? query
+      second_blast_summary_inteins[query] = {
+        num_hits: 0,
+        best_evalue: 1,
+      }
+    end
+
+    second_blast_summary_inteins[query][:num_hits] += 1
+
+    if evalue < second_blast_summary_inteins[query][:best_evalue]
+      second_blast_summary_inteins[query][:best_evalue] = evalue
+    end
+  end
+
+  second_blast_summary_inteins_out = File.join search_results_dir,
+                                               "trimmed_inteins_search_summary.txt"
+
+  File.open(second_blast_summary_inteins_out, "w") do |f|
+    f.puts %w[seq hits best.evalue].join "\t"
+
+    second_blast_summary_inteins.each do |rec_id, info|
+      f.puts [rec_id, info[:num_hits], info[:best_evalue]].join "\t"
+    end
   end
 end
 
-second_blast_summary_inteins_out = File.join search_results_dir,
-                                             "trimmed_inteins_search_summary.txt"
-
-File.open(second_blast_summary_inteins_out, "w") do |f|
-  f.puts %w[seq hits best.evalue].join "\t"
-
-  second_blast_summary_inteins.each do |rec_id, info|
-    f.puts [rec_id, info[:num_hits], info[:best_evalue]].join "\t"
-  end
-end
-
-
-#####################
-# summarize 2nd blast
+#######################################
+# check the sequences that were trimmed
 ######################################################################
-
 
 AbortIf.logger.info { "Writing intein info" }
 
@@ -1347,15 +1327,20 @@ FileUtils.rm_r tmp_dir
 FileUtils.rm_r aln_dir unless opts[:keep_alignment_files]
 
 # Remove the first search intermediate files
-FileUtils.rm [rpsblast_out, mmseqs_out]
 
-# Remove the second search intermediate files
-FileUtils.rm [trimmed_inteins_rpsblast_out, trimmed_inteins_mmseqs_out,
-              trimmed_queries_rpsblast_out, trimmed_queries_mmseqs_out]
+remove_these = [
+  rpsblast_out,
+  mmseqs_out,
+  trimmed_inteins_rpsblast_out,
+  trimmed_inteins_mmseqs_out,
+  trimmed_queries_rpsblast_out,
+  trimmed_queries_mmseqs_out,
+  trimmed_queries_simple_headers_out,
+  trimmed_inteins_simple_headers_out,
+  queries_simple_name_out,
+]
 
-FileUtils.rm [trimmed_queries_simple_headers_out, trimmed_inteins_simple_headers_out]
-
-FileUtils.rm queries_simple_name_out
+try_rm remove_these
 
 unless opts[:pssm_list]
   # This is the temporary one we made.

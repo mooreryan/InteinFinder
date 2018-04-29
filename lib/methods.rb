@@ -280,6 +280,14 @@ end
 # random stuff
 ##############
 
+def try_rm files
+  files.each do |fname|
+    if fname && File.exist?(fname)
+      FileUtils.rm fname
+    end
+  end
+end
+
 def new_region regions, qstart, qend
   regions[regions.count] = { qstart: qstart, qend: qend }
 end
