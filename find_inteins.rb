@@ -567,12 +567,6 @@ mmseqs_hits.sort! do |(br1, cr1), (br2, cr2)|
   end
 end
 
-# mmseqs_hits.each do |(br, cr)|
-#   puts [br, cr.to_s].join "\t"
-# end
-
-
-
 conserved_f_lines = nil
 
 good_stuff = Set.new
@@ -584,31 +578,22 @@ mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 
 progbar = ProgressBar.create title: "Checking conserved residues",
                              starting_at: 0,
-                             total: mmseqs_hits.count,
+                             total: mmseqs_hit_groups.count,
                              format: "%t%e |%B|"
 
 conserved_f_lines = []
 mmseqs_hit_groups.each do |group, items|
-  aln_count = 0
+  progbar.increment
+
+  found_good_hit = false
 
   subset_1 = items.take MAX_ALIGNMENTS_BEFORE_ALL
-  subest_2 = items.drop MAX_ALIGNMENTS_BEFORE_ALL
+  subset_2 = items.drop MAX_ALIGNMENTS_BEFORE_ALL
 
-  items.each do |(blast_record, clipping_region)| # START HERE
-    progbar.increment
-
+  subset_1.each do |(blast_record, clipping_region)|
     if good_stuff.include? [blast_record.query, clipping_region.id]
       num_skipped += 1
     else
-      aln_count += 1
-
-      if aln_count > MAX_ALIGNMENTS_BEFORE_ALL
-        # pass
-      else
-      end
-
-      num_aligned += 1
-
       tmp_aln_in = File.join aln_dir,
                              "aln_in_#{blast_record.query}" +
                              "_#{blast_record.subject}.faa"
@@ -635,12 +620,59 @@ mmseqs_hit_groups.each do |group, items|
 
       conserved_f_lines << out_line
 
-      if all_good
-        good_stuff << [blast_record.query, clipping_region.id]
-      end
-
       FileUtils.rm tmp_aln_in
       FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+
+      if all_good
+        good_stuff << [blast_record.query, clipping_region.id]
+        found_good_hit = true
+      end
+
+      num_aligned += 1
+    end
+  end
+
+  if found_good_hit
+    num_skipped += subset_2.count
+  else
+    AbortIf.logger.info { "Haven't found a good hit for #{group.inspect} after #{MAX_ALIGNMENTS_BEFORE_ALL} tries.  Aligning the remaining #{subset_2.count} hits in parallel." }
+
+    outlines = Parallel.map(
+      subset_2,
+      in_processes: opts[:cpus]
+    ) do |(blast_record, clipping_region)|
+
+      tmp_aln_in = File.join aln_dir,
+                             "aln_in_#{blast_record.query}" +
+                             "_#{blast_record.subject}.faa"
+      tmp_aln_out = File.join aln_dir,
+                              "aln_out_#{blast_record.query}" +
+                              "_#{blast_record.subject}.faa"
+
+      # TODO check for missing seqs
+      this_query = query_records[blast_record.query]
+      this_intein = intein_records[blast_record.subject]
+
+      write_aln_in tmp_aln_in,
+                   this_intein,
+                   this_query,
+                   clipping_region
+
+      align! tmp_aln_in, tmp_aln_out
+
+
+      all_good, out_line = parse_aln_out tmp_aln_out,
+                                         blast_record,
+                                         clipping_region,
+                                         query2regions
+
+      out_line
+    end
+
+    num_aligned += aln_out_fnames.count
+
+    outlines.each do |outline|
+      conserved_f_lines << outline
     end
   end
 end
