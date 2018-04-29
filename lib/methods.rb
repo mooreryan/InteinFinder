@@ -59,3 +59,209 @@ module InteinFinder
   # Used to get important parts of BioRuby entries
   TinySeq = Struct.new :first_name, :seq
 end
+
+
+# These are for dealing with alignments and stuff.
+def write_aln_in fname, intein, query, clipping_region
+  clipping_start_idx = clipping_region.start - 1
+  clipping_stop_idx = clipping_region.stop - 1
+
+  clipped_seq = query.seq[clipping_start_idx .. clipping_stop_idx]
+
+  clipped_seq_id = "clipped___#{query.id}"
+
+  File.open(fname, "w") do |f|
+    f.printf ">%s\n%s\n", intein.id, intein.seq
+    f.printf ">%s\n%s\n", clipped_seq_id, clipped_seq
+    f.printf ">%s\n%s\n", query.id, query.seq
+  end
+end
+
+def align! aln_in, aln_out
+  cmd = sprintf MAFFT, aln_in, aln_out
+
+  Utils.run_it! cmd
+end
+
+
+def parse_intein_aln rec
+  first_non_gap_idx = -1
+  last_non_gap_idx = -1
+
+  seq_len = rec.seq.length
+
+  rec.seq.each_char.with_index do |char, idx|
+    # TODO account for other gap characters
+    if char != "-"
+      first_non_gap_idx = idx
+
+      break
+    end
+  end
+
+  rec.seq.reverse.each_char.with_index do |char, idx|
+    forward_index = seq_len - 1 - idx
+
+    if char != "-"
+      last_non_gap_idx = forward_index
+      break
+    end
+  end
+
+  [first_non_gap_idx, last_non_gap_idx]
+end
+
+def parse_query_aln rec,
+                    blast_record,
+                    first_non_gap_idx,
+                    last_non_gap_idx,
+                    query2regions
+
+  # TODO check if the alignment actually got into the region
+  # that the blast hit said it should be in
+
+  intein_n_term = NO
+  end_good = NO
+  extein_good = NO
+  correct_region = NO
+
+  true_pos_to_gapped_pos = PasvLib.pos_to_gapped_pos(rec.seq)
+  gapped_pos_to_true_pos = true_pos_to_gapped_pos.invert
+
+  # TODO if the non_gap_idx is not present in the
+  # gapped_pos_to_true_pos hash table, then this query
+  # probably has a gap at that location?
+  unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
+    AbortIf.logger.debug do
+      "Skipping query target pair (#{blast_record.query}," \
+      "#{blast_record.subject}) as we couldn't determine" \
+      "the region start."
+    end
+
+    return nil
+  end
+
+  unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
+    AbortIf.logger.debug do
+      "Skipping query target pair (#{blast_record.query}," \
+      " #{blast_record.subject}) as we couldn't determine" \
+      " the region end."
+    end
+
+    return nil
+  end
+
+  this_region_start =
+    gapped_pos_to_true_pos[first_non_gap_idx+1]
+  this_region_end =
+    gapped_pos_to_true_pos[last_non_gap_idx+1]
+
+  region = [this_region_start, this_region_end].join "-"
+
+  putative_regions = query2regions[blast_record.query]
+
+  region_good = NO
+
+  putative_regions.each_with_index do |(rid, info), idx|
+    if this_region_start >= info[:qstart] &&
+       this_region_end <= info[:qend]
+
+      region_good = L1
+
+      # It can never be within two separate regions as the
+      # regions don't overlap (I think...TODO)
+      break
+    end
+  end
+
+
+  start_residue = rec.seq[first_non_gap_idx]
+  start_good = residue_test start_residue,
+                           N_TERM_LEVEL_1,
+                           N_TERM_LEVEL_2
+
+  # Take last two residues
+  end_oligo = rec.seq[last_non_gap_idx-1 .. last_non_gap_idx]
+  end_good = residue_test end_oligo,
+                         C_TERM_LEVEL_1,
+                         C_TERM_LEVEL_2
+
+  # need to get one past the last thing in the intein
+  extein_start_residue = rec.seq.upcase[last_non_gap_idx + 1]
+
+  if C_EXTEIN_START.include? extein_start_residue
+    extein_good = L1
+  end
+
+  all_good = [
+    region_good,
+    start_good,
+    end_good,
+    extein_good,
+  ].all? { |test| test != NO }
+
+
+  h = {
+    region: region,
+    all_good: all_good,
+    region_good: region_good,
+    start_good: start_good,
+    end_good: end_good,
+    extein_good: extein_good,
+    start_residue: start_residue,
+    end_oligo: end_oligo,
+    extein_start_residue: extein_start_residue
+  }
+
+  return h
+end
+
+def parse_aln_out aln_out,
+                  blast_record,
+                  clipping_region,
+                  query2regions
+
+  num = 0
+  out_line = nil
+  result = nil
+  all_good = nil
+  first_non_gap_idx = nil
+  last_non_gap_idx = nil
+  ParseFasta::SeqFile.open(aln_out).each_record do |rec|
+    num += 1
+
+    if num == 1
+      # Intein
+      first_non_gap_idx, last_non_gap_idx = parse_intein_aln rec
+    elsif num == 3
+      # This query
+
+      result = parse_query_aln rec,
+                               blast_record,
+                               first_non_gap_idx,
+                               last_non_gap_idx,
+                               query2regions
+
+      if result
+        out_line = [
+          blast_record.query,
+          blast_record.subject,
+          blast_record.evalue,
+          clipping_region.id,
+          result[:region],
+          result[:region_good],
+          result[:start_good],
+          result[:end_good],
+          result[:extein_good],
+          result[:start_residue],
+          result[:end_oligo],
+          result[:extein_start_residue]
+        ]
+
+        all_good = result[:all_good]
+      end
+    end
+  end
+
+  [all_good, out_line]
+end
