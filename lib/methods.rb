@@ -135,8 +135,8 @@ def parse_query_aln rec,
   # probably has a gap at that location?
   unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
     AbortIf.logger.debug do
-      "Skipping query target pair (#{blast_record.query}," \
-      "#{blast_record.subject}) as we couldn't determine" \
+      "Skipping query target pair (#{blast_record.query}, " \
+      "#{blast_record.subject}) as we couldn't determine " \
       "the region start."
     end
 
@@ -145,9 +145,9 @@ def parse_query_aln rec,
 
   unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
     AbortIf.logger.debug do
-      "Skipping query target pair (#{blast_record.query}," \
-      " #{blast_record.subject}) as we couldn't determine" \
-      " the region end."
+      "Skipping query target pair (#{blast_record.query}, " \
+      "#{blast_record.subject}) as we couldn't determine " \
+      "the region end."
     end
 
     return nil

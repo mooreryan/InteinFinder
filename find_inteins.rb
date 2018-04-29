@@ -574,6 +574,12 @@ good_stuff = Set.new
 num_aligned = 0
 num_skipped = 0
 
+puts;puts
+mmseqs_hits.each do |br, cr|
+  puts [br, cr].join "\t"
+end
+puts;puts
+
 mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 
 progbar = ProgressBar.create title: "Checking conserved residues",
@@ -634,10 +640,18 @@ mmseqs_hit_groups.each do |group, items|
 
   if found_good_hit
     num_skipped += subset_2.count
-  else
-    AbortIf.logger.info { "Haven't found a good hit for #{group.inspect} after #{MAX_ALIGNMENTS_BEFORE_ALL} tries.  Aligning the remaining #{subset_2.count} hits in parallel." }
+  elsif subset_2.count > 0
+    # If there is nothing in subset 2 there is nothing more to do.
+    seq_name = group[0]
+    region_name =  group[1]
+    AbortIf.logger.debug do
+      "Haven't found a good hit for Seq: #{seq_name}, " \
+      "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
+      "tries.  Aligning the remaining #{subset_2.count} hits in " \
+      "parallel."
+    end
 
-    outlines = Parallel.map(
+    out_lines = Parallel.map(
       subset_2,
       in_processes: opts[:cpus]
     ) do |(blast_record, clipping_region)|
@@ -669,10 +683,10 @@ mmseqs_hit_groups.each do |group, items|
       out_line
     end
 
-    num_aligned += aln_out_fnames.count
+    num_aligned += out_lines.count
 
-    outlines.each do |outline|
-      conserved_f_lines << outline
+    out_lines.each do |out_line|
+      conserved_f_lines << out_line
     end
   end
 end
