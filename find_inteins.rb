@@ -688,9 +688,9 @@ mmseqs_lines.sort! do |(br1, cr1), (br2, cr2)|
   end
 end
 
-mmseqs_lines.each do |(br, cr)|
-  puts [br, cr.to_s].join "\t"
-end
+# mmseqs_lines.each do |(br, cr)|
+#   puts [br, cr.to_s].join "\t"
+# end
 
 
 
@@ -698,14 +698,23 @@ conserved_f_lines = nil
 
 good_stuff = Set.new
 
+num_aligned = 0
+num_skipped = 0
+
+progbar = ProgressBar.create title: "Checking conserved residues",
+                             starting_at: 0,
+                             total: mmseqs_lines.count,
+                             format: "%t%e |%B|"
+
 # conserved_f_lines = Parallel.map(mmseqs_lines, in_processes: opts[:cpus], progress: "Checking for key residues") do |(blast_record, clipping_region)|
 conserved_f_lines = mmseqs_lines.map do |(blast_record, clipping_region)|
+  progbar.increment
+
   out_line = nil
   if good_stuff.include? [blast_record.query, clipping_region.id]
-    AbortIf.logger.debug { "DON'T NEED TO ALIGN: #{blast_record.query} (#{clipping_region.id}) and #{blast_record.subject}" }
-
+    num_skipped += 1
   else
-    AbortIf.logger.debug { "NEED TO ALIGN: #{blast_record.query} (#{clipping_region.id}) and #{blast_record.subject}" }
+    num_aligned += 1
 
     tmp_aln_in = File.join aln_dir, "aln_in_#{blast_record.query}_#{blast_record.subject}.faa"
     tmp_aln_out = File.join aln_dir, "aln_out_#{blast_record.query}_#{blast_record.subject}.faa"
@@ -875,6 +884,10 @@ conserved_f_lines = mmseqs_lines.map do |(blast_record, clipping_region)|
 
   out_line
 end
+
+perc_aligned = (num_aligned.to_f / (num_aligned + num_skipped)).round(2) * 100
+
+AbortIf.logger.debug { "Percent aligned: #{perc_aligned}" }
 
 # Sort lines by query, then by region, then by evalue.
 conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
