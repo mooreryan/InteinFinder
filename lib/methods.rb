@@ -265,3 +265,39 @@ def parse_aln_out aln_out,
 
   [all_good, out_line]
 end
+
+
+# Random stuff
+# name can be either a name or a path to the program.
+def check_program name
+  abort_unless File.exists?(name) || Utils.command?(name),
+               "Either #{name} doesn't exist or it is not a command."
+end
+
+def residue_test aa, level_1, level_2
+  test_aa = aa.upcase
+
+  if level_1.include? test_aa
+    L1
+  elsif level_2.include? test_aa
+    L2
+  else
+    NO
+  end
+end
+
+def residue_test_pass? result, strictness
+  result == L1 || (result == L2 && strictness >= 2)
+end
+
+
+
+def check_file fname
+  abort_if fname && !File.exist?(fname),
+           "#{fname} doesn't exist!  Try #{__FILE__} --help for help."
+end
+
+def check_arg opts, arg
+  abort_unless opts.send(:fetch, arg),
+               "You must specify --#{arg.to_s.tr('_', '-')}.  Try #{__FILE__} --help for help."
+end
