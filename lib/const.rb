@@ -1,4 +1,4 @@
-PSSM_DIR = File.join __dir__, "assets", "intein_superfamily_members"
+PSSM_DIR = File.join __dir__, "..", "assets", "intein_superfamily_members"
 
 PSSMs = ["cd00081.smp", "cd00085.smp", "cd09643.smp", "COG1372.smp",
          "COG1403.smp", "COG2356.smp", "pfam01844.smp",
