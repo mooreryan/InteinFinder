@@ -60,8 +60,10 @@ module InteinFinder
   TinySeq = Struct.new :first_name, :seq
 end
 
+######################################################################
+# aligning
+##########
 
-# These are for dealing with alignments and stuff.
 def write_aln_in fname, intein, query, clipping_region
   clipping_start_idx = clipping_region.start - 1
   clipping_stop_idx = clipping_region.stop - 1
@@ -266,8 +268,23 @@ def parse_aln_out aln_out,
   [all_good, out_line]
 end
 
+##########
+# aligning
+######################################################################
 
-# Random stuff
+
+
+
+
+######################################################################
+# random stuff
+##############
+
+def new_region regions, qstart, qend
+  regions[regions.count] = { qstart: qstart, qend: qend }
+end
+
+
 # name can be either a name or a path to the program.
 def check_program name
   abort_unless File.exists?(name) || Utils.command?(name),
@@ -301,3 +318,36 @@ def check_arg opts, arg
   abort_unless opts.send(:fetch, arg),
                "You must specify --#{arg.to_s.tr('_', '-')}.  Try #{__FILE__} --help for help."
 end
+
+##############
+# random stuff
+######################################################################
+
+
+
+######################################################################
+# search
+########
+
+def mmseqs_search! infile, outfile
+  cmd = sprintf MMSEQS_SEARCH, infile, outfile
+
+  Utils.run_and_time_it! "Running mmseqs", cmd
+end
+
+def rpsblast_search! infile, outfile
+
+  cmd = sprintf RPSBLAST_SEARCH, infile, outfile
+
+  Utils.run_and_time_it! "Running rpsblast", cmd
+end
+
+def rpsblast_search_parallel! infile, outfile
+  cmd = sprintf RPSBLAST_SEARCH_PARALLEL, infile, outfile
+
+  Utils.run_and_time_it! "Running rpsblast", cmd
+end
+
+########
+# search
+######################################################################

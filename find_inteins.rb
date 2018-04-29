@@ -255,24 +255,6 @@ RPSBLAST_SEARCH =  "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile
 # second -- outfile
 RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile %s --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile %s --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
 
-def mmseqs_search! infile, outfile
-  cmd = sprintf MMSEQS_SEARCH, infile, outfile
-
-  Utils.run_and_time_it! "Running mmseqs", cmd
-end
-
-def rpsblast_search! infile, outfile
-
-  cmd = sprintf RPSBLAST_SEARCH, infile, outfile
-
-  Utils.run_and_time_it! "Running rpsblast", cmd
-end
-
-def rpsblast_search_parallel! infile, outfile
-  cmd = sprintf RPSBLAST_SEARCH_PARALLEL, infile, outfile
-
-  Utils.run_and_time_it! "Running rpsblast", cmd
-end
 
 ##################
 # search constants
@@ -418,14 +400,6 @@ Utils.run_and_time_it! "Changing IDs in mmseqs search", "mv #{tmpfile} #{mmseqs_
 #############
 
 AbortIf.logger.info { "Getting putative intein regions" }
-
-QSTART_IDX = 6
-QEND_IDX = 7
-PADDING = 10
-
-def new_region regions, qstart, qend
-  regions[regions.count] = { qstart: qstart, qend: qend }
-end
 
 cmd = "cat #{rpsblast_out} #{mmseqs_out} > #{all_blast_out}"
 Utils.run_and_time_it! "Catting search results", cmd
