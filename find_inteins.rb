@@ -574,12 +574,6 @@ good_stuff = Set.new
 num_aligned = 0
 num_skipped = 0
 
-puts;puts
-mmseqs_hits.each do |br, cr|
-  puts [br, cr].join "\t"
-end
-puts;puts
-
 mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 
 progbar = ProgressBar.create title: "Checking conserved residues",
@@ -647,46 +641,56 @@ mmseqs_hit_groups.each do |group, items|
     AbortIf.logger.debug do
       "Haven't found a good hit for Seq: #{seq_name}, " \
       "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
-      "tries.  Aligning the remaining #{subset_2.count} hits in " \
+      "tries.  Aligning the remaining hits in " \
       "parallel."
     end
 
-    out_lines = Parallel.map(
-      subset_2,
-      in_processes: opts[:cpus]
-    ) do |(blast_record, clipping_region)|
+    subset_2.each_slice(opts[:cpus]) do |slice|
+      break if found_good_hit
 
-      tmp_aln_in = File.join aln_dir,
-                             "aln_in_#{blast_record.query}" +
-                             "_#{blast_record.subject}.faa"
-      tmp_aln_out = File.join aln_dir,
-                              "aln_out_#{blast_record.query}" +
-                              "_#{blast_record.subject}.faa"
+      num_aligned += slice.count
 
-      # TODO check for missing seqs
-      this_query = query_records[blast_record.query]
-      this_intein = intein_records[blast_record.subject]
+      results = Parallel.map(
+        slice,
+        in_processes: opts[:cpus]
+      ) do |(blast_record, clipping_region)|
 
-      write_aln_in tmp_aln_in,
-                   this_intein,
-                   this_query,
-                   clipping_region
+        tmp_aln_in = File.join aln_dir,
+                               "aln_in_#{blast_record.query}" +
+                               "_#{blast_record.subject}.faa"
+        tmp_aln_out = File.join aln_dir,
+                                "aln_out_#{blast_record.query}" +
+                                "_#{blast_record.subject}.faa"
 
-      align! tmp_aln_in, tmp_aln_out
+        # TODO check for missing seqs
+        this_query = query_records[blast_record.query]
+        this_intein = intein_records[blast_record.subject]
+
+        write_aln_in tmp_aln_in,
+                     this_intein,
+                     this_query,
+                     clipping_region
+
+        align! tmp_aln_in, tmp_aln_out
 
 
-      all_good, out_line = parse_aln_out tmp_aln_out,
-                                         blast_record,
-                                         clipping_region,
-                                         query2regions
+        all_good, out_line = parse_aln_out tmp_aln_out,
+                                           blast_record,
+                                           clipping_region,
+                                           query2regions
 
-      out_line
-    end
+        [all_good, out_line]
+      end
 
-    num_aligned += out_lines.count
+      results.each do |all_good, out_line|
+        conserved_f_lines << out_line
 
-    out_lines.each do |out_line|
-      conserved_f_lines << out_line
+        if all_good
+          found_good_hit = true
+
+          break
+        end
+      end
     end
   end
 end
