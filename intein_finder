@@ -666,7 +666,7 @@ mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 progbar = ProgressBar.create title: "Checking conserved residues",
                              starting_at: 0,
                              total: mmseqs_hit_groups.count,
-                             format: "%t%e |%B|"
+                             format: "%t: %p%% |%B|"
 
 conserved_f_lines = []
 mmseqs_hit_groups.each do |group, items|
