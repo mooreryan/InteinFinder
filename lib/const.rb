@@ -23,8 +23,11 @@ C_TERM_LEVEL_1 = Set.new %w[HN SN GN GQ LD FN]
 C_TERM_LEVEL_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
 C_EXTEIN_START = Set.new %w[S T C]
 
-REGION_MIN_LEN = 134 - 20
-REGION_MAX_LEN = 608 + 20
+# The defaults come from the InterPro page about inteins plus some
+# padding.
+REGION_MIN_LEN_DEFAULT = 134 - 20
+REGION_MAX_LEN_DEFAULT = 608 + 20
+IGNORE_QUERIES_LESS_THAN_DEFUALT = REGION_MIN_LEN_DEFAULT
 
 VERSION = "v0.2.0-alpha"
 COPYRIGHT = "2018 Ryan Moore"

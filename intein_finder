@@ -80,6 +80,10 @@ opts = Trollop.options do
   opt(:queries,
       "Input fasta file with protein queries",
       type: :string)
+  opt(:ignore_queries_less_than,
+      "Ignore query peptides with fewer than this number of amino acids.  Pass 0 if you want to include all queries.",
+      default: IGNORE_QUERIES_LESS_THAN_DEFUALT)
+
 
   opt(:inteins,
       "Input fasta file with Inteins",
@@ -104,23 +108,32 @@ opts = Trollop.options do
       default: false)
 
   opt(:cpus, "Number of cpus to use", default: 1)
-  opt(:split_queries, "Split queries for rpsblast if there are enough sequences", default: false)
+  opt(:split_queries,
+      "Split queries for rpsblast if there are enough sequences",
+      default: false)
   opt(:mmseqs_sensitivity, "-s for mmseqs", default: 5.7)
   opt(:mmseqs_iterations, "--num-iterations for mmseqs", default: 2)
 
   opt(:intein_n_term_test_strictness,
       "Which level passes the intein_n_term_test?",
-      default: 1)
+      default: 2)
   opt(:intein_c_term_dipeptide_test_strictness,
       "Which level passes the intein_c_term_dipeptide_test?",
-      default: 1)
+      default: 2)
 
   opt(:refinement_strictness,
       "How strict for refining intein regions?",
       default: 1)
   opt(:use_length_in_refinement,
       "Use min and max len for refinement",
-      default: false)
+      default: true)
+
+  opt(:region_min_length,
+      "Minimum length of a region for the refinement step",
+      default: REGION_MIN_LEN_DEFAULT)
+  opt(:region_max_length,
+      "Minimum length of a region for the refinement step",
+      default: REGION_MAX_LEN_DEFAULT)
 
   opt(:outdir, "Output directory", type: :string, default: ".")
 
@@ -189,6 +202,20 @@ abort_unless opts[:evalue_mmseqs] <= 0.1,
 
 abort_unless opts[:cpus] >= 1,
              "--cpus must be >= 1"
+
+abort_unless opts[:ignore_queries_less_than] >= 0,
+             "--ignore-queries-less-than must be >= 0"
+
+abort_unless opts[:region_min_length] >= 0,
+             "--region-min-length must be >= 0"
+
+abort_unless opts[:region_max_length] > opts[:region_min_length],
+             "--region-max-length must be > --region-min-length"
+
+REGION_MIN_LEN = opts[:region_min_length]
+REGION_MAX_LEN = opts[:region_max_length]
+IGNORE_QUERIES_LESS_THAN = opts[:ignore_queries_less_than]
+
 
 tmp_dir = File.join opts[:outdir], "tmp"
 
@@ -260,6 +287,9 @@ RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --eva
 # search constants
 ######################################################################
 
+######################################################################
+# write the rpsblast db
+#######################
 
 
 AbortIf.logger.info { "Writing smp list file" }
@@ -287,6 +317,14 @@ File.open(pssm_list, "rt").each_line do |line|
   end
 end
 
+#######################
+# write the rpsblast db
+######################################################################
+
+
+######################################################################
+# read in the queries
+#####################
 
 AbortIf.logger.info { "Setting up queries hash table" }
 
@@ -295,28 +333,47 @@ AbortIf.logger.info { "Setting up queries hash table" }
 queries = {}
 query_records = {}
 query_name_map = {}
-n = 0
+num_over_min_len = 0
+total_queries = 0
+
+# Only seqs with length greater than the threshold will be included
+# from here on out.
 File.open(queries_simple_name_out, "w") do |f|
   ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
-    n += 1
-    new_name = "user_query___seq_#{n}"
-    orig_rec_id = rec.id
-    query_name_map[new_name] = orig_rec_id
+    total_queries += 1
 
-    query_records[orig_rec_id] = rec
+    if rec.seq.length >= IGNORE_QUERIES_LESS_THAN
+      num_over_min_len += 1
 
-    # rec.header = new_name
-    # rec.id = new_name
+      new_name = "user_query___seq_#{num_over_min_len}"
+      orig_rec_id = rec.id
+      query_name_map[new_name] = orig_rec_id
 
-    f.puts ">#{new_name}"
-    f.puts rec.seq
+      query_records[orig_rec_id] = rec
 
-    unless queries.has_key? orig_rec_id
-      queries[orig_rec_id] = { mmseqs_hits: 0, mmseqs_best_evalue: 1,
-                              rpsblast_hits: 0, rpsblast_best_evalue: 1 }
+      # rec.header = new_name
+      # rec.id = new_name
+
+      f.puts ">#{new_name}"
+      f.puts rec.seq
+
+      unless queries.has_key? orig_rec_id
+        queries[orig_rec_id] = {
+          mmseqs_hits: 0, mmseqs_best_evalue: 1,
+          rpsblast_hits: 0, rpsblast_best_evalue: 1
+        }
+      end
     end
   end
 end
+
+perc_too_short = (num_over_min_len / total_queries.to_f).round(2) * 100
+
+AbortIf.logger.info { "#{perc_too_short}% of queries passed the length filter." }
+
+#####################
+# read in the queries
+######################################################################
 
 
 ######################################################################

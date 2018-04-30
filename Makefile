@@ -11,5 +11,8 @@ test_small:
 test_small2:
 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/small_2.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/* && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small2_expected.txt
 
+test_long_and_short:
+	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/long_and_short.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
+
 test_no_inteins:
 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/no_inteins.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
