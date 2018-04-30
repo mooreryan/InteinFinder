@@ -1222,8 +1222,10 @@ File.open(trimmed_queries_out, "w") do |queries_f|
         # More sanity checks
         if intein_seqs.count > 0
           total_intein_length = intein_seqs.map(&:length).reduce(:+)
-          abort_unless total_intein_length + trimmed_query_seq.length == rec.seq.length,
-                       "Pre trimming length and post trimming length plus intein length  don't match up for seq #{rec.id}"
+
+          unless total_intein_length + trimmed_query_seq.length == rec.seq.length
+            AbortIf.logger.error { "Pre trimming length and post trimming length plus intein length don't match up for seq #{rec.id}.  Don't trust this sequence!!!" }
+          end
         end
 
       else
