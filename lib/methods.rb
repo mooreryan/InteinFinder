@@ -312,7 +312,7 @@ def residue_test aa, level_1, level_2
 end
 
 def residue_test_pass? result, strictness
-  result == L1 || (result == L2 && strictness >= 2)
+  [result == L1 || (result == L2 && strictness >= 2), result]
 end
 
 

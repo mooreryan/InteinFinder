@@ -908,11 +908,11 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
     query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
 
-    start_test_pass = residue_test_pass? start_good, opts[:intein_n_term_test_strictness]
-    end_test_pass = residue_test_pass? end_good, opts[:intein_c_term_dipeptide_test_strictness]
+    start_test_pass, start_test_result = residue_test_pass? start_good, opts[:intein_n_term_test_strictness]
+    end_test_pass, end_test_result = residue_test_pass? end_good, opts[:intein_c_term_dipeptide_test_strictness]
 
-    all_good = region_good == "L1" && start_test_pass &&
-               end_test_pass && extein_good == "L1"
+    all_good = region_good == L1 && start_test_pass &&
+               end_test_pass && extein_good == L1
 
     unless query_good.has_key?(query)
       query_good[query] = {}
@@ -937,8 +937,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
       query_good[query][region_idx][:single_target_all_good] = { seq: target, evalue: evalue, region: region }
     end
 
-    if region_good == "L1"
-      query_good[query][region_idx][:region_good] = "L1"
+    if region_good == L1
+      query_good[query][region_idx][:region_good] = L1
     end
 
     if start_test_pass
@@ -949,8 +949,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
       query_good[query][region_idx][:end_good] = end_good
     end
 
-    if extein_good == "L1"
-      query_good[query][region_idx][:extein_good] = "L1"
+    if extein_good == L1
+      query_good[query][region_idx][:extein_good] = L1
     end
   end
 end
@@ -962,10 +962,19 @@ File.open(criteria_check_condensed_out, "w") do |f|
 
   query_good.each do |query, regions|
     regions.each do |region, info|
-      start_test_pass = residue_test_pass? info[:start_good], opts[:intein_n_term_test_strictness]
-      end_test_pass = residue_test_pass? info[:end_good], opts[:intein_c_term_dipeptide_test_strictness]
+      start_test_pass, start_test_result = residue_test_pass? info[:start_good], opts[:intein_n_term_test_strictness]
+      end_test_pass, end_test_result = residue_test_pass? info[:end_good], opts[:intein_c_term_dipeptide_test_strictness]
 
-      all = info[:region_good] == "L1" && start_test_pass && end_test_pass && info[:extein_good] == "L1" ? "L1" : NO
+      if info[:region_good] == L1 && start_test_pass && end_test_pass && info[:extein_good]
+        # it is a pass, but which level?
+        if [start_test_result, end_test_result].any? { |result| result == L2 }
+          all = L2
+        else
+          all = L1
+        end
+      else
+        all = NO
+      end
 
       if info[:single_target_all_good] == NO
         single_target_all = NO
