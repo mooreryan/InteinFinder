@@ -370,7 +370,7 @@ File.open(queries_simple_name_out, "w") do |f|
   end
 end
 
-perc_too_short = (num_over_min_len / total_queries.to_f).round(2) * 100
+perc_too_short = (num_over_min_len / total_queries.to_f * 100).round(5)
 
 AbortIf.logger.info { "#{perc_too_short}% of queries passed the length filter." }
 
@@ -518,6 +518,7 @@ AbortIf.logger.info { "Writing intein region info" }
 
 all_query_ids = queries.keys
 
+short_regions = Set.new
 num_passing_regions = 0
 num_total_regions = 0
 File.open(containing_regions_out, "w") do |f|
@@ -533,6 +534,8 @@ File.open(containing_regions_out, "w") do |f|
         if len >= opts[:ignore_regions_less_than]
           num_passing_regions += 1
           f.puts [query, id, info[:qstart], info[:qend], len].join "\t"
+        else
+          short_regions << [query, id]
         end
       end
     else
@@ -542,9 +545,9 @@ File.open(containing_regions_out, "w") do |f|
 end
 
 perc_passing_regions =
-  (num_passing_regions / num_total_regions.to_f).round(2) * 100
+  (num_passing_regions / num_total_regions.to_f * 100).round(5)
 
-AbortIf.logger.info { "#{perc_passing_regions}% of putative regions passed the length fileter." }
+AbortIf.logger.info { "#{perc_passing_regions}% of putative regions passed the length filter." }
 
 
 
@@ -568,7 +571,11 @@ ParseFasta::SeqFile.open(opts[:inteins]).each_record do |rec|
 end
 
 mmseqs_hits = []
+num_blast_hits_passed = 0
+total_blast_hits = 0
 File.open(mmseqs_out, "rt").each_line do |line|
+  total_blast_hits += 1
+
   blast_record = InteinFinder::BlastRecord.new line
 
   clipping_start_idx = -100
@@ -576,37 +583,63 @@ File.open(mmseqs_out, "rt").each_line do |line|
 
   region_idx = -1
 
+  # Find the regino to which this hit belongs.
   query_middle = (blast_record.qend + blast_record.qstart + 1) / 2.0
+
   putative_regions = query2regions[blast_record.query]
+
   putative_regions.each do |rid, info|
     if query_middle >= info[:qstart] && query_middle <= info[:qend]
       clipping_start_idx = info[:qstart]-1-PADDING
       clipping_end_idx = info[:qend]-1-PADDING
+
       region_idx = rid
+
       break
     end
   end
 
-  # The middle should at least be in a single region as the
-  # regions were built on hits.  TODO it could be the case that a
-  # region got built based only on hits to superfams and this
-  # could break?
-  assert clipping_start_idx != -100, "#{line}"
-  assert clipping_end_idx != -100
-  assert region_idx != -1
+  # if the query region pair to which this hit belongs was filtered
+  # out because of length, we want to ignore it during the alignment
+  # stage later.
+  unless short_regions.include? [blast_record.query, region_idx]
+    num_blast_hits_passed += 1
 
-  clipping_start_idx = clipping_start_idx < 0 ? 0 : clipping_start_idx
-  # Note that if the clipping_end_idx is passed the length of the string, Ruby will just give us all the way up to the end of the string.
+    # The middle should at least be in a single region as the
+    # regions were built on hits.  TODO it could be the case that a
+    # region got built based only on hits to superfams and this
+    # could break?
+    assert clipping_start_idx != -100, "#{line}"
+    assert clipping_end_idx != -100
+    assert region_idx != -1
 
-  clipping_region = InteinFinder::ClippingRegion.new region_idx,
-                                                     clipping_start_idx+1,
-                                                     clipping_end_idx+1
+    clipping_start_idx =
+      clipping_start_idx < 0 ? 0 : clipping_start_idx
 
-  # hit = [query, target, rest, region_idx, clipping_start_idx, clipping_end_idx].flatten
-  hit = [blast_record, clipping_region]
+    # Note that if the clipping_end_idx is passed the length of the
+    # string, Ruby will just give us all the way up to the end of the
+    # string.
 
-  mmseqs_hits << hit
+    clipping_region =
+      InteinFinder::ClippingRegion.new region_idx,
+                                       clipping_start_idx+1,
+                                       clipping_end_idx+1
+
+    hit = [blast_record, clipping_region]
+
+    mmseqs_hits << hit
+  end
 end
+
+perc_blast_hits_passed =
+  (num_blast_hits_passed / total_blast_hits.to_f * 100).round(5)
+
+p num_blast_hits_passed
+p total_blast_hits
+
+AbortIf.logger.info { "#{perc_blast_hits_passed}% of blast hits were in regions that passed length filter" }
+
+
 
 # Sort by query, then by region, then by evalue.
 # br = BlastRecord, cr = ClippingRecord
@@ -755,8 +788,8 @@ end
 
 if total_items > 0
   perc_aligned = (
-    num_aligned.to_f / total_items
-  ).round(2) * 100
+    num_aligned.to_f / total_items * 100
+  ).round(5)
 else
   perc_aligned = 0
 end
@@ -1393,7 +1426,7 @@ File.open(c_term_residue_counts_out, "w") do |cf|
       total = counts.values.reduce(:+).to_f
 
       counts.sort_by { |aa, count| count.to_i }.reverse.each do |aa, count|
-        perc = (count / total * 100).round(2)
+        perc = (count / total * 100).round(5)
         f.puts [location, aa, count, count / total * 100].join "\t"
       end
     end
