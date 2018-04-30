@@ -83,6 +83,9 @@ opts = Trollop.options do
   opt(:ignore_queries_less_than,
       "Ignore query peptides with fewer than this number of amino acids.  Pass 0 if you want to include all queries.",
       default: IGNORE_QUERIES_LESS_THAN_DEFUALT)
+  opt(:ignore_regions_less_than,
+      "Ignore putative regions that are shorter than this length",
+      default: IGNORE_REGIONS_LESS_THAN_DEFUALT)
 
 
   opt(:inteins,
@@ -515,6 +518,8 @@ AbortIf.logger.info { "Writing intein region info" }
 
 all_query_ids = queries.keys
 
+num_passing_regions = 0
+num_total_regions = 0
 File.open(containing_regions_out, "w") do |f|
   f.puts %w[seq region.id start end len].join "\t"
 
@@ -522,14 +527,26 @@ File.open(containing_regions_out, "w") do |f|
     regions = query2regions[query]
     if regions
       regions.each do |id, info|
+        num_total_regions += 1
         len = info[:qend] - info[:qstart] + 1
-        f.puts [query, id, info[:qstart], info[:qend], len].join "\t"
+
+        if len >= opts[:ignore_regions_less_than]
+          num_passing_regions += 1
+          f.puts [query, id, info[:qstart], info[:qend], len].join "\t"
+        end
       end
     else
       # f.puts [query, "na", "na"].join "\t"
     end
   end
 end
+
+perc_passing_regions =
+  (num_passing_regions / num_total_regions.to_f).round(2) * 100
+
+AbortIf.logger.info { "#{perc_passing_regions}% of putative regions passed the length fileter." }
+
+
 
 #############
 # get regions
