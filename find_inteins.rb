@@ -619,12 +619,12 @@ mmseqs_hit_groups.each do |group, items|
   if !found_good_hit && subset_2.count > 0
     seq_name = group[0]
     region_name =  group[1]
-    AbortIf.logger.debug do
-      "Haven't found a good hit for Seq: #{seq_name}, " \
-      "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
-      "tries.  Aligning the remaining hits in " \
-      "parallel."
-    end
+    # AbortIf.logger.debug do
+    #   "Haven't found a good hit for Seq: #{seq_name}, " \
+    #   "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
+    #   "tries.  Aligning the remaining hits in " \
+    #   "parallel."
+    # end
 
     subset_2.each_slice(opts[:cpus]) do |slice|
       break if found_good_hit

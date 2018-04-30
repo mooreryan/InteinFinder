@@ -134,21 +134,21 @@ def parse_query_aln rec,
   # gapped_pos_to_true_pos hash table, then this query
   # probably has a gap at that location?
   unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-    AbortIf.logger.debug do
-      "Skipping query target pair (#{blast_record.query}, " \
-      "#{blast_record.subject}) as we couldn't determine " \
-      "the region start."
-    end
+    # AbortIf.logger.debug do
+    #   "Skipping query target pair (#{blast_record.query}, " \
+    #   "#{blast_record.subject}) as we couldn't determine " \
+    #   "the region start."
+    # end
 
     return nil
   end
 
   unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-    AbortIf.logger.debug do
-      "Skipping query target pair (#{blast_record.query}, " \
-      "#{blast_record.subject}) as we couldn't determine " \
-      "the region end."
-    end
+    # AbortIf.logger.debug do
+    #   "Skipping query target pair (#{blast_record.query}, " \
+    #   "#{blast_record.subject}) as we couldn't determine " \
+    #   "the region end."
+    # end
 
     return nil
   end
