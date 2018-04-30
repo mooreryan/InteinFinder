@@ -26,7 +26,7 @@ C_EXTEIN_START = Set.new %w[S T C]
 REGION_MIN_LEN = 134 - 20
 REGION_MAX_LEN = 608 + 20
 
-VERSION = "v0.1.0"
+VERSION = "v0.2.0-alpha"
 COPYRIGHT = "2018 Ryan Moore"
 CONTACT   = "moorer@udel.edu"
 #WEBSITE   = "https://github.com/mooreryan/ZetaHunter"

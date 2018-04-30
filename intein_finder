@@ -769,6 +769,20 @@ File.open(mmseqs_out, "rt").each_line do |line|
   end
 end
 
+File.open(search_results_summary_out, "w") do |f|
+  f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
+
+  queries_with_hits = queries.select do |query, info|
+    info[:mmseqs_hits] > 0 || info[:rpsblast_hits] > 0
+  end
+
+  queries_with_hits.each do |query, info|
+    f.puts [query,
+            info[:mmseqs_hits], info[:mmseqs_best_evalue],
+            info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
+  end
+end
+
 
 #######################
 # summarize first blast
@@ -1309,16 +1323,6 @@ File.open(c_term_residue_counts_out, "w") do |cf|
         f.puts [location, aa, count, count / total * 100].join "\t"
       end
     end
-  end
-end
-
-File.open(search_results_summary_out, "w") do |f|
-  f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
-
-  queries.each do |query, info|
-    f.puts [query,
-            info[:mmseqs_hits], info[:mmseqs_best_evalue],
-            info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
   end
 end
 
