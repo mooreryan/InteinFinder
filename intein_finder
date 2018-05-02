@@ -138,7 +138,10 @@ opts = Trollop.options do
       "Minimum length of a region for the refinement step",
       default: REGION_MAX_LEN_DEFAULT)
 
-  opt(:outdir, "Output directory", type: :string, default: ".")
+  opt(:outdir,
+      "Output directory",
+      type: :string,
+      default: "intein_finder_outdir")
 
   # Binary file locations.
   opt(:makeprofiledb,
