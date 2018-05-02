@@ -111,6 +111,11 @@ opts = Trollop.options do
       default: false)
 
   opt(:cpus, "Number of cpus to use", default: 1)
+  opt(:parallel_mode,
+      "0: automatic, 1: one query-region pair per CPU (good for lots of sequences), 2: fancy thing (good for fewer sequences)",
+      default: 0)
+
+
   opt(:split_queries,
       "Split queries for rpsblast if there are enough sequences",
       default: false)
@@ -173,6 +178,7 @@ abort_unless Set.new([1,2]).include?(opts[:intein_c_term_dipeptide_test_strictne
 abort_unless Set.new([1]).include?(opts[:refinement_strictness]),
              "Currently, the only option for --refinement-strictness is 1."
 
+abort_unless Set.new([0,1,2]).include?(opts[:parallel_mode]), "--parallel-mode must be 0, 1, or 2"
 
 
 # TODO make sure that you have a version of MMseqs2 that has the
@@ -372,6 +378,19 @@ File.open(queries_simple_name_out, "w") do |f|
     end
   end
 end
+
+if opts[:parallel_mode].zero?
+  if total_queries > PARALLEL_MODE_CUTOFF
+    parallel_mode = 1
+  else
+    parallel_mode = 2
+
+  end
+else
+  parallel_mode = opts[:parallel_mode]
+end
+
+AbortIf.logger.info { "Number of good queries was #{total_queries}.  Using parallel-mode #{parallel_mode}." }
 
 perc_too_short = (num_over_min_len / total_queries.to_f * 100).round(5)
 
@@ -637,10 +656,10 @@ end
 perc_blast_hits_passed =
   (num_blast_hits_passed / total_blast_hits.to_f * 100).round(5)
 
-p num_blast_hits_passed
-p total_blast_hits
 
-AbortIf.logger.info { "#{perc_blast_hits_passed}% of blast hits were in regions that passed length filter" }
+# TODO somewhere around here it is slow.
+
+AbortIf.logger.info { "#{perc_blast_hits_passed}% of blast hits were in regions that passed length filter (that's #{num_blast_hits_passed} hits!)" }
 
 
 
@@ -666,138 +685,208 @@ total_items = 0
 
 mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 
-progbar = ProgressBar.create title: "Checking conserved residues",
-                             starting_at: 0,
-                             total: mmseqs_hit_groups.count,
-                             format: "%t: %p%% |%B|"
 
 conserved_f_lines = []
-mmseqs_hit_groups.each do |group, items|
-  progbar.increment
-
-  total_items += items.count
-
-  found_good_hit = false
-
-  subset_1 = items.take MAX_ALIGNMENTS_BEFORE_ALL
-  subset_2 = items.drop MAX_ALIGNMENTS_BEFORE_ALL
-
-  # Most seqs have a good hit in the first couple, so trying a few
-  # single threaded before jumping to doing multiple alignments at a
-  # time will actually give you better efficiency (sometimes up to
-  # half as many alignments).
-  subset_1.each do |(blast_record, clipping_region)|
-    break if found_good_hit
-
-    num_aligned += 1
-
-    tmp_aln_in = File.join aln_dir,
-                           "aln_in_#{blast_record.query}" +
-                           "_#{blast_record.subject}.faa"
-    tmp_aln_out = File.join aln_dir,
-                            "aln_out_#{blast_record.query}" +
-                            "_#{blast_record.subject}.faa"
-
-    # TODO check for missing seqs
-    this_query = query_records[blast_record.query]
-    this_intein = intein_records[blast_record.subject]
-
-    write_aln_in tmp_aln_in,
-                 this_intein,
-                 this_query,
-                 clipping_region
-
-    align! tmp_aln_in, tmp_aln_out
 
 
-    all_good, out_line = parse_aln_out tmp_aln_out,
-                                       blast_record,
-                                       clipping_region,
-                                       query2regions
+# conserved_f_lines = []
+if parallel_mode == 1
+  # Process each query-region pair in parallel
+  tmp_lines = Parallel.map(mmseqs_hit_groups,
+                           in_processes: opts[:cpus],
+                           progress: "Checking conserved residues") do |group, items|
+    # progbar.increment
 
-    conserved_f_lines << out_line
+    # total_items += items.count
 
-    FileUtils.rm tmp_aln_in
-    FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+    found_good_hit = false
 
-    if all_good
-      found_good_hit = true
-    end
-  end
+    out_lines = []
 
-
-  if !found_good_hit && subset_2.count > 0
-    seq_name = group[0]
-    region_name =  group[1]
-    # AbortIf.logger.debug do
-    #   "Haven't found a good hit for Seq: #{seq_name}, " \
-    #   "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
-    #   "tries.  Aligning the remaining hits in " \
-    #   "parallel."
-    # end
-
-    subset_2.each_slice(opts[:cpus]) do |slice|
+    # subset_1.each do |(blast_record, clipping_region)|
+    items.each do |(blast_record, clipping_region)|
       break if found_good_hit
 
-      num_aligned += slice.count
+      # num_aligned += 1
 
-      results = Parallel.map(
-        slice,
-        in_processes: opts[:cpus]
-      ) do |(blast_record, clipping_region)|
+      tmp_aln_in = File.join aln_dir,
+                             "aln_in_#{blast_record.query}" +
+                             "_#{blast_record.subject}.faa"
+      tmp_aln_out = File.join aln_dir,
+                              "aln_out_#{blast_record.query}" +
+                              "_#{blast_record.subject}.faa"
 
-        tmp_aln_in = File.join aln_dir,
-                               "aln_in_#{blast_record.query}" +
-                               "_#{blast_record.subject}.faa"
-        tmp_aln_out = File.join aln_dir,
-                                "aln_out_#{blast_record.query}" +
-                                "_#{blast_record.subject}.faa"
+      # TODO check for missing seqs
+      this_query = query_records[blast_record.query]
+      this_intein = intein_records[blast_record.subject]
 
-        # TODO check for missing seqs
-        this_query = query_records[blast_record.query]
-        this_intein = intein_records[blast_record.subject]
+      write_aln_in tmp_aln_in,
+                   this_intein,
+                   this_query,
+                   clipping_region
 
-        write_aln_in tmp_aln_in,
-                     this_intein,
-                     this_query,
-                     clipping_region
-
-        align! tmp_aln_in, tmp_aln_out
+      align! tmp_aln_in, tmp_aln_out
 
 
-        all_good, out_line = parse_aln_out tmp_aln_out,
-                                           blast_record,
-                                           clipping_region,
-                                           query2regions
+      all_good, out_line = parse_aln_out tmp_aln_out,
+                                         blast_record,
+                                         clipping_region,
+                                         query2regions
 
-        FileUtils.rm tmp_aln_in
-        FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+      out_lines << out_line
 
-        [all_good, out_line]
+      FileUtils.rm tmp_aln_in
+      FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+
+      if all_good
+        found_good_hit = true
       end
+    end
 
-      results.each do |all_good, out_line|
-        conserved_f_lines << out_line
+    out_lines
+  end
 
-        if all_good
-          found_good_hit = true
+  tmp_lines.each do |line_set|
+    line_set.each do |out_line|
+      conserved_f_lines << out_line
+    end
+  end
+elsif parallel_mode == 2
+  # This one is better if there are a small number of sequences.
+  progbar = ProgressBar.create title: "Checking conserved residues",
+                               starting_at: 0,
+                               total: mmseqs_hit_groups.count,
+                               format: "%t: %p%% |%B|"
 
-          break
+  # Each group is a sequence-region pair.
+  mmseqs_hit_groups.each do |group, items|
+    progbar.increment
+
+    total_items += items.count
+
+    found_good_hit = false
+
+    subset_1 = items.take MAX_ALIGNMENTS_BEFORE_ALL
+    subset_2 = items.drop MAX_ALIGNMENTS_BEFORE_ALL
+
+    # Most seqs have a good hit in the first couple, so trying a few
+    # single threaded before jumping to doing multiple alignments at a
+    # time will actually give you better efficiency (sometimes up to
+    # half as many alignments).
+    subset_1.each do |(blast_record, clipping_region)|
+      break if found_good_hit
+
+      num_aligned += 1
+
+      tmp_aln_in = File.join aln_dir,
+                             "aln_in_#{blast_record.query}" +
+                             "_#{blast_record.subject}.faa"
+      tmp_aln_out = File.join aln_dir,
+                              "aln_out_#{blast_record.query}" +
+                              "_#{blast_record.subject}.faa"
+
+      # TODO check for missing seqs
+      this_query = query_records[blast_record.query]
+      this_intein = intein_records[blast_record.subject]
+
+      write_aln_in tmp_aln_in,
+                   this_intein,
+                   this_query,
+                   clipping_region
+
+      align! tmp_aln_in, tmp_aln_out
+
+
+      all_good, out_line = parse_aln_out tmp_aln_out,
+                                         blast_record,
+                                         clipping_region,
+                                         query2regions
+
+      conserved_f_lines << out_line
+
+      FileUtils.rm tmp_aln_in
+      FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+
+      if all_good
+        found_good_hit = true
+      end
+    end
+
+
+    if !found_good_hit && subset_2.count > 0
+      seq_name = group[0]
+      region_name =  group[1]
+      # AbortIf.logger.debug do
+      #   "Haven't found a good hit for Seq: #{seq_name}, " \
+      #   "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
+      #   "tries.  Aligning the remaining hits in " \
+      #   "parallel."
+      # end
+
+      subset_2.each_slice(opts[:cpus]) do |slice|
+        break if found_good_hit
+
+        num_aligned += slice.count
+
+        results = Parallel.map(
+          slice,
+          in_processes: opts[:cpus]
+        ) do |(blast_record, clipping_region)|
+
+          tmp_aln_in = File.join aln_dir,
+                                 "aln_in_#{blast_record.query}" +
+                                 "_#{blast_record.subject}.faa"
+          tmp_aln_out = File.join aln_dir,
+                                  "aln_out_#{blast_record.query}" +
+                                  "_#{blast_record.subject}.faa"
+
+          # TODO check for missing seqs
+          this_query = query_records[blast_record.query]
+          this_intein = intein_records[blast_record.subject]
+
+          write_aln_in tmp_aln_in,
+                       this_intein,
+                       this_query,
+                       clipping_region
+
+          align! tmp_aln_in, tmp_aln_out
+
+
+          all_good, out_line = parse_aln_out tmp_aln_out,
+                                             blast_record,
+                                             clipping_region,
+                                             query2regions
+
+          FileUtils.rm tmp_aln_in
+          FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+
+          [all_good, out_line]
+        end
+
+        results.each do |all_good, out_line|
+          conserved_f_lines << out_line
+
+          if all_good
+            found_good_hit = true
+
+            break
+          end
         end
       end
     end
   end
+  if total_items > 0
+    perc_aligned = (
+      num_aligned.to_f / total_items * 100
+    ).round(5)
+  else
+    perc_aligned = 0
+  end
+
+  AbortIf.logger.debug { "Percent aligned: #{perc_aligned}%" }
 end
 
-if total_items > 0
-  perc_aligned = (
-    num_aligned.to_f / total_items * 100
-  ).round(5)
-else
-  perc_aligned = 0
-end
 
-AbortIf.logger.debug { "Percent aligned: #{perc_aligned}%" }
 
 # Sort lines by query, then by region, then by evalue.
 conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
