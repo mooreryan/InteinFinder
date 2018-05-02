@@ -25,3 +25,5 @@ test_files/50*
 
 snazzy_proteins_out/
 test_files/snazzy_proteins.faa
+
+assets/intein_sequences/intein_db
