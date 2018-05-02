@@ -18,9 +18,9 @@ L1 = "L1"
 L2 = "L2"
 
 N_TERM_LEVEL_1 = Set.new %w[C S A Q P T]
-N_TERM_LEVEL_2 = Set.new %w[V F N G M L]
+N_TERM_LEVEL_2 = Set.new %w[V G L M N F]
 C_TERM_LEVEL_1 = Set.new %w[HN SN GN GQ LD FN]
-C_TERM_LEVEL_2 = Set.new %w[KN AN HQ PP TH CN KQ LH NS NT VH]
+C_TERM_LEVEL_2 = Set.new %w[KN DY SQ HQ NS AN SD TH RD PY YN VH KQ PP NT CN LH]
 C_EXTEIN_START = Set.new %w[S T C]
 
 # The defaults come from the InterPro page about inteins plus some
@@ -30,7 +30,7 @@ REGION_MAX_LEN_DEFAULT = 608 + 20
 IGNORE_QUERIES_LESS_THAN_DEFUALT = REGION_MIN_LEN_DEFAULT
 IGNORE_REGIONS_LESS_THAN_DEFUALT = 100
 
-VERSION = "v0.2.0"
+VERSION = "v0.3.0"
 COPYRIGHT = "2018 Ryan Moore"
 CONTACT   = "moorer@udel.edu"
 #WEBSITE   = "https://github.com/mooreryan/ZetaHunter"

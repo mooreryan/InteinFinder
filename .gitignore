@@ -15,8 +15,13 @@ rnr_out
 assets/intein_superfamily_members/fastas/aligned
 assets/intein_superfamily_members/fastas/unaligned/all
 
-assets/intein_sequences/work_dir
-assets/intein_sequences/other_work_dir
+assets/intein_sequences/old
+
+out_50_with_added_inteins
+
+test_files/rnr_db_big
+
+test_files/50*
 
 snazzy_proteins_out/
 test_files/snazzy_proteins.faa
