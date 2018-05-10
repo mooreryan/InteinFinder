@@ -24,21 +24,30 @@ INSERT_IDX = 49
 
 STDERR.puts %w[seq region.id start end len trimmable refining.target].join "\t"
 seqs.each_with_index do |seq, idx|
-  intein = inteins.sample
+  if rand < 0.5
+    intein = inteins.sample
 
-  chars = seq.seq.chars
+    chars = seq.seq.chars
 
-  first_part = chars.take(INSERT_IDX).join
-  last_part = chars.drop(INSERT_IDX).join
+    first_part = chars.take(INSERT_IDX).join
+    last_part = chars.drop(INSERT_IDX).join
 
-  new_seq = sprintf "%s%sC%s", first_part, intein.seq, last_part
+    new_seq = sprintf "%s%sC%s", first_part, intein.seq, last_part
 
-  puts ">seq_#{idx+1}---#{intein.id}---#{INSERT_IDX+1}~to~#{intein.seq.length+INSERT_IDX}"
-  puts new_seq
+    seq_name = "seq_#{idx+1}---#{intein.id}---#{INSERT_IDX+1}~to~#{intein.seq.length+INSERT_IDX}"
 
-  start_pos = INSERT_IDX + 1
-  end_pos = intein.seq.length + INSERT_IDX
-  len = end_pos - start_pos + 1
+    puts ">#{seq_name}"
+    puts new_seq
 
-  STDERR.puts ["seq_#{idx+1}", 0, start_pos, end_pos, len, "Yes", intein.id].join "\t"
+    start_pos = INSERT_IDX + 1
+    end_pos = intein.seq.length + INSERT_IDX
+    len = end_pos - start_pos + 1
+
+    STDERR.puts [seq_name, 0, start_pos, end_pos, len, "Yes", intein.id].join "\t"
+  else
+    seq_name = "seq_#{idx+1}---NO_INTEINS_ADDED"
+
+    puts ">#{seq_name}"
+    puts seq.seq
+  end
 end
