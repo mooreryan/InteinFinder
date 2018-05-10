@@ -8,3 +8,5 @@ gem 'trollop', '~> 2.1', '>= 2.1.2'
 
 gem 'pasv_lib'
 gem 'ruby-progressbar', '~> 1.8', '>= 1.8.1'
+
+gem 'rspec', '~> 3.7'
