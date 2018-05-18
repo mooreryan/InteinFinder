@@ -158,9 +158,9 @@ opts = Trollop.options do
   opt(:mmseqs,
       "Path to mmseqs binary",
       default: "mmseqs")
-  opt(:n_fold_splits,
-      "Path to n_fold_splits ruby script",
-      default: File.join(__dir__, "bin", "n_fold_splits.rb"))
+  opt(:split_seqs,
+      "Path to split_seqs program",
+      default: File.join(__dir__, "bin", "split_seqs"))
   opt(:parallel_blast,
       "Path to parallel_blast ruby script",
       default: File.join(__dir__, "bin", "parallel_blast.rb"))
@@ -189,7 +189,7 @@ check_program opts[:makeprofiledb]
 check_program opts[:rpsblast]
 check_program opts[:mmseqs]
 check_program opts[:mafft]
-check_program opts[:n_fold_splits]
+check_program opts[:split_seqs]
 check_program opts[:parallel_blast]
 
 check_file opts[:pssm_list]
@@ -292,7 +292,7 @@ RPSBLAST_SEARCH =  "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile
 
 # first -- infile
 # second -- outfile
-RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile %s --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile %s --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
+RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile %s --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile %s --blast-program #{opts[:rpsblast]} --split-program #{opts[:split_seqs]}"
 
 
 ##################
@@ -414,7 +414,7 @@ num_seqs = queries.count
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus] * 2
   AbortIf.logger.info { "You asked for splits, and we have #{num_seqs} sequences, so we will split the queries before blasting." }
-  cmd = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{queries_simple_name_out} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:n_fold_splits]}"
+  cmd = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{queries_simple_name_out} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:split_seqs]}"
 else
   AbortIf.logger.info { "Not splitting the queries before blasting.  Either too few (#{num_seqs}) or you didn't ask for splits." }
   cmd = "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query #{queries_simple_name_out} -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out #{rpsblast_out}"

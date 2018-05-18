@@ -78,7 +78,7 @@ dbbase = if (match = opts[:blast_db].match(/^(.*)\.gz$/))
          end
 
 mga_outf = File.join opts[:outdir], "#{inbase}.mga"
-infile_splits_glob = File.join opts[:outdir], "#{File.basename(opts[:infile])}.fold_*"
+infile_splits_glob = File.join opts[:outdir], "#{File.basename(opts[:infile])}.split_*"
 
 # First split up the infile with the number of cpus.
 cmd = "#{opts[:split_program]} #{opts[:cpus]} #{opts[:infile]}"
@@ -86,7 +86,7 @@ Process.run_and_time_it! "Splitting infile", cmd
 
 # Move the splits to the outdir if they aren't already there.
 unless File.dirname(opts[:infile]) == opts[:outdir]
-  cmd = "mv #{opts[:infile]}.fold_* #{opts[:outdir]}"
+  cmd = "mv #{opts[:infile]}.split_* #{opts[:outdir]}"
   Process.run_and_time_it! "Moving splits", cmd
 end
 
@@ -103,7 +103,7 @@ Process.run_and_time_it! "Catting tmp btabs", cmd
 cmd = "rm #{File.join(opts[:outdir], '*.tmp_btab')}"
 Process.run_and_time_it! "Removing tmp btabs", cmd
 
-# Remove the folds
+# Remove the splits
 cmd = "rm #{infile_splits_glob}"
 Process.run_and_time_it! "Removing splits", cmd
 

@@ -11,7 +11,7 @@ num_out = ARGV[0].to_i
 fname = ARGV[1]
 
 outfiles = num_out.times.map do |n|
-  outfname = "#{fname}.fold_#{n}"
+  outfname = "#{fname}.split_#{n}"
   abort_if File.exist?(outfname),
            "#{outfname} already exists"
 
