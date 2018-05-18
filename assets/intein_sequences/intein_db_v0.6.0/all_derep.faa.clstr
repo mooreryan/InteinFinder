@@ -1,0 +1,1967 @@
+>Cluster 0
+0	1986aa, >inbase___seq_320... *
+>Cluster 1
+0	1365aa, >inbase___seq_322... *
+>Cluster 2
+0	1065aa, >green_2018___seq_83... *
+>Cluster 3
+0	955aa, >green_2018___seq_36... *
+>Cluster 4
+0	844aa, >inbase___seq_85... *
+>Cluster 5
+0	842aa, >green_2018___seq_66... *
+>Cluster 6
+0	839aa, >green_2018___seq_20... *
+>Cluster 7
+0	838aa, >green_2018___seq_19... *
+1	838aa, >inbase___seq_15... at 100.00%
+>Cluster 8
+0	819aa, >green_2018___seq_7... *
+>Cluster 9
+0	819aa, >green_2018___seq_49... *
+1	819aa, >inbase___seq_9... at 100.00%
+2	819aa, >inbase___seq_10... at 100.00%
+>Cluster 10
+0	819aa, >inbase___seq_11... *
+>Cluster 11
+0	811aa, >inbase___seq_21... *
+>Cluster 12
+0	695aa, >green_2018___seq_16... *
+1	695aa, >inbase___seq_33... at 100.00%
+>Cluster 13
+0	682aa, >green_2018___seq_19... *
+1	682aa, >inbase___seq_73... at 100.00%
+>Cluster 14
+0	659aa, >green_2018___seq_18... *
+>Cluster 15
+0	656aa, >green_2018___seq_19... *
+>Cluster 16
+0	649aa, >green_2018___seq_18... *
+1	649aa, >inbase___seq_72... at 100.00%
+>Cluster 17
+0	642aa, >inbase___seq_428... *
+>Cluster 18
+0	635aa, >green_2018___seq_18... *
+>Cluster 19
+0	635aa, >green_2018___seq_19... *
+1	635aa, >inbase___seq_81... at 100.00%
+>Cluster 20
+0	617aa, >inbase___seq_50... *
+>Cluster 21
+0	617aa, >inbase___seq_382... *
+>Cluster 22
+0	613aa, >green_2018___seq_79... *
+>Cluster 23
+0	608aa, >inbase___seq_443... *
+1	608aa, >swissprot___seq_118... at 100.00%
+>Cluster 24
+0	607aa, >green_2018___seq_18... *
+>Cluster 25
+0	607aa, >green_2018___seq_19... *
+1	607aa, >inbase___seq_48... at 100.00%
+>Cluster 26
+0	606aa, >green_2018___seq_15... *
+>Cluster 27
+0	605aa, >green_2018___seq_27... *
+1	605aa, >inbase___seq_13... at 100.00%
+2	605aa, >inbase___seq_51... at 100.00%
+>Cluster 28
+0	602aa, >green_2018___seq_10... *
+>Cluster 29
+0	591aa, >green_2018___seq_17... *
+>Cluster 30
+0	590aa, >inbase___seq_527... *
+>Cluster 31
+0	586aa, >green_2018___seq_28... *
+>Cluster 32
+0	573aa, >green_2018___seq_53... *
+1	573aa, >inbase___seq_71... at 100.00%
+>Cluster 33
+0	573aa, >inbase___seq_76... *
+>Cluster 34
+0	572aa, >inbase___seq_370... *
+>Cluster 35
+0	570aa, >green_2018___seq_54... *
+>Cluster 36
+0	566aa, >green_2018___seq_26... *
+>Cluster 37
+0	563aa, >green_2018___seq_64... *
+>Cluster 38
+0	560aa, >inbase___seq_97... *
+>Cluster 39
+0	559aa, >inbase___seq_70... *
+>Cluster 40
+0	555aa, >green_2018___seq_10... *
+>Cluster 41
+0	554aa, >green_2018___seq_10... *
+>Cluster 42
+0	553aa, >green_2018___seq_19... *
+1	553aa, >inbase___seq_80... at 100.00%
+>Cluster 43
+0	553aa, >inbase___seq_79... *
+>Cluster 44
+0	551aa, >green_2018___seq_5... *
+1	551aa, >inbase___seq_62... at 100.00%
+>Cluster 45
+0	548aa, >inbase___seq_406... *
+1	548aa, >swissprot___seq_76... at 100.00%
+>Cluster 46
+0	546aa, >green_2018___seq_29... *
+>Cluster 47
+0	546aa, >inbase___seq_401... *
+1	546aa, >swissprot___seq_62... at 100.00%
+>Cluster 48
+0	546aa, >inbase___seq_491... *
+1	546aa, >swissprot___seq_82... at 100.00%
+>Cluster 49
+0	544aa, >green_2018___seq_14... *
+>Cluster 50
+0	544aa, >inbase___seq_372... *
+1	544aa, >swissprot___seq_51... at 100.00%
+>Cluster 51
+0	543aa, >inbase___seq_408... *
+1	543aa, >swissprot___seq_78... at 100.00%
+>Cluster 52
+0	542aa, >green_2018___seq_10... *
+>Cluster 53
+0	540aa, >inbase___seq_497... *
+>Cluster 54
+0	540aa, >swissprot___seq_84... *
+>Cluster 55
+0	539aa, >green_2018___seq_65... *
+>Cluster 56
+0	538aa, >inbase___seq_357... *
+>Cluster 57
+0	538aa, >inbase___seq_481... *
+1	538aa, >swissprot___seq_9... at 100.00%
+>Cluster 58
+0	538aa, >inbase___seq_503... *
+1	538aa, >swissprot___seq_27... at 100.00%
+>Cluster 59
+0	538aa, >inbase___seq_510... *
+>Cluster 60
+0	537aa, >inbase___seq_474... *
+1	537aa, >swissprot___seq_58... at 100.00%
+>Cluster 61
+0	537aa, >inbase___seq_486... *
+1	537aa, >swissprot___seq_106... at 100.00%
+>Cluster 62
+0	537aa, >inbase___seq_505... *
+>Cluster 63
+0	537aa, >inbase___seq_519... *
+>Cluster 64
+0	537aa, >inbase___seq_521... *
+1	537aa, >inbase___seq_522... at 100.00%
+>Cluster 65
+0	537aa, >swissprot___seq_41... *
+>Cluster 66
+0	536aa, >green_2018___seq_10... *
+>Cluster 67
+0	536aa, >inbase___seq_495... *
+>Cluster 68
+0	535aa, >green_2018___seq_34... *
+>Cluster 69
+0	535aa, >inbase___seq_5... *
+>Cluster 70
+0	535aa, >inbase___seq_507... *
+>Cluster 71
+0	535aa, >inbase___seq_517... *
+1	535aa, >swissprot___seq_108... at 100.00%
+>Cluster 72
+0	534aa, >green_2018___seq_1... *
+1	534aa, >inbase___seq_3... at 100.00%
+>Cluster 73
+0	534aa, >inbase___seq_55... *
+>Cluster 74
+0	533aa, >inbase___seq_410... *
+1	533aa, >swissprot___seq_68... at 100.00%
+>Cluster 75
+0	532aa, >inbase___seq_524... *
+>Cluster 76
+0	529aa, >inbase___seq_371... *
+1	529aa, >swissprot___seq_50... at 100.00%
+>Cluster 77
+0	528aa, >inbase___seq_364... *
+>Cluster 78
+0	528aa, >inbase___seq_394... *
+>Cluster 79
+0	526aa, >green_2018___seq_2... *
+1	526aa, >green_2018___seq_15... at 100.00%
+2	526aa, >inbase___seq_7... at 100.00%
+>Cluster 80
+0	526aa, >green_2018___seq_16... *
+1	526aa, >inbase___seq_8... at 100.00%
+>Cluster 81
+0	526aa, >inbase___seq_514... *
+>Cluster 82
+0	525aa, >inbase___seq_454... *
+1	525aa, >swissprot___seq_96... at 100.00%
+>Cluster 83
+0	525aa, >inbase___seq_468... *
+1	525aa, >swissprot___seq_13... at 100.00%
+>Cluster 84
+0	525aa, >inbase___seq_493... *
+>Cluster 85
+0	523aa, >inbase___seq_384... *
+>Cluster 86
+0	523aa, >inbase___seq_492... *
+>Cluster 87
+0	523aa, >inbase___seq_506... *
+>Cluster 88
+0	522aa, >green_2018___seq_69... *
+>Cluster 89
+0	522aa, >green_2018___seq_87... *
+1	522aa, >inbase___seq_31... at 100.00%
+>Cluster 90
+0	522aa, >green_2018___seq_12... *
+>Cluster 91
+0	522aa, >inbase___seq_418... *
+1	522aa, >swissprot___seq_91... at 100.00%
+>Cluster 92
+0	522aa, >inbase___seq_452... *
+>Cluster 93
+0	521aa, >inbase___seq_368... *
+>Cluster 94
+0	520aa, >green_2018___seq_68... *
+>Cluster 95
+0	520aa, >green_2018___seq_25... *
+>Cluster 96
+0	520aa, >inbase___seq_128... *
+>Cluster 97
+0	520aa, >inbase___seq_463... *
+>Cluster 98
+0	519aa, >green_2018___seq_15... *
+>Cluster 99
+0	518aa, >green_2018___seq_16... *
+>Cluster 100
+0	517aa, >green_2018___seq_48... *
+1	517aa, >inbase___seq_65... at 100.00%
+>Cluster 101
+0	517aa, >green_2018___seq_12... *
+1	517aa, >green_2018___seq_13... at 100.00%
+2	517aa, >inbase___seq_89... at 100.00%
+3	517aa, >inbase___seq_90... at 100.00%
+>Cluster 102
+0	517aa, >green_2018___seq_13... *
+>Cluster 103
+0	517aa, >inbase___seq_421... *
+1	517aa, >swissprot___seq_90... at 100.00%
+>Cluster 104
+0	511aa, >inbase___seq_501... *
+>Cluster 105
+0	510aa, >inbase___seq_4... *
+>Cluster 106
+0	509aa, >green_2018___seq_34... *
+>Cluster 107
+0	505aa, >green_2018___seq_81... *
+>Cluster 108
+0	504aa, >green_2018___seq_11... *
+>Cluster 109
+0	504aa, >green_2018___seq_17... *
+>Cluster 110
+0	502aa, >green_2018___seq_84... *
+>Cluster 111
+0	502aa, >green_2018___seq_85... *
+>Cluster 112
+0	502aa, >green_2018___seq_12... *
+1	502aa, >inbase___seq_57... at 100.00%
+>Cluster 113
+0	502aa, >inbase___seq_381... *
+>Cluster 114
+0	501aa, >green_2018___seq_3... *
+>Cluster 115
+0	501aa, >green_2018___seq_72... *
+>Cluster 116
+0	501aa, >green_2018___seq_73... *
+1	501aa, >green_2018___seq_74... at 100.00%
+>Cluster 117
+0	501aa, >green_2018___seq_75... *
+>Cluster 118
+0	501aa, >green_2018___seq_76... *
+>Cluster 119
+0	501aa, >green_2018___seq_13... *
+>Cluster 120
+0	501aa, >green_2018___seq_13... *
+1	501aa, >inbase___seq_98... at 100.00%
+>Cluster 121
+0	501aa, >inbase___seq_124... *
+>Cluster 122
+0	501aa, >inbase___seq_399... *
+1	501aa, >swissprot___seq_74... at 100.00%
+>Cluster 123
+0	499aa, >green_2018___seq_11... *
+>Cluster 124
+0	499aa, >green_2018___seq_11... *
+>Cluster 125
+0	499aa, >green_2018___seq_13... *
+1	499aa, >inbase___seq_99... at 100.00%
+>Cluster 126
+0	499aa, >inbase___seq_398... *
+1	499aa, >swissprot___seq_75... at 100.00%
+>Cluster 127
+0	499aa, >inbase___seq_442... *
+1	499aa, >swissprot___seq_117... at 100.00%
+>Cluster 128
+0	496aa, >inbase___seq_159... *
+>Cluster 129
+0	494aa, >green_2018___seq_11... *
+>Cluster 130
+0	494aa, >inbase___seq_6... *
+>Cluster 131
+0	494aa, >inbase___seq_414... *
+1	494aa, >swissprot___seq_79... at 100.00%
+>Cluster 132
+0	493aa, >green_2018___seq_38... *
+>Cluster 133
+0	492aa, >green_2018___seq_82... *
+>Cluster 134
+0	492aa, >green_2018___seq_12... *
+>Cluster 135
+0	492aa, >inbase___seq_179... *
+>Cluster 136
+0	492aa, >inbase___seq_379... *
+>Cluster 137
+0	492aa, >inbase___seq_434... *
+>Cluster 138
+0	491aa, >green_2018___seq_4... *
+>Cluster 139
+0	491aa, >green_2018___seq_15... *
+>Cluster 140
+0	489aa, >inbase___seq_502... *
+1	489aa, >swissprot___seq_88... at 100.00%
+>Cluster 141
+0	488aa, >green_2018___seq_15... *
+1	488aa, >inbase___seq_16... at 100.00%
+>Cluster 142
+0	488aa, >green_2018___seq_34... *
+>Cluster 143
+0	488aa, >inbase___seq_19... *
+>Cluster 144
+0	488aa, >inbase___seq_393... *
+>Cluster 145
+0	488aa, >inbase___seq_411... *
+1	488aa, >swissprot___seq_64... at 100.00%
+>Cluster 146
+0	487aa, >green_2018___seq_11... *
+>Cluster 147
+0	486aa, >green_2018___seq_67... *
+>Cluster 148
+0	485aa, >inbase___seq_385... *
+>Cluster 149
+0	484aa, >green_2018___seq_12... *
+>Cluster 150
+0	484aa, >green_2018___seq_14... *
+>Cluster 151
+0	482aa, >inbase___seq_420... *
+1	482aa, >swissprot___seq_89... at 100.00%
+>Cluster 152
+0	482aa, >inbase___seq_500... *
+1	482aa, >swissprot___seq_81... at 100.00%
+>Cluster 153
+0	481aa, >inbase___seq_169... *
+>Cluster 154
+0	481aa, >inbase___seq_457... *
+1	481aa, >swissprot___seq_93... at 100.00%
+>Cluster 155
+0	481aa, >inbase___seq_513... *
+>Cluster 156
+0	480aa, >inbase___seq_476... *
+>Cluster 157
+0	479aa, >green_2018___seq_10... *
+>Cluster 158
+0	477aa, >green_2018___seq_10... *
+>Cluster 159
+0	477aa, >green_2018___seq_10... *
+>Cluster 160
+0	477aa, >inbase___seq_354... *
+>Cluster 161
+0	477aa, >inbase___seq_391... *
+1	477aa, >inbase___seq_392... at 100.00%
+>Cluster 162
+0	476aa, >green_2018___seq_14... *
+1	476aa, >inbase___seq_101... at 100.00%
+>Cluster 163
+0	476aa, >inbase___seq_395... *
+>Cluster 164
+0	476aa, >inbase___seq_405... *
+1	476aa, >swissprot___seq_70... at 100.00%
+>Cluster 165
+0	475aa, >inbase___seq_464... *
+>Cluster 166
+0	475aa, >inbase___seq_483... *
+>Cluster 167
+0	474aa, >inbase___seq_465... *
+1	474aa, >swissprot___seq_16... at 100.00%
+>Cluster 168
+0	474aa, >inbase___seq_496... *
+1	474aa, >swissprot___seq_80... at 100.00%
+>Cluster 169
+0	474aa, >inbase___seq_509... *
+>Cluster 170
+0	474aa, >inbase___seq_515... *
+>Cluster 171
+0	473aa, >green_2018___seq_93... *
+>Cluster 172
+0	473aa, >inbase___seq_103... *
+>Cluster 173
+0	473aa, >inbase___seq_425... *
+>Cluster 174
+0	471aa, >green_2018___seq_11... *
+1	471aa, >inbase___seq_45... at 100.00%
+2	471aa, >swissprot___seq_30... at 100.00%
+>Cluster 175
+0	471aa, >inbase___seq_46... *
+>Cluster 176
+0	471aa, >inbase___seq_416... *
+1	471aa, >swissprot___seq_72... at 100.00%
+>Cluster 177
+0	469aa, >inbase___seq_331... *
+>Cluster 178
+0	468aa, >green_2018___seq_12... *
+>Cluster 179
+0	468aa, >inbase___seq_348... *
+>Cluster 180
+0	465aa, >green_2018___seq_92... *
+1	465aa, >inbase___seq_18... at 100.00%
+>Cluster 181
+0	465aa, >inbase___seq_17... *
+>Cluster 182
+0	464aa, >green_2018___seq_16... *
+1	464aa, >inbase___seq_47... at 100.00%
+2	464aa, >swissprot___seq_59... at 100.00%
+>Cluster 183
+0	463aa, >inbase___seq_386... *
+>Cluster 184
+0	460aa, >green_2018___seq_14... *
+>Cluster 185
+0	460aa, >inbase___seq_466... *
+1	460aa, >swissprot___seq_20... at 100.00%
+>Cluster 186
+0	459aa, >green_2018___seq_97... *
+>Cluster 187
+0	459aa, >green_2018___seq_98... *
+>Cluster 188
+0	459aa, >green_2018___seq_36... *
+>Cluster 189
+0	459aa, >green_2018___seq_37... *
+>Cluster 190
+0	459aa, >green_2018___seq_37... *
+>Cluster 191
+0	459aa, >green_2018___seq_37... *
+1	459aa, >green_2018___seq_37... at 100.00%
+>Cluster 192
+0	459aa, >green_2018___seq_37... *
+>Cluster 193
+0	459aa, >green_2018___seq_37... *
+>Cluster 194
+0	456aa, >green_2018___seq_14... *
+1	456aa, >inbase___seq_105... at 100.00%
+>Cluster 195
+0	456aa, >green_2018___seq_14... *
+1	456aa, >inbase___seq_110... at 100.00%
+>Cluster 196
+0	456aa, >green_2018___seq_14... *
+1	456aa, >inbase___seq_82... at 100.00%
+>Cluster 197
+0	456aa, >green_2018___seq_19... *
+1	456aa, >inbase___seq_28... at 100.00%
+2	456aa, >swissprot___seq_31... at 100.00%
+>Cluster 198
+0	456aa, >green_2018___seq_19... *
+1	456aa, >inbase___seq_32... at 100.00%
+>Cluster 199
+0	455aa, >green_2018___seq_14... *
+1	455aa, >inbase___seq_106... at 100.00%
+>Cluster 200
+0	455aa, >inbase___seq_383... *
+>Cluster 201
+0	455aa, >inbase___seq_440... *
+>Cluster 202
+0	454aa, >green_2018___seq_13... *
+1	454aa, >inbase___seq_91... at 100.00%
+>Cluster 203
+0	454aa, >green_2018___seq_13... *
+1	454aa, >inbase___seq_92... at 100.00%
+2	454aa, >swissprot___seq_26... at 100.00%
+>Cluster 204
+0	454aa, >green_2018___seq_13... *
+1	454aa, >inbase___seq_93... at 100.00%
+2	454aa, >inbase___seq_96... at 100.00%
+3	454aa, >inbase___seq_102... at 100.00%
+>Cluster 205
+0	454aa, >green_2018___seq_36... *
+1	454aa, >green_2018___seq_37... at 100.00%
+>Cluster 206
+0	454aa, >green_2018___seq_37... *
+>Cluster 207
+0	454aa, >green_2018___seq_37... *
+>Cluster 208
+0	454aa, >inbase___seq_94... *
+>Cluster 209
+0	454aa, >inbase___seq_95... *
+>Cluster 210
+0	454aa, >inbase___seq_413... *
+1	454aa, >swissprot___seq_73... at 100.00%
+>Cluster 211
+0	454aa, >inbase___seq_427... *
+>Cluster 212
+0	454aa, >inbase___seq_455... *
+1	454aa, >swissprot___seq_3... at 100.00%
+>Cluster 213
+0	454aa, >inbase___seq_498... *
+>Cluster 214
+0	454aa, >inbase___seq_516... *
+>Cluster 215
+0	453aa, >inbase___seq_409... *
+1	453aa, >swissprot___seq_67... at 100.00%
+>Cluster 216
+0	452aa, >inbase___seq_415... *
+1	452aa, >swissprot___seq_71... at 100.00%
+>Cluster 217
+0	451aa, >inbase___seq_429... *
+>Cluster 218
+0	450aa, >green_2018___seq_14... *
+1	450aa, >inbase___seq_111... at 100.00%
+>Cluster 219
+0	450aa, >green_2018___seq_14... *
+1	450aa, >inbase___seq_112... at 100.00%
+>Cluster 220
+0	450aa, >green_2018___seq_38... *
+>Cluster 221
+0	449aa, >green_2018___seq_19... *
+>Cluster 222
+0	449aa, >inbase___seq_84... *
+>Cluster 223
+0	448aa, >green_2018___seq_13... *
+>Cluster 224
+0	446aa, >inbase___seq_174... *
+>Cluster 225
+0	444aa, >green_2018___seq_18... *
+>Cluster 226
+0	444aa, >inbase___seq_462... *
+1	444aa, >swissprot___seq_18... at 100.00%
+>Cluster 227
+0	441aa, >green_2018___seq_10... *
+>Cluster 228
+0	440aa, >inbase___seq_199... *
+1	440aa, >inbase___seq_246... at 100.00%
+2	440aa, >inbase___seq_250... at 100.00%
+3	440aa, >inbase___seq_255... at 100.00%
+4	440aa, >swissprot___seq_25... at 100.00%
+5	440aa, >swissprot___seq_45... at 100.00%
+6	440aa, >swissprot___seq_46... at 100.00%
+>Cluster 229
+0	440aa, >inbase___seq_242... *
+>Cluster 230
+0	440aa, >inbase___seq_244... *
+>Cluster 231
+0	440aa, >inbase___seq_245... *
+1	440aa, >inbase___seq_253... at 100.00%
+>Cluster 232
+0	440aa, >inbase___seq_252... *
+>Cluster 233
+0	440aa, >inbase___seq_254... *
+>Cluster 234
+0	440aa, >inbase___seq_256... *
+>Cluster 235
+0	439aa, >green_2018___seq_16... *
+>Cluster 236
+0	438aa, >inbase___seq_340... *
+>Cluster 237
+0	438aa, >inbase___seq_344... *
+>Cluster 238
+0	438aa, >inbase___seq_378... *
+>Cluster 239
+0	438aa, >inbase___seq_445... *
+>Cluster 240
+0	437aa, >green_2018___seq_12... *
+>Cluster 241
+0	437aa, >inbase___seq_365... *
+>Cluster 242
+0	436aa, >green_2018___seq_25... *
+>Cluster 243
+0	436aa, >inbase___seq_407... *
+1	436aa, >swissprot___seq_77... at 100.00%
+>Cluster 244
+0	436aa, >inbase___seq_447... *
+1	436aa, >swissprot___seq_115... at 100.00%
+>Cluster 245
+0	436aa, >inbase___seq_512... *
+>Cluster 246
+0	436aa, >inbase___seq_529... *
+>Cluster 247
+0	435aa, >inbase___seq_309... *
+1	435aa, >swissprot___seq_42... at 100.00%
+>Cluster 248
+0	434aa, >inbase___seq_373... *
+>Cluster 249
+0	434aa, >inbase___seq_525... *
+>Cluster 250
+0	433aa, >green_2018___seq_14... *
+1	433aa, >inbase___seq_108... at 100.00%
+>Cluster 251
+0	431aa, >green_2018___seq_17... *
+>Cluster 252
+0	431aa, >green_2018___seq_17... *
+1	431aa, >inbase___seq_38... at 100.00%
+>Cluster 253
+0	431aa, >inbase___seq_375... *
+>Cluster 254
+0	431aa, >inbase___seq_388... *
+>Cluster 255
+0	430aa, >inbase___seq_308... *
+>Cluster 256
+0	430aa, >inbase___seq_326... *
+>Cluster 257
+0	429aa, >inbase___seq_156... *
+>Cluster 258
+0	429aa, >inbase___seq_265... *
+>Cluster 259
+0	429aa, >inbase___seq_269... *
+1	429aa, >swissprot___seq_97... at 100.00%
+>Cluster 260
+0	429aa, >inbase___seq_307... *
+1	429aa, >swissprot___seq_60... at 100.00%
+>Cluster 261
+0	429aa, >inbase___seq_448... *
+1	429aa, >swissprot___seq_112... at 100.00%
+>Cluster 262
+0	428aa, >inbase___seq_181... *
+>Cluster 263
+0	428aa, >inbase___seq_286... *
+1	428aa, >inbase___seq_287... at 100.00%
+2	428aa, >swissprot___seq_5... at 100.00%
+>Cluster 264
+0	428aa, >inbase___seq_323... *
+>Cluster 265
+0	427aa, >green_2018___seq_22... *
+>Cluster 266
+0	426aa, >green_2018___seq_24... *
+>Cluster 267
+0	425aa, >inbase___seq_235... *
+>Cluster 268
+0	425aa, >inbase___seq_262... *
+>Cluster 269
+0	425aa, >inbase___seq_317... *
+>Cluster 270
+0	425aa, >inbase___seq_459... *
+1	425aa, >swissprot___seq_95... at 100.00%
+>Cluster 271
+0	423aa, >green_2018___seq_25... *
+>Cluster 272
+0	423aa, >inbase___seq_288... *
+>Cluster 273
+0	423aa, >inbase___seq_338... *
+>Cluster 274
+0	423aa, >inbase___seq_339... *
+>Cluster 275
+0	423aa, >inbase___seq_342... *
+>Cluster 276
+0	423aa, >inbase___seq_343... *
+>Cluster 277
+0	422aa, >inbase___seq_333... *
+>Cluster 278
+0	421aa, >green_2018___seq_12... *
+1	421aa, >inbase___seq_61... at 100.00%
+>Cluster 279
+0	421aa, >inbase___seq_213... *
+1	421aa, >swissprot___seq_54... at 100.00%
+>Cluster 280
+0	421aa, >inbase___seq_221... *
+>Cluster 281
+0	421aa, >inbase___seq_237... *
+1	421aa, >inbase___seq_239... at 100.00%
+>Cluster 282
+0	421aa, >inbase___seq_258... *
+>Cluster 283
+0	420aa, >inbase___seq_193... *
+>Cluster 284
+0	420aa, >inbase___seq_217... *
+>Cluster 285
+0	420aa, >inbase___seq_222... *
+1	420aa, >swissprot___seq_55... at 100.00%
+>Cluster 286
+0	420aa, >inbase___seq_224... *
+>Cluster 287
+0	420aa, >inbase___seq_225... *
+1	420aa, >swissprot___seq_56... at 100.00%
+>Cluster 288
+0	420aa, >inbase___seq_226... *
+>Cluster 289
+0	420aa, >inbase___seq_227... *
+>Cluster 290
+0	420aa, >inbase___seq_229... *
+1	420aa, >swissprot___seq_61... at 100.00%
+>Cluster 291
+0	420aa, >inbase___seq_232... *
+1	420aa, >swissprot___seq_7... at 100.00%
+>Cluster 292
+0	420aa, >inbase___seq_315... *
+>Cluster 293
+0	419aa, >green_2018___seq_25... *
+1	419aa, >inbase___seq_20... at 100.00%
+>Cluster 294
+0	418aa, >green_2018___seq_18... *
+>Cluster 295
+0	418aa, >inbase___seq_125... *
+>Cluster 296
+0	417aa, >inbase___seq_197... *
+>Cluster 297
+0	417aa, >inbase___seq_216... *
+1	417aa, >inbase___seq_220... at 100.00%
+>Cluster 298
+0	416aa, >inbase___seq_201... *
+1	416aa, >inbase___seq_202... at 100.00%
+2	416aa, >inbase___seq_243... at 100.00%
+3	416aa, >inbase___seq_247... at 100.00%
+4	416aa, >inbase___seq_251... at 100.00%
+5	416aa, >swissprot___seq_34... at 100.00%
+6	416aa, >swissprot___seq_47... at 100.00%
+>Cluster 299
+0	416aa, >inbase___seq_248... *
+1	416aa, >inbase___seq_249... at 100.00%
+2	416aa, >swissprot___seq_48... at 100.00%
+>Cluster 300
+0	416aa, >inbase___seq_257... *
+>Cluster 301
+0	415aa, >green_2018___seq_11... *
+1	415aa, >inbase___seq_30... at 100.00%
+>Cluster 302
+0	415aa, >green_2018___seq_16... *
+>Cluster 303
+0	415aa, >green_2018___seq_17... *
+>Cluster 304
+0	415aa, >inbase___seq_276... *
+>Cluster 305
+0	414aa, >green_2018___seq_13... *
+1	414aa, >inbase___seq_104... at 100.00%
+>Cluster 306
+0	412aa, >green_2018___seq_16... *
+>Cluster 307
+0	412aa, >inbase___seq_177... *
+>Cluster 308
+0	412aa, >inbase___seq_403... *
+1	412aa, >swissprot___seq_63... at 100.00%
+>Cluster 309
+0	412aa, >inbase___seq_430... *
+>Cluster 310
+0	411aa, >inbase___seq_359... *
+>Cluster 311
+0	410aa, >green_2018___seq_12... *
+1	410aa, >inbase___seq_59... at 100.00%
+2	410aa, >inbase___seq_60... at 100.00%
+>Cluster 312
+0	410aa, >inbase___seq_473... *
+1	410aa, >swissprot___seq_17... at 100.00%
+>Cluster 313
+0	409aa, >green_2018___seq_12... *
+>Cluster 314
+0	409aa, >inbase___seq_58... *
+>Cluster 315
+0	409aa, >inbase___seq_151... *
+>Cluster 316
+0	409aa, >inbase___seq_264... *
+>Cluster 317
+0	409aa, >inbase___seq_277... *
+>Cluster 318
+0	409aa, >inbase___seq_314... *
+>Cluster 319
+0	409aa, >inbase___seq_356... *
+>Cluster 320
+0	409aa, >inbase___seq_433... *
+>Cluster 321
+0	408aa, >inbase___seq_148... *
+>Cluster 322
+0	408aa, >inbase___seq_172... *
+>Cluster 323
+0	408aa, >inbase___seq_377... *
+>Cluster 324
+0	407aa, >green_2018___seq_15... *
+>Cluster 325
+0	407aa, >green_2018___seq_15... *
+>Cluster 326
+0	407aa, >green_2018___seq_35... *
+>Cluster 327
+0	407aa, >inbase___seq_260... *
+>Cluster 328
+0	407aa, >inbase___seq_270... *
+>Cluster 329
+0	407aa, >inbase___seq_341... *
+>Cluster 330
+0	407aa, >inbase___seq_345... *
+>Cluster 331
+0	406aa, >green_2018___seq_16... *
+>Cluster 332
+0	404aa, >green_2018___seq_15... *
+>Cluster 333
+0	404aa, >inbase___seq_318... *
+>Cluster 334
+0	403aa, >inbase___seq_490... *
+>Cluster 335
+0	403aa, >swissprot___seq_83... *
+>Cluster 336
+0	402aa, >inbase___seq_154... *
+>Cluster 337
+0	401aa, >green_2018___seq_15... *
+>Cluster 338
+0	401aa, >green_2018___seq_16... *
+>Cluster 339
+0	401aa, >inbase___seq_163... *
+>Cluster 340
+0	401aa, >inbase___seq_432... *
+>Cluster 341
+0	401aa, >inbase___seq_453... *
+>Cluster 342
+0	399aa, >green_2018___seq_16... *
+>Cluster 343
+0	399aa, >inbase___seq_444... *
+>Cluster 344
+0	394aa, >green_2018___seq_11... *
+1	394aa, >inbase___seq_49... at 100.00%
+>Cluster 345
+0	394aa, >inbase___seq_160... *
+>Cluster 346
+0	394aa, >inbase___seq_208... *
+>Cluster 347
+0	394aa, >inbase___seq_327... *
+>Cluster 348
+0	394aa, >inbase___seq_417... *
+>Cluster 349
+0	394aa, >inbase___seq_437... *
+1	394aa, >swissprot___seq_114... at 100.00%
+>Cluster 350
+0	392aa, >green_2018___seq_36... *
+>Cluster 351
+0	392aa, >inbase___seq_400... *
+1	392aa, >swissprot___seq_87... at 100.00%
+>Cluster 352
+0	392aa, >inbase___seq_449... *
+>Cluster 353
+0	391aa, >green_2018___seq_11... *
+>Cluster 354
+0	391aa, >green_2018___seq_36... *
+1	391aa, >inbase___seq_23... at 100.00%
+>Cluster 355
+0	391aa, >green_2018___seq_38... *
+>Cluster 356
+0	391aa, >green_2018___seq_38... *
+>Cluster 357
+0	390aa, >green_2018___seq_17... *
+1	390aa, >inbase___seq_100... at 100.00%
+>Cluster 358
+0	390aa, >inbase___seq_471... *
+1	390aa, >swissprot___seq_19... at 100.00%
+>Cluster 359
+0	390aa, >inbase___seq_504... *
+1	390aa, >swissprot___seq_28... at 100.00%
+>Cluster 360
+0	389aa, >green_2018___seq_36... *
+>Cluster 361
+0	389aa, >inbase___seq_485... *
+1	389aa, >swissprot___seq_39... at 100.00%
+>Cluster 362
+0	389aa, >inbase___seq_487... *
+1	389aa, >swissprot___seq_107... at 100.00%
+>Cluster 363
+0	389aa, >inbase___seq_518... *
+1	389aa, >swissprot___seq_109... at 100.00%
+>Cluster 364
+0	389aa, >inbase___seq_520... *
+>Cluster 365
+0	388aa, >inbase___seq_120... *
+>Cluster 366
+0	388aa, >inbase___seq_121... *
+>Cluster 367
+0	388aa, >inbase___seq_508... *
+>Cluster 368
+0	387aa, >green_2018___seq_11... *
+>Cluster 369
+0	387aa, >green_2018___seq_38... *
+1	387aa, >inbase___seq_42... at 100.00%
+>Cluster 370
+0	387aa, >inbase___seq_451... *
+1	387aa, >swissprot___seq_94... at 100.00%
+>Cluster 371
+0	386aa, >inbase___seq_231... *
+1	386aa, >swissprot___seq_57... at 100.00%
+>Cluster 372
+0	386aa, >inbase___seq_396... *
+>Cluster 373
+0	385aa, >inbase___seq_136... *
+>Cluster 374
+0	385aa, >inbase___seq_137... *
+1	385aa, >swissprot___seq_6... at 100.00%
+2	385aa, >swissprot___seq_21... at 100.00%
+>Cluster 375
+0	385aa, >inbase___seq_469... *
+>Cluster 376
+0	384aa, >inbase___seq_298... *
+>Cluster 377
+0	382aa, >inbase___seq_446... *
+>Cluster 378
+0	382aa, >inbase___seq_456... *
+1	382aa, >swissprot___seq_4... at 100.00%
+>Cluster 379
+0	382aa, >inbase___seq_499... *
+>Cluster 380
+0	381aa, >green_2018___seq_32... *
+>Cluster 381
+0	381aa, >green_2018___seq_34... *
+>Cluster 382
+0	381aa, >inbase___seq_261... *
+>Cluster 383
+0	381aa, >inbase___seq_330... *
+>Cluster 384
+0	380aa, >inbase___seq_204... *
+>Cluster 385
+0	380aa, >inbase___seq_280... *
+>Cluster 386
+0	378aa, >inbase___seq_219... *
+>Cluster 387
+0	378aa, >inbase___seq_336... *
+>Cluster 388
+0	377aa, >green_2018___seq_17... *
+1	377aa, >inbase___seq_52... at 100.00%
+>Cluster 389
+0	377aa, >inbase___seq_126... *
+>Cluster 390
+0	377aa, >inbase___seq_284... *
+>Cluster 391
+0	377aa, >inbase___seq_346... *
+>Cluster 392
+0	376aa, >inbase___seq_166... *
+>Cluster 393
+0	376aa, >inbase___seq_294... *
+>Cluster 394
+0	376aa, >inbase___seq_472... *
+1	376aa, >swissprot___seq_12... at 100.00%
+>Cluster 395
+0	375aa, >inbase___seq_162... *
+>Cluster 396
+0	374aa, >inbase___seq_278... *
+>Cluster 397
+0	374aa, >inbase___seq_337... *
+>Cluster 398
+0	373aa, >green_2018___seq_32... *
+>Cluster 399
+0	373aa, >inbase___seq_328... *
+>Cluster 400
+0	373aa, >inbase___seq_458... *
+1	373aa, >swissprot___seq_23... at 100.00%
+>Cluster 401
+0	372aa, >inbase___seq_289... *
+>Cluster 402
+0	372aa, >inbase___seq_306... *
+>Cluster 403
+0	371aa, >green_2018___seq_26... *
+1	371aa, >swissprot___seq_2... at 100.00%
+>Cluster 404
+0	370aa, >green_2018___seq_32... *
+>Cluster 405
+0	370aa, >inbase___seq_140... *
+1	370aa, >inbase___seq_149... at 100.00%
+>Cluster 406
+0	370aa, >inbase___seq_275... *
+>Cluster 407
+0	370aa, >inbase___seq_296... *
+>Cluster 408
+0	370aa, >inbase___seq_297... *
+>Cluster 409
+0	369aa, >inbase___seq_311... *
+>Cluster 410
+0	369aa, >inbase___seq_313... *
+>Cluster 411
+0	369aa, >inbase___seq_404... *
+1	369aa, >swissprot___seq_69... at 100.00%
+>Cluster 412
+0	368aa, >inbase___seq_218... *
+1	368aa, >swissprot___seq_101... at 100.00%
+>Cluster 413
+0	367aa, >inbase___seq_178... *
+>Cluster 414
+0	367aa, >inbase___seq_450... *
+>Cluster 415
+0	366aa, >green_2018___seq_94... *
+>Cluster 416
+0	366aa, >inbase___seq_164... *
+1	366aa, >inbase___seq_165... at 100.00%
+>Cluster 417
+0	366aa, >inbase___seq_167... *
+>Cluster 418
+0	366aa, >inbase___seq_273... *
+>Cluster 419
+0	366aa, >inbase___seq_350... *
+1	366aa, >inbase___seq_352... at 100.00%
+>Cluster 420
+0	365aa, >inbase___seq_230... *
+1	365aa, >swissprot___seq_29... at 100.00%
+>Cluster 421
+0	365aa, >inbase___seq_240... *
+1	365aa, >swissprot___seq_99... at 100.00%
+>Cluster 422
+0	364aa, >inbase___seq_205... *
+1	364aa, >swissprot___seq_104... at 100.00%
+>Cluster 423
+0	364aa, >inbase___seq_211... *
+>Cluster 424
+0	364aa, >inbase___seq_214... *
+>Cluster 425
+0	364aa, >inbase___seq_215... *
+1	364aa, >swissprot___seq_102... at 100.00%
+>Cluster 426
+0	364aa, >inbase___seq_233... *
+1	364aa, >swissprot___seq_100... at 100.00%
+>Cluster 427
+0	364aa, >inbase___seq_319... *
+>Cluster 428
+0	363aa, >inbase___seq_212... *
+1	363aa, >swissprot___seq_103... at 100.00%
+>Cluster 429
+0	362aa, >green_2018___seq_16... *
+1	362aa, >inbase___seq_43... at 100.00%
+>Cluster 430
+0	361aa, >green_2018___seq_26... *
+1	361aa, >green_2018___seq_26... at 100.00%
+>Cluster 431
+0	361aa, >inbase___seq_387... *
+>Cluster 432
+0	360aa, >green_2018___seq_35... *
+>Cluster 433
+0	360aa, >inbase___seq_480... *
+1	360aa, >swissprot___seq_8... at 100.00%
+>Cluster 434
+0	360aa, >inbase___seq_484... *
+1	360aa, >swissprot___seq_38... at 100.00%
+>Cluster 435
+0	360aa, >inbase___seq_494... *
+1	360aa, >swissprot___seq_40... at 100.00%
+>Cluster 436
+0	359aa, >green_2018___seq_26... *
+>Cluster 437
+0	359aa, >green_2018___seq_26... *
+1	359aa, >green_2018___seq_26... at 100.00%
+>Cluster 438
+0	359aa, >green_2018___seq_35... *
+1	359aa, >green_2018___seq_35... at 100.00%
+>Cluster 439
+0	359aa, >inbase___seq_198... *
+1	359aa, >inbase___seq_200... at 100.00%
+2	359aa, >inbase___seq_241... at 100.00%
+3	359aa, >swissprot___seq_35... at 100.00%
+4	359aa, >swissprot___seq_43... at 100.00%
+5	359aa, >swissprot___seq_44... at 100.00%
+>Cluster 440
+0	359aa, >kelley_2016___seq_6... *
+>Cluster 441
+0	358aa, >inbase___seq_305... *
+>Cluster 442
+0	358aa, >inbase___seq_374... *
+>Cluster 443
+0	358aa, >inbase___seq_389... *
+>Cluster 444
+0	357aa, >green_2018___seq_32... *
+>Cluster 445
+0	357aa, >inbase___seq_334... *
+>Cluster 446
+0	356aa, >green_2018___seq_38... *
+>Cluster 447
+0	356aa, >inbase___seq_351... *
+1	356aa, >inbase___seq_353... at 100.00%
+>Cluster 448
+0	356aa, >kelley_2016___seq_4... *
+1	356aa, >kelley_2016___seq_5... at 100.00%
+>Cluster 449
+0	354aa, >green_2018___seq_15... *
+1	354aa, >inbase___seq_88... at 100.00%
+>Cluster 450
+0	354aa, >green_2018___seq_17... *
+>Cluster 451
+0	354aa, >green_2018___seq_25... *
+>Cluster 452
+0	353aa, >green_2018___seq_17... *
+>Cluster 453
+0	352aa, >inbase___seq_267... *
+>Cluster 454
+0	352aa, >inbase___seq_279... *
+>Cluster 455
+0	351aa, >green_2018___seq_27... *
+1	351aa, >green_2018___seq_27... at 100.00%
+2	351aa, >green_2018___seq_27... at 100.00%
+3	351aa, >green_2018___seq_27... at 100.00%
+4	351aa, >green_2018___seq_27... at 100.00%
+5	351aa, >green_2018___seq_27... at 100.00%
+6	351aa, >green_2018___seq_29... at 100.00%
+7	351aa, >green_2018___seq_29... at 100.00%
+8	351aa, >green_2018___seq_29... at 100.00%
+9	351aa, >green_2018___seq_29... at 100.00%
+10	351aa, >green_2018___seq_29... at 100.00%
+11	351aa, >green_2018___seq_29... at 100.00%
+12	351aa, >green_2018___seq_29... at 100.00%
+13	351aa, >green_2018___seq_29... at 100.00%
+14	351aa, >green_2018___seq_30... at 100.00%
+15	351aa, >green_2018___seq_30... at 100.00%
+16	351aa, >green_2018___seq_30... at 100.00%
+17	351aa, >green_2018___seq_30... at 100.00%
+18	351aa, >green_2018___seq_30... at 100.00%
+19	351aa, >green_2018___seq_30... at 100.00%
+20	351aa, >green_2018___seq_31... at 100.00%
+21	351aa, >green_2018___seq_31... at 100.00%
+22	351aa, >green_2018___seq_31... at 100.00%
+23	351aa, >green_2018___seq_31... at 100.00%
+24	351aa, >inbase___seq_1... at 100.00%
+25	351aa, >swissprot___seq_85... at 100.00%
+>Cluster 456
+0	351aa, >green_2018___seq_30... *
+>Cluster 457
+0	351aa, >green_2018___seq_30... *
+>Cluster 458
+0	351aa, >green_2018___seq_31... *
+1	351aa, >green_2018___seq_31... at 100.00%
+2	351aa, >green_2018___seq_31... at 100.00%
+>Cluster 459
+0	350aa, >green_2018___seq_30... *
+>Cluster 460
+0	350aa, >inbase___seq_477... *
+>Cluster 461
+0	348aa, >inbase___seq_291... *
+>Cluster 462
+0	347aa, >green_2018___seq_17... *
+>Cluster 463
+0	347aa, >green_2018___seq_27... *
+1	347aa, >green_2018___seq_28... at 100.00%
+2	347aa, >inbase___seq_39... at 100.00%
+>Cluster 464
+0	347aa, >green_2018___seq_36... *
+1	347aa, >green_2018___seq_36... at 100.00%
+2	347aa, >green_2018___seq_36... at 100.00%
+>Cluster 465
+0	347aa, >inbase___seq_133... *
+>Cluster 466
+0	347aa, >inbase___seq_134... *
+>Cluster 467
+0	347aa, >inbase___seq_161... *
+>Cluster 468
+0	344aa, >kelley_2016___seq_1... at 100.00%
+1	347aa, >kelley_2016___seq_7... *
+2	347aa, >kelley_2016___seq_8... at 100.00%
+3	347aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 469
+0	346aa, >inbase___seq_118... *
+1	346aa, >swissprot___seq_22... at 100.00%
+>Cluster 470
+0	345aa, >green_2018___seq_18... *
+1	345aa, >inbase___seq_44... at 100.00%
+>Cluster 471
+0	345aa, >green_2018___seq_28... *
+1	345aa, >green_2018___seq_30... at 100.00%
+>Cluster 472
+0	345aa, >inbase___seq_139... *
+>Cluster 473
+0	345aa, >inbase___seq_153... *
+>Cluster 474
+0	344aa, >inbase___seq_129... *
+>Cluster 475
+0	344aa, >inbase___seq_304... *
+>Cluster 476
+0	344aa, >inbase___seq_316... *
+>Cluster 477
+0	343aa, >inbase___seq_168... *
+>Cluster 478
+0	342aa, >inbase___seq_301... *
+>Cluster 479
+0	341aa, >green_2018___seq_35... *
+>Cluster 480
+0	341aa, >inbase___seq_171... *
+>Cluster 481
+0	341aa, >inbase___seq_185... *
+1	341aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 482
+0	341aa, >inbase___seq_209... *
+>Cluster 483
+0	341aa, >inbase___seq_335... *
+>Cluster 484
+0	341aa, >kelley_2016___seq_4... *
+>Cluster 485
+0	341aa, >kelley_2016___seq_1... *
+>Cluster 486
+0	340aa, >inbase___seq_190... *
+1	340aa, >kelley_2016___seq_6... at 100.00%
+2	340aa, >kelley_2016___seq_8... at 100.00%
+>Cluster 487
+0	339aa, >green_2018___seq_32... *
+1	339aa, >green_2018___seq_33... at 100.00%
+2	339aa, >inbase___seq_22... at 100.00%
+3	339aa, >inbase___seq_56... at 100.00%
+4	339aa, >swissprot___seq_11... at 100.00%
+>Cluster 488
+0	339aa, >inbase___seq_158... *
+>Cluster 489
+0	339aa, >inbase___seq_183... *
+>Cluster 490
+0	339aa, >inbase___seq_431... *
+>Cluster 491
+0	338aa, >inbase___seq_295... *
+>Cluster 492
+0	337aa, >green_2018___seq_32... *
+>Cluster 493
+0	337aa, >inbase___seq_194... *
+1	337aa, >inbase___seq_195... at 100.00%
+2	337aa, >inbase___seq_196... at 100.00%
+>Cluster 494
+0	336aa, >green_2018___seq_32... *
+1	336aa, >inbase___seq_24... at 100.00%
+>Cluster 495
+0	335aa, >green_2018___seq_32... at 100.00%
+1	336aa, >inbase___seq_40... *
+>Cluster 496
+0	336aa, >inbase___seq_325... *
+>Cluster 497
+0	335aa, >green_2018___seq_15... *
+>Cluster 498
+0	335aa, >green_2018___seq_32... *
+>Cluster 499
+0	335aa, >inbase___seq_223... *
+1	335aa, >swissprot___seq_105... at 100.00%
+>Cluster 500
+0	335aa, >inbase___seq_412... *
+1	335aa, >swissprot___seq_66... at 100.00%
+>Cluster 501
+0	335aa, >inbase___seq_489... *
+>Cluster 502
+0	335aa, >kelley_2016___seq_5... *
+1	335aa, >kelley_2016___seq_1... at 100.00%
+2	335aa, >kelley_2016___seq_4... at 100.00%
+3	335aa, >kelley_2016___seq_5... at 100.00%
+4	335aa, >kelley_2016___seq_9... at 100.00%
+5	335aa, >kelley_2016___seq_1... at 100.00%
+6	335aa, >kelley_2016___seq_1... at 100.00%
+7	335aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 503
+0	334aa, >green_2018___seq_34... *
+>Cluster 504
+0	334aa, >green_2018___seq_36... *
+>Cluster 505
+0	333aa, >inbase___seq_119... *
+>Cluster 506
+0	333aa, >inbase___seq_157... *
+>Cluster 507
+0	333aa, >inbase___seq_439... *
+1	333aa, >swissprot___seq_113... at 100.00%
+>Cluster 508
+0	333aa, >inbase___seq_475... *
+>Cluster 509
+0	333aa, >kelley_2016___seq_2... *
+1	333aa, >kelley_2016___seq_6... at 100.00%
+>Cluster 510
+0	333aa, >kelley_2016___seq_6... *
+>Cluster 511
+0	333aa, >kelley_2016___seq_6... *
+1	333aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 512
+0	332aa, >green_2018___seq_34... *
+>Cluster 513
+0	332aa, >green_2018___seq_34... *
+>Cluster 514
+0	332aa, >inbase___seq_132... *
+>Cluster 515
+0	332aa, >inbase___seq_135... *
+>Cluster 516
+0	331aa, >inbase___seq_187... *
+1	331aa, >kelley_2016___seq_2... at 100.00%
+2	331aa, >kelley_2016___seq_5... at 100.00%
+3	331aa, >kelley_2016___seq_7... at 100.00%
+4	331aa, >kelley_2016___seq_9... at 100.00%
+5	331aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 517
+0	331aa, >inbase___seq_189... *
+1	331aa, >kelley_2016___seq_3... at 100.00%
+2	331aa, >kelley_2016___seq_8... at 100.00%
+>Cluster 518
+0	331aa, >kelley_2016___seq_1... *
+1	331aa, >kelley_2016___seq_2... at 100.00%
+2	331aa, >kelley_2016___seq_3... at 100.00%
+3	331aa, >kelley_2016___seq_3... at 100.00%
+4	331aa, >kelley_2016___seq_3... at 100.00%
+5	331aa, >kelley_2016___seq_4... at 100.00%
+6	331aa, >kelley_2016___seq_5... at 100.00%
+7	331aa, >kelley_2016___seq_5... at 100.00%
+8	331aa, >kelley_2016___seq_5... at 100.00%
+9	331aa, >kelley_2016___seq_6... at 100.00%
+10	331aa, >kelley_2016___seq_7... at 100.00%
+11	331aa, >kelley_2016___seq_7... at 100.00%
+12	331aa, >kelley_2016___seq_7... at 100.00%
+13	331aa, >kelley_2016___seq_8... at 100.00%
+14	331aa, >kelley_2016___seq_9... at 100.00%
+15	331aa, >kelley_2016___seq_9... at 100.00%
+16	331aa, >kelley_2016___seq_1... at 100.00%
+17	331aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 519
+0	331aa, >kelley_2016___seq_9... *
+1	331aa, >kelley_2016___seq_1... at 100.00%
+2	331aa, >kelley_2016___seq_1... at 100.00%
+3	331aa, >kelley_2016___seq_2... at 100.00%
+4	331aa, >kelley_2016___seq_3... at 100.00%
+5	331aa, >kelley_2016___seq_4... at 100.00%
+6	331aa, >kelley_2016___seq_5... at 100.00%
+7	331aa, >kelley_2016___seq_7... at 100.00%
+8	331aa, >kelley_2016___seq_9... at 100.00%
+9	331aa, >kelley_2016___seq_1... at 100.00%
+10	331aa, >kelley_2016___seq_1... at 100.00%
+11	331aa, >kelley_2016___seq_1... at 100.00%
+12	331aa, >kelley_2016___seq_1... at 100.00%
+13	331aa, >kelley_2016___seq_1... at 100.00%
+14	331aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 520
+0	331aa, >kelley_2016___seq_2... *
+>Cluster 521
+0	331aa, >kelley_2016___seq_2... *
+1	331aa, >kelley_2016___seq_3... at 100.00%
+2	331aa, >kelley_2016___seq_8... at 100.00%
+>Cluster 522
+0	331aa, >kelley_2016___seq_6... *
+>Cluster 523
+0	331aa, >kelley_2016___seq_1... *
+>Cluster 524
+0	330aa, >inbase___seq_142... *
+>Cluster 525
+0	330aa, >inbase___seq_143... *
+>Cluster 526
+0	327aa, >kelley_2016___seq_2... *
+>Cluster 527
+0	327aa, >kelley_2016___seq_3... *
+>Cluster 528
+0	327aa, >kelley_2016___seq_6... *
+>Cluster 529
+0	327aa, >kelley_2016___seq_1... *
+>Cluster 530
+0	325aa, >inbase___seq_117... *
+1	325aa, >inbase___seq_127... at 100.00%
+>Cluster 531
+0	323aa, >green_2018___seq_26... *
+>Cluster 532
+0	323aa, >inbase___seq_329... *
+>Cluster 533
+0	323aa, >inbase___seq_376... *
+1	323aa, >swissprot___seq_49... at 100.00%
+>Cluster 534
+0	322aa, >inbase___seq_236... *
+1	322aa, >inbase___seq_238... at 100.00%
+>Cluster 535
+0	322aa, >inbase___seq_266... *
+>Cluster 536
+0	320aa, >inbase___seq_152... *
+>Cluster 537
+0	317aa, >inbase___seq_186... *
+1	317aa, >inbase___seq_188... at 100.00%
+2	317aa, >kelley_2016___seq_2... at 100.00%
+3	317aa, >kelley_2016___seq_3... at 100.00%
+4	317aa, >kelley_2016___seq_1... at 100.00%
+5	317aa, >kelley_2016___seq_2... at 100.00%
+6	317aa, >kelley_2016___seq_5... at 100.00%
+7	317aa, >kelley_2016___seq_6... at 100.00%
+8	317aa, >kelley_2016___seq_6... at 100.00%
+9	317aa, >kelley_2016___seq_7... at 100.00%
+10	317aa, >kelley_2016___seq_7... at 100.00%
+11	317aa, >kelley_2016___seq_8... at 100.00%
+12	317aa, >kelley_2016___seq_8... at 100.00%
+13	317aa, >kelley_2016___seq_8... at 100.00%
+14	317aa, >kelley_2016___seq_9... at 100.00%
+15	317aa, >kelley_2016___seq_9... at 100.00%
+16	317aa, >kelley_2016___seq_9... at 100.00%
+17	317aa, >kelley_2016___seq_1... at 100.00%
+18	317aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 538
+0	317aa, >inbase___seq_191... *
+1	317aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 539
+0	317aa, >kelley_2016___seq_4... *
+>Cluster 540
+0	317aa, >kelley_2016___seq_8... *
+>Cluster 541
+0	317aa, >kelley_2016___seq_1... *
+>Cluster 542
+0	317aa, >kelley_2016___seq_1... *
+>Cluster 543
+0	316aa, >green_2018___seq_37... *
+>Cluster 544
+0	316aa, >inbase___seq_347... *
+>Cluster 545
+0	314aa, >inbase___seq_203... *
+>Cluster 546
+0	313aa, >green_2018___seq_34... *
+>Cluster 547
+0	313aa, >inbase___seq_263... *
+>Cluster 548
+0	313aa, >inbase___seq_272... *
+>Cluster 549
+0	312aa, >inbase___seq_268... *
+>Cluster 550
+0	312aa, >kelley_2016___seq_1... *
+>Cluster 551
+0	312aa, >kelley_2016___seq_1... *
+>Cluster 552
+0	312aa, >kelley_2016___seq_1... *
+>Cluster 553
+0	307aa, >green_2018___seq_35... *
+>Cluster 554
+0	307aa, >inbase___seq_526... *
+>Cluster 555
+0	306aa, >inbase___seq_113... *
+>Cluster 556
+0	306aa, >inbase___seq_114... *
+>Cluster 557
+0	306aa, >inbase___seq_115... *
+1	306aa, >inbase___seq_116... at 100.00%
+>Cluster 558
+0	305aa, >inbase___seq_419... *
+1	305aa, >swissprot___seq_92... at 100.00%
+>Cluster 559
+0	303aa, >inbase___seq_182... *
+>Cluster 560
+0	302aa, >green_2018___seq_35... *
+>Cluster 561
+0	300aa, >kelley_2016___seq_4... *
+1	300aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 562
+0	299aa, >inbase___seq_290... *
+1	299aa, >inbase___seq_292... at 100.00%
+2	299aa, >inbase___seq_293... at 100.00%
+>Cluster 563
+0	299aa, >inbase___seq_302... *
+>Cluster 564
+0	298aa, >inbase___seq_332... *
+>Cluster 565
+0	294aa, >inbase___seq_173... *
+>Cluster 566
+0	288aa, >inbase___seq_170... *
+>Cluster 567
+0	287aa, >inbase___seq_175... *
+>Cluster 568
+0	282aa, >green_2018___seq_27... *
+1	282aa, >green_2018___seq_27... at 100.00%
+2	282aa, >green_2018___seq_28... at 100.00%
+3	282aa, >green_2018___seq_28... at 100.00%
+4	282aa, >green_2018___seq_28... at 100.00%
+5	282aa, >green_2018___seq_28... at 100.00%
+6	282aa, >green_2018___seq_28... at 100.00%
+7	282aa, >green_2018___seq_28... at 100.00%
+8	282aa, >green_2018___seq_29... at 100.00%
+>Cluster 569
+0	282aa, >green_2018___seq_28... *
+>Cluster 570
+0	282aa, >green_2018___seq_28... *
+>Cluster 571
+0	282aa, >green_2018___seq_29... *
+>Cluster 572
+0	282aa, >green_2018___seq_31... *
+>Cluster 573
+0	277aa, >inbase___seq_285... *
+>Cluster 574
+0	276aa, >inbase___seq_141... *
+>Cluster 575
+0	274aa, >inbase___seq_423... *
+>Cluster 576
+0	273aa, >green_2018___seq_39... *
+>Cluster 577
+0	270aa, >inbase___seq_210... *
+>Cluster 578
+0	269aa, >kelley_2016___seq_7... *
+1	269aa, >kelley_2016___seq_1... at 100.00%
+2	269aa, >kelley_2016___seq_4... at 100.00%
+3	269aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 579
+0	269aa, >kelley_2016___seq_1... *
+1	269aa, >kelley_2016___seq_2... at 100.00%
+2	269aa, >kelley_2016___seq_3... at 100.00%
+3	269aa, >kelley_2016___seq_3... at 100.00%
+4	269aa, >kelley_2016___seq_4... at 100.00%
+5	269aa, >kelley_2016___seq_5... at 100.00%
+6	269aa, >kelley_2016___seq_7... at 100.00%
+7	269aa, >kelley_2016___seq_1... at 100.00%
+8	269aa, >kelley_2016___seq_1... at 100.00%
+9	269aa, >kelley_2016___seq_1... at 100.00%
+10	269aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 580
+0	269aa, >kelley_2016___seq_2... *
+1	269aa, >kelley_2016___seq_7... at 100.00%
+>Cluster 581
+0	269aa, >kelley_2016___seq_6... *
+>Cluster 582
+0	269aa, >kelley_2016___seq_1... *
+>Cluster 583
+0	268aa, >inbase___seq_436... *
+>Cluster 584
+0	265aa, >green_2018___seq_27... *
+>Cluster 585
+0	265aa, >green_2018___seq_31... *
+1	265aa, >green_2018___seq_31... at 100.00%
+>Cluster 586
+0	265aa, >green_2018___seq_38... *
+1	265aa, >green_2018___seq_38... at 100.00%
+>Cluster 587
+0	262aa, >inbase___seq_271... *
+>Cluster 588
+0	260aa, >inbase___seq_461... *
+>Cluster 589
+0	259aa, >green_2018___seq_35... *
+>Cluster 590
+0	258aa, >inbase___seq_176... *
+>Cluster 591
+0	257aa, >kelley_2016___seq_5... *
+1	257aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 592
+0	255aa, >kelley_2016___seq_8... *
+1	255aa, >kelley_2016___seq_4... at 100.00%
+>Cluster 593
+0	254aa, >kelley_2016___seq_1... *
+1	254aa, >kelley_2016___seq_3... at 100.00%
+2	254aa, >kelley_2016___seq_9... at 100.00%
+>Cluster 594
+0	254aa, >kelley_2016___seq_4... *
+1	254aa, >kelley_2016___seq_1... at 100.00%
+>Cluster 595
+0	254aa, >kelley_2016___seq_8... *
+>Cluster 596
+0	254aa, >kelley_2016___seq_9... *
+>Cluster 597
+0	248aa, >inbase___seq_274... *
+>Cluster 598
+0	247aa, >inbase___seq_299... *
+1	247aa, >inbase___seq_300... at 100.00%
+>Cluster 599
+0	245aa, >green_2018___seq_33... *
+1	245aa, >green_2018___seq_34... at 100.00%
+>Cluster 600
+0	244aa, >inbase___seq_324... *
+>Cluster 601
+0	239aa, >inbase___seq_424... *
+>Cluster 602
+0	233aa, >green_2018___seq_91... *
+>Cluster 603
+0	232aa, >green_2018___seq_26... *
+1	232aa, >inbase___seq_54... at 100.00%
+>Cluster 604
+0	231aa, >inbase___seq_184... *
+>Cluster 605
+0	225aa, >green_2018___seq_33... *
+1	225aa, >green_2018___seq_35... at 100.00%
+>Cluster 606
+0	220aa, >green_2018___seq_99... *
+>Cluster 607
+0	215aa, >inbase___seq_207... *
+>Cluster 608
+0	215aa, >inbase___seq_366... *
+>Cluster 609
+0	214aa, >inbase___seq_380... *
+>Cluster 610
+0	211aa, >inbase___seq_369... *
+>Cluster 611
+0	209aa, >inbase___seq_367... *
+>Cluster 612
+0	201aa, >green_2018___seq_23... *
+>Cluster 613
+0	201aa, >green_2018___seq_30... *
+>Cluster 614
+0	200aa, >green_2018___seq_26... *
+>Cluster 615
+0	200aa, >green_2018___seq_10... *
+>Cluster 616
+0	198aa, >green_2018___seq_35... *
+>Cluster 617
+0	198aa, >green_2018___seq_95... *
+1	198aa, >inbase___seq_74... at 100.00%
+>Cluster 618
+0	198aa, >green_2018___seq_96... *
+1	198aa, >inbase___seq_75... at 100.00%
+>Cluster 619
+0	198aa, >inbase___seq_259... *
+1	198aa, >swissprot___seq_36... at 100.00%
+>Cluster 620
+0	196aa, >inbase___seq_438... *
+>Cluster 621
+0	195aa, >inbase___seq_362... *
+1	195aa, >swissprot___seq_110... at 100.00%
+>Cluster 622
+0	195aa, >inbase___seq_363... *
+>Cluster 623
+0	194aa, >inbase___seq_150... *
+>Cluster 624
+0	192aa, >inbase___seq_206... *
+>Cluster 625
+0	189aa, >green_2018___seq_33... *
+>Cluster 626
+0	186aa, >green_2018___seq_78... *
+>Cluster 627
+0	186aa, >inbase___seq_523... *
+1	186aa, >swissprot___seq_98... at 100.00%
+>Cluster 628
+0	185aa, >inbase___seq_441... *
+1	185aa, >swissprot___seq_116... at 100.00%
+>Cluster 629
+0	184aa, >green_2018___seq_26... *
+>Cluster 630
+0	182aa, >green_2018___seq_17... *
+>Cluster 631
+0	182aa, >green_2018___seq_18... *
+1	182aa, >inbase___seq_37... at 100.00%
+>Cluster 632
+0	182aa, >inbase___seq_360... *
+1	182aa, >inbase___seq_361... at 100.00%
+>Cluster 633
+0	180aa, >green_2018___seq_18... *
+>Cluster 634
+0	180aa, >green_2018___seq_77... *
+1	180aa, >inbase___seq_107... at 100.00%
+>Cluster 635
+0	180aa, >green_2018___seq_18... *
+>Cluster 636
+0	180aa, >inbase___seq_355... *
+1	180aa, >swissprot___seq_86... at 100.00%
+>Cluster 637
+0	177aa, >inbase___seq_321... *
+>Cluster 638
+0	174aa, >inbase___seq_358... *
+>Cluster 639
+0	174aa, >inbase___seq_479... *
+1	174aa, >swissprot___seq_111... at 100.00%
+>Cluster 640
+0	173aa, >inbase___seq_478... *
+>Cluster 641
+0	172aa, >green_2018___seq_89... *
+1	172aa, >inbase___seq_35... at 100.00%
+2	172aa, >inbase___seq_36... at 100.00%
+>Cluster 642
+0	172aa, >green_2018___seq_18... *
+>Cluster 643
+0	172aa, >inbase___seq_470... *
+1	172aa, >swissprot___seq_15... at 100.00%
+>Cluster 644
+0	171aa, >green_2018___seq_88... *
+1	171aa, >inbase___seq_34... at 100.00%
+>Cluster 645
+0	170aa, >green_2018___seq_31... *
+>Cluster 646
+0	170aa, >green_2018___seq_86... *
+>Cluster 647
+0	170aa, >inbase___seq_26... *
+1	170aa, >inbase___seq_27... at 100.00%
+2	170aa, >inbase___seq_29... at 100.00%
+>Cluster 648
+0	169aa, >green_2018___seq_12... *
+1	169aa, >inbase___seq_14... at 100.00%
+>Cluster 649
+0	169aa, >green_2018___seq_51... *
+1	169aa, >inbase___seq_68... at 100.00%
+>Cluster 650
+0	169aa, >green_2018___seq_52... *
+1	169aa, >inbase___seq_69... at 100.00%
+>Cluster 651
+0	169aa, >inbase___seq_67... *
+>Cluster 652
+0	168aa, >inbase___seq_402... *
+1	168aa, >swissprot___seq_65... at 100.00%
+>Cluster 653
+0	168aa, >inbase___seq_460... *
+>Cluster 654
+0	167aa, >green_2018___seq_8... *
+1	166aa, >inbase___seq_12... at 100.00%
+>Cluster 655
+0	167aa, >inbase___seq_528... *
+>Cluster 656
+0	166aa, >green_2018___seq_38... *
+>Cluster 657
+0	166aa, >green_2018___seq_39... *
+>Cluster 658
+0	166aa, >green_2018___seq_40... *
+>Cluster 659
+0	166aa, >green_2018___seq_41... *
+>Cluster 660
+0	166aa, >green_2018___seq_42... *
+>Cluster 661
+0	166aa, >green_2018___seq_43... *
+>Cluster 662
+0	166aa, >green_2018___seq_44... *
+>Cluster 663
+0	166aa, >inbase___seq_467... *
+1	166aa, >swissprot___seq_14... at 100.00%
+>Cluster 664
+0	165aa, >green_2018___seq_6... *
+1	165aa, >inbase___seq_2... at 100.00%
+>Cluster 665
+0	165aa, >inbase___seq_349... *
+>Cluster 666
+0	165aa, >inbase___seq_390... *
+1	165aa, >swissprot___seq_1... at 100.00%
+>Cluster 667
+0	165aa, >inbase___seq_397... *
+1	165aa, >swissprot___seq_53... at 100.00%
+>Cluster 668
+0	164aa, >green_2018___seq_46... *
+1	164aa, >inbase___seq_63... at 100.00%
+>Cluster 669
+0	164aa, >inbase___seq_435... *
+>Cluster 670
+0	163aa, >green_2018___seq_9... *
+>Cluster 671
+0	163aa, >green_2018___seq_10... *
+>Cluster 672
+0	163aa, >green_2018___seq_13... *
+>Cluster 673
+0	163aa, >green_2018___seq_70... *
+>Cluster 674
+0	163aa, >green_2018___seq_71... *
+>Cluster 675
+0	163aa, >green_2018___seq_19... *
+>Cluster 676
+0	162aa, >inbase___seq_78... *
+>Cluster 677
+0	161aa, >green_2018___seq_32... *
+>Cluster 678
+0	161aa, >green_2018___seq_55... *
+>Cluster 679
+0	161aa, >green_2018___seq_57... *
+>Cluster 680
+0	161aa, >green_2018___seq_58... *
+1	161aa, >green_2018___seq_63... at 100.00%
+2	161aa, >inbase___seq_86... at 100.00%
+>Cluster 681
+0	161aa, >green_2018___seq_59... *
+>Cluster 682
+0	161aa, >green_2018___seq_60... *
+>Cluster 683
+0	161aa, >green_2018___seq_21... *
+>Cluster 684
+0	160aa, >green_2018___seq_61... *
+>Cluster 685
+0	160aa, >green_2018___seq_19... *
+1	160aa, >inbase___seq_53... at 100.00%
+2	160aa, >swissprot___seq_24... at 100.00%
+>Cluster 686
+0	159aa, >green_2018___seq_45... *
+>Cluster 687
+0	159aa, >green_2018___seq_22... *
+>Cluster 688
+0	159aa, >swissprot___seq_37... *
+>Cluster 689
+0	158aa, >green_2018___seq_62... *
+>Cluster 690
+0	158aa, >green_2018___seq_90... *
+>Cluster 691
+0	158aa, >inbase___seq_426... *
+>Cluster 692
+0	157aa, >green_2018___seq_56... *
+1	157aa, >inbase___seq_77... at 100.00%
+>Cluster 693
+0	157aa, >inbase___seq_482... *
+1	157aa, >swissprot___seq_10... at 100.00%
+>Cluster 694
+0	157aa, >inbase___seq_511... *
+>Cluster 695
+0	156aa, >green_2018___seq_50... *
+1	155aa, >inbase___seq_66... at 100.00%
+>Cluster 696
+0	156aa, >green_2018___seq_20... *
+>Cluster 697
+0	156aa, >inbase___seq_180... *
+>Cluster 698
+0	155aa, >green_2018___seq_47... *
+1	155aa, >inbase___seq_64... at 100.00%
+>Cluster 699
+0	153aa, >green_2018___seq_11... *
+>Cluster 700
+0	153aa, >inbase___seq_123... *
+>Cluster 701
+0	153aa, >inbase___seq_155... *
+>Cluster 702
+0	153aa, >inbase___seq_283... *
+>Cluster 703
+0	152aa, >green_2018___seq_21... *
+>Cluster 704
+0	150aa, >green_2018___seq_21... *
+>Cluster 705
+0	150aa, >green_2018___seq_21... *
+1	150aa, >inbase___seq_83... at 100.00%
+2	150aa, >swissprot___seq_33... at 100.00%
+>Cluster 706
+0	150aa, >green_2018___seq_21... *
+>Cluster 707
+0	150aa, >green_2018___seq_21... *
+>Cluster 708
+0	150aa, >green_2018___seq_21... *
+>Cluster 709
+0	150aa, >green_2018___seq_21... *
+>Cluster 710
+0	150aa, >green_2018___seq_22... *
+>Cluster 711
+0	150aa, >green_2018___seq_25... *
+>Cluster 712
+0	150aa, >green_2018___seq_25... *
+>Cluster 713
+0	149aa, >green_2018___seq_21... *
+>Cluster 714
+0	149aa, >green_2018___seq_22... *
+1	149aa, >green_2018___seq_22... at 100.00%
+>Cluster 715
+0	149aa, >inbase___seq_122... *
+>Cluster 716
+0	148aa, >green_2018___seq_37... *
+>Cluster 717
+0	148aa, >green_2018___seq_20... *
+>Cluster 718
+0	148aa, >green_2018___seq_21... *
+1	148aa, >inbase___seq_87... at 100.00%
+2	148aa, >swissprot___seq_52... at 100.00%
+>Cluster 719
+0	148aa, >green_2018___seq_21... *
+>Cluster 720
+0	148aa, >inbase___seq_281... *
+>Cluster 721
+0	148aa, >inbase___seq_282... *
+>Cluster 722
+0	147aa, >green_2018___seq_23... *
+>Cluster 723
+0	146aa, >green_2018___seq_22... *
+>Cluster 724
+0	146aa, >green_2018___seq_35... *
+1	146aa, >inbase___seq_41... at 100.00%
+>Cluster 725
+0	146aa, >inbase___seq_144... *
+>Cluster 726
+0	146aa, >inbase___seq_145... *
+>Cluster 727
+0	146aa, >inbase___seq_146... *
+>Cluster 728
+0	146aa, >inbase___seq_147... *
+>Cluster 729
+0	145aa, >green_2018___seq_22... *
+>Cluster 730
+0	145aa, >green_2018___seq_22... *
+>Cluster 731
+0	145aa, >green_2018___seq_23... *
+>Cluster 732
+0	145aa, >green_2018___seq_25... *
+>Cluster 733
+0	145aa, >inbase___seq_228... *
+1	145aa, >swissprot___seq_32... at 100.00%
+>Cluster 734
+0	143aa, >green_2018___seq_23... *
+>Cluster 735
+0	143aa, >green_2018___seq_23... *
+>Cluster 736
+0	142aa, >inbase___seq_138... *
+>Cluster 737
+0	142aa, >inbase___seq_192... *
+>Cluster 738
+0	141aa, >green_2018___seq_24... *
+>Cluster 739
+0	141aa, >inbase___seq_310... *
+>Cluster 740
+0	141aa, >inbase___seq_312... *
+>Cluster 741
+0	140aa, >green_2018___seq_25... *
+>Cluster 742
+0	140aa, >inbase___seq_488... *
+>Cluster 743
+0	139aa, >green_2018___seq_23... *
+>Cluster 744
+0	139aa, >green_2018___seq_33... *
+1	139aa, >inbase___seq_25... at 100.00%
+>Cluster 745
+0	139aa, >green_2018___seq_33... *
+>Cluster 746
+0	139aa, >green_2018___seq_34... *
+>Cluster 747
+0	139aa, >green_2018___seq_34... *
+>Cluster 748
+0	139aa, >inbase___seq_234... *
+>Cluster 749
+0	138aa, >green_2018___seq_20... *
+>Cluster 750
+0	138aa, >green_2018___seq_23... *
+>Cluster 751
+0	138aa, >green_2018___seq_23... *
+>Cluster 752
+0	138aa, >green_2018___seq_24... *
+>Cluster 753
+0	138aa, >green_2018___seq_25... *
+>Cluster 754
+0	138aa, >green_2018___seq_32... *
+1	138aa, >inbase___seq_109... at 100.00%
+>Cluster 755
+0	138aa, >green_2018___seq_33... *
+1	138aa, >green_2018___seq_33... at 100.00%
+>Cluster 756
+0	138aa, >green_2018___seq_33... *
+>Cluster 757
+0	138aa, >green_2018___seq_33... *
+>Cluster 758
+0	138aa, >green_2018___seq_33... *
+>Cluster 759
+0	137aa, >green_2018___seq_20... *
+>Cluster 760
+0	137aa, >green_2018___seq_20... *
+>Cluster 761
+0	137aa, >green_2018___seq_20... *
+>Cluster 762
+0	137aa, >green_2018___seq_23... *
+>Cluster 763
+0	137aa, >green_2018___seq_24... *
+>Cluster 764
+0	137aa, >green_2018___seq_25... *
+>Cluster 765
+0	136aa, >green_2018___seq_20... *
+>Cluster 766
+0	136aa, >green_2018___seq_22... *
+>Cluster 767
+0	136aa, >green_2018___seq_23... *
+>Cluster 768
+0	136aa, >inbase___seq_130... *
+1	136aa, >inbase___seq_131... at 100.00%
+2	136aa, >inbase___seq_303... at 100.00%
+>Cluster 769
+0	135aa, >green_2018___seq_20... *
+>Cluster 770
+0	135aa, >green_2018___seq_20... *
+>Cluster 771
+0	135aa, >green_2018___seq_23... *
+>Cluster 772
+0	135aa, >green_2018___seq_24... *
+>Cluster 773
+0	134aa, >green_2018___seq_24... *
+>Cluster 774
+0	134aa, >green_2018___seq_24... *
+>Cluster 775
+0	134aa, >inbase___seq_422... *
+>Cluster 776
+0	133aa, >green_2018___seq_24... *
+>Cluster 777
+0	130aa, >green_2018___seq_24... *
+>Cluster 778
+0	130aa, >green_2018___seq_24... *
+>Cluster 779
+0	128aa, >green_2018___seq_20... *
+>Cluster 780
+0	126aa, >green_2018___seq_39... *
+>Cluster 781
+0	126aa, >green_2018___seq_39... *
+>Cluster 782
+0	126aa, >green_2018___seq_39... *
+>Cluster 783
+0	125aa, >green_2018___seq_39... at 100.00%
+1	126aa, >green_2018___seq_39... *
+>Cluster 784
+0	125aa, >green_2018___seq_22... *
+>Cluster 785
+0	125aa, >green_2018___seq_39... *
+>Cluster 786
+0	124aa, >green_2018___seq_22... *
+>Cluster 787
+0	123aa, >green_2018___seq_24... *
+>Cluster 788
+0	81aa, >green_2018___seq_38... *
+>Cluster 789
+0	76aa, >green_2018___seq_38... *
+>Cluster 790
+0	61aa, >green_2018___seq_36... *
+>Cluster 791
+0	41aa, >green_2018___seq_80... *
