@@ -1,0 +1,2 @@
+APPLE___seq_1	apple pie is good
+APPLE___seq_2	and really tasty
