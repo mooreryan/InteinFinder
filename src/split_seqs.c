@@ -3,7 +3,6 @@
 
    - It will have empty files if you have more splits than the number
      of input sequences.
-   - If you pass a directory instead of a file, it hangs.
 */
 
 #include <assert.h>
@@ -12,49 +11,9 @@
 #include <string.h>
 #include <zlib.h>
 
-#include "err_codes.h"
-#include "kseq.h"
-
-#define TOO_BIG 10000
-
-KSEQ_INIT(gzFile, gzread)
-
-void kseq_write(FILE* file, kseq_t* seq)
-{
-  if (seq->qual.l && seq->comment.l) { /* fastq with comment */
-    fprintf(file,
-            "@%s %s\n"
-            "%s\n"
-            "+\n"
-            "%s\n",
-            seq->name.s,
-            seq->comment.s,
-            seq->seq.s,
-            seq->qual.s);
-  } else if (seq->qual.l) { /* fastq no comment */
-    fprintf(file,
-            "@%s\n"
-            "%s\n"
-            "+\n"
-            "%s\n",
-            seq->name.s,
-            seq->seq.s,
-            seq->qual.s);
-  } else if (seq->comment.l) { /* fasta with comment */
-    fprintf(file,
-            ">%s %s\n"
-            "%s\n",
-            seq->name.s,
-            seq->comment.s,
-            seq->seq.s);
-  } else { /* fasta no comment */
-    fprintf(file,
-            ">%s\n"
-            "%s\n",
-            seq->name.s,
-            seq->seq.s);
-  }
-}
+#include "rlib.h"
+#include "kseq_helper.h"
+#include "const.h"
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +35,21 @@ int main(int argc, char *argv[])
 
   char* arg_num_splits = argv[1];
   char* arg_fname = argv[2];
+
+  rstring* rstr = rstring_new(arg_fname);
+  PANIC_MEM(stderr, rstr);
+
+  ret_val = rfile_is_directory(rstr);
+  if (ret_val == RTRUE) {
+    rstring_free(rstr);
+    fprintf(stderr, "Error: %s is a directory!\n", arg_fname);
+    exit(1);
+  } else if (ret_val == RERROR) {
+    rstring_free(rstr);
+    fprintf(stderr, "Error checking on %s\n", arg_fname);
+    exit(1);
+  }
+  rstring_free(rstr);
 
   char* out_fname = NULL;
 

@@ -4,8 +4,13 @@ LDFLAGS = -lz
 
 BIN = bin
 SRC = src
+VENDOR = vendor
 TEST_FILES = test_files
 TEST_OUTDIR = TEST_OUTPUT
+
+OBJS := $(SRC)/kseq_helper.o
+
+SRC_RLIB = vendor/ruby_like_c/src
 
 ifeq ($(OPTIMIZE),)
 OPTIMIZE = 3
@@ -33,8 +38,14 @@ test_long_and_short: split_seqs
 test_no_inteins: split_seqs
 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/no_inteins.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
 
-split_seqs:
-	$(CC) $(CFLAGS) -fopt-info-optimized -O$(OPTIMIZE) $(SRC)/$@.c $(LDFLAGS) -o $(BIN)/$@
+split_seqs: $(OBJS)
+	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -fopt-info-optimized -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
 
 test_split_seqs: split_seqs
 	rm $(TEST_FILES)/split_seqs_in.fa.split_?; valgrind --leak-check=full $(BIN)/split_seqs 2 $(TEST_FILES)/split_seqs_in.fa && diff $(TEST_FILES)/split_seqs_in.fa.split_0 $(TEST_FILES)/split_seqs_split_0_expected.txt && diff $(TEST_FILES)/split_seqs_in.fa.split_1 $(TEST_FILES)/split_seqs_split_1_expected.txt
+
+simple_headers: $(OBJS)
+	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -fopt-info-optimized -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
+
+test_simple_headers: simple_headers
+	rm $(TEST_FILES)/*.simple_headers.*; valgrind --leak-check=full $(BIN)/simple_headers APPLE $(TEST_FILES)/simple_headers_in.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.fa $(TEST_FILES)/simple_headers_expected.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.name_map.txt $(TEST_FILES)/simple_headers_name_map_expected.txt
