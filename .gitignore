@@ -33,3 +33,6 @@ rnr_db_out_v0.5.0
 spec/examples.txt
 
 bin/split_seqs
+bin/simple_headers
+
+test_files.fold*
