@@ -138,6 +138,29 @@ int main(int argc, char *argv[])
     ++num_seqs;
   }
 
+  /* You may need to remove unused split files. */
+  rstring* fname = NULL;
+  for (int i = num_seqs; i < num_splits; ++i) {
+    fprintf(stderr,
+            "INFO -- Not enough seqs, removing split %d\n",
+            i+1);
+
+    fname = rstring_format("%s.split_%d",
+                           arg_fname,
+                           i);
+    PANIC_MEM(stderr, fname);
+
+    ret_val = remove(rstring_data(fname));
+    PANIC_IF(stderr,
+             ret_val == -1,
+             errno,
+             "Couldn't remove %s: (%s)",
+             rstring_data(fname),
+             strerror(errno));
+
+    rstring_free(fname);
+  }
+
   kseq_destroy(seq);
   gzclose(fp);
 
