@@ -8,6 +8,9 @@ VENDOR = vendor
 TEST_FILES = test_files
 TEST_OUTDIR = TEST_OUTPUT
 
+THREADS_ALIGNMENT = 16
+THREADS_SEARCH = 32
+
 OBJS := $(SRC)/kseq_helper.o
 
 SRC_RLIB = vendor/ruby_like_c/src
@@ -24,19 +27,19 @@ endif
 all: split_seqs
 
 test: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --queries test_files/rnr.faa --outdir $(TEST_OUTDIR) --split-queries --cpus 32 && tree $(TEST_OUTDIR) && diff TEST_OUTPUT/results/intein_regions_refined_condensed.txt test_files/test_expected.txt
+	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --queries test_files/rnr.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff TEST_OUTPUT/results/intein_regions_refined_condensed.txt test_files/test_expected.txt
 
 test_small: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --evalue-rpsblast 1e-10 --evalue-mmseqs 1e-10 --evalue-region-refinement 1e-10 --mmseqs-sensitivity 1 --mmseqs-iterations 1 --queries test_files/rnr_seq_4.faa --outdir $(TEST_OUTDIR) --split-queries --cpus 32 && tree $(TEST_OUTDIR) && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small_expected.txt
+	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --evalue-rpsblast 1e-10 --evalue-mmseqs 1e-10 --evalue-region-refinement 1e-10 --mmseqs-sensitivity 1 --mmseqs-iterations 1 --queries test_files/rnr_seq_4.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small_expected.txt
 
-test_small2: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/small_2.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/* && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small2_expected.txt
+# test_small2: split_seqs
+# 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/small_2.faa --outdir $(TEST_OUTDIR) --cpus $(THREADS) && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/* && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small2_expected.txt
 
-test_long_and_short: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/long_and_short.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
+# test_long_and_short: split_seqs
+# 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/long_and_short.faa --outdir $(TEST_OUTDIR) --cpus $(THREADS) && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
 
-test_no_inteins: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/no_inteins.faa --outdir $(TEST_OUTDIR) --cpus 32 && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
+# test_no_inteins: split_seqs
+# 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/no_inteins.faa --outdir $(TEST_OUTDIR) --cpus $(THREADS) && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
 
 split_seqs: $(OBJS)
 	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -fopt-info-optimized -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
