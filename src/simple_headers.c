@@ -11,52 +11,6 @@
 
 /* This just assumes it's a fasta */
 
-rstring*
-basename(const rstring* fname)
-{
-  rstring* base = rfile_basename(fname);
-  PANIC_MEM(stderr, base);
-
-  rstring* sep = rstring_new(".");
-  PANIC_MEM(stderr, sep);
-
-  rstring_array* ary = rstring_split(base, sep);
-  PANIC_MEM(stderr, ary);
-
-
-  if (ary->qty == 1) {
-    rstring_free(sep);
-    rstring_array_free(ary);
-
-    return base;
-  }
-
-  rstring_array* new_ary = rstring_array_new();
-  PANIC_MEM(stderr, new_ary);
-
-  int ret_val = 0;
-  /* Push everything but the last bit on. */
-
-  for (int i = 0; i < ary->qty - 1; ++i) {
-    ret_val = rstring_array_push_rstr(new_ary, rstring_array_get(ary, i));
-    PANIC_IF(stderr,
-             ret_val != ROKAY,
-             STD_ERR,
-             "Couldn't push onto array");
-  }
-
-  rstring* base_no_ext = rstring_array_join(new_ary, sep);
-
-  rstring_free(base);
-  rstring_free(sep);
-  rstring_array_free(ary);
-  /* rstring_array_free(new_ary); */
-  free(new_ary->entry);
-  free(new_ary);
-
-  return base_no_ext;
-}
-
 int main(int argc, char *argv[])
 {
   if (argc != 3) {
@@ -65,8 +19,6 @@ int main(int argc, char *argv[])
 
     exit(1);
   }
-
-
 
   char* arg_annotation = argv[1];
   char* arg_fname = argv[2];
@@ -77,14 +29,14 @@ int main(int argc, char *argv[])
   rstring* fname = rstring_new(arg_fname);
   PANIC_MEM(stderr, fname);
 
-  rstring* base = basename(fname);
+  rstring* ext = rfile_extname(fname);
+  PANIC_MEM(stderr, ext);
+
+  rstring* base = rfile_basename2(fname, ext);
   PANIC_MEM(stderr, base);
 
   rstring* dir = rfile_dirname(fname);
   PANIC_MEM(stderr, dir);
-
-  rstring* ext = rfile_extname(fname);
-  PANIC_MEM(stderr, ext);
 
   rstring* out_fasta =
     rstring_format("%s/%s.simple_headers%s",
@@ -143,8 +95,10 @@ int main(int argc, char *argv[])
     else {
       old_header = rstring_new(seq->name.s);
     }
+    PANIC_MEM(stderr, old_header);
 
     new_header = rstring_format("%s___seq_%lu", arg_annotation, num_seqs);
+    PANIC_MEM(stderr, new_header);
 
     fprintf(out_name_map_f,
             "%s\t%s\n",
