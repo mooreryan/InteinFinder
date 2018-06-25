@@ -4,16 +4,16 @@ Signal.trap("PIPE", "EXIT")
 require "aai"
 require "abort_if"
 require "fileutils"
-require "parse_fasta"
 require "pp"
-require "set"
-require "trollop"
+require "parse_fasta"
 require "pasv_lib"
 require "parallel"
-
 require "ruby-progressbar"
+require "set"
+require "trollop"
 
 require_relative "lib/const"
+require_relative "lib/intein_finder"
 require_relative "lib/methods"
 
 module Utils
