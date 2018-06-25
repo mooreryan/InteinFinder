@@ -478,11 +478,16 @@ else
   parallel_mode = opts[:parallel_mode]
 end
 
-AbortIf.logger.info { "Number of good queries was #{total_queries}.  Using parallel-mode #{parallel_mode}." }
+AbortIf.logger.info do
+  "Number of good queries was #{total_queries}.  " \
+  "Using parallel-mode #{parallel_mode}."
+end
 
 perc_too_short = (num_over_min_len / total_queries.to_f * 100).round(5)
 
-AbortIf.logger.info { "#{perc_too_short}% of queries passed the length filter." }
+AbortIf.logger.info do
+  "#{perc_too_short}% of queries passed the length filter."
+end
 
 #####################
 # read in the queries
@@ -501,9 +506,14 @@ cmd = "#{opts[:makeprofiledb]} " \
 Utils.run_and_time_it! "Making profile DB", cmd
 
 num_seqs = queries.count
-# there are enough seqs for parallel blast to be worth it and the user asked for splits
+# there are enough seqs for parallel blast to be worth it and the user
+# asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
-  AbortIf.logger.info { "You asked for splits, and we have #{num_seqs} sequences, so we will split the queries before blasting." }
+  AbortIf.logger.info do
+    "You asked for splits, and we have #{num_seqs} sequences, " \
+    "so we will split the queries before blasting."
+  end
+
   cmd = "#{opts[:parallel_blast]} " \
         "--cpus #{opts[:cpus_search]} " \
         "--evalue #{opts[:evalue_rpsblast]} " \
@@ -514,7 +524,11 @@ if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
         "--blast-program #{opts[:rpsblast]} " \
         "--split-program #{opts[:split_seqs]}"
 else
-  AbortIf.logger.info { "Not splitting the queries before blasting.  Either too few (#{num_seqs}) or you didn't ask for splits." }
+  AbortIf.logger.info do
+    "Not splitting the queries before blasting.  " \
+    "Either too few (#{num_seqs}) or you didn't ask for splits."
+  end
+
   cmd = "#{opts[:rpsblast]} " \
         "-num_threads #{opts[:cpus_search]} " \
         "-db #{profile_db} " \
@@ -526,12 +540,17 @@ end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
-cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} " \
+cmd = "#{search} " \
+      "#{queries_simple_name_out} " \
+      "#{opts[:inteins]} " \
+      "#{mmseqs_out} " \
+      "#{tmp_dir} " \
       "--format-mode 2 " \
       "-s #{opts[:mmseqs_sensitivity]} " \
       "--num-iterations #{opts[:mmseqs_iterations]} " \
       "-e #{opts[:evalue_mmseqs]} " \
-      "--threads #{opts[:cpus_search]} >> #{mmseqs_log}"
+      "--threads #{opts[:cpus_search]} " \
+      ">> #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 #################
@@ -562,7 +581,8 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in rpsblast", "mv #{tmpfile} #{rpsblast_out}"
+Utils.run_and_time_it! "Changing IDs in rpsblast",
+                       "mv #{tmpfile} #{rpsblast_out}"
 
 tmpfile = File.join opts[:outdir], "tmptmp"
 File.open(tmpfile, "w") do |f|
@@ -576,7 +596,8 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in mmseqs search", "mv #{tmpfile} #{mmseqs_out}"
+Utils.run_and_time_it! "Changing IDs in mmseqs search",
+                       "mv #{tmpfile} #{mmseqs_out}"
 
 # From here out, the sequence IDs should be back to normal.
 
@@ -678,7 +699,10 @@ end
 perc_passing_regions =
   (num_passing_regions / num_total_regions.to_f * 100).round(5)
 
-AbortIf.logger.info { "#{perc_passing_regions}% of putative regions passed the length filter." }
+AbortIf.logger.info do
+  "#{perc_passing_regions}% of putative regions passed the " \
+  "length filter."
+end
 
 
 
@@ -768,7 +792,10 @@ perc_blast_hits_passed =
 
 # TODO somewhere around here it is slow.
 
-AbortIf.logger.info { "#{perc_blast_hits_passed}% of blast hits were in regions that passed length filter (that's #{num_blast_hits_passed} hits!)" }
+AbortIf.logger.info do
+  "#{perc_blast_hits_passed}% of blast hits were in regions that " \
+  "passed length filter (that's #{num_blast_hits_passed} hits!)"
+end
 
 
 
@@ -792,7 +819,8 @@ end
 num_aligned = 0
 total_items = 0
 
-mmseqs_hit_groups = mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
+mmseqs_hit_groups =
+  mmseqs_hits.group_by { |br, cr| [br.query, cr.id] }
 
 
 conserved_f_lines = []
@@ -801,12 +829,11 @@ conserved_f_lines = []
 # conserved_f_lines = []
 if parallel_mode == 1
   # Process each query-region pair in parallel
-  tmp_lines = Parallel.map(mmseqs_hit_groups,
-                           in_processes: opts[:cpus_alignment],
-                           progress: "Checking conserved residues") do |group, items|
-    # progbar.increment
-
-    # total_items += items.count
+  tmp_lines =
+    Parallel.map( mmseqs_hit_groups,
+                  in_processes: opts[:cpus_alignment],
+                  progress: "Checking conserved residues"
+                ) do |group, items|
 
     found_good_hit = false
 
@@ -925,12 +952,6 @@ elsif parallel_mode == 2
     if !found_good_hit && subset_2.count > 0
       seq_name = group[0]
       region_name =  group[1]
-      # AbortIf.logger.debug do
-      #   "Haven't found a good hit for Seq: #{seq_name}, " \
-      #   "Region: #{region_name} after #{MAX_ALIGNMENTS_BEFORE_ALL} " \
-      #   "tries.  Aligning the remaining hits in " \
-      #   "parallel."
-      # end
 
       subset_2.each_slice(opts[:cpus_alignment]) do |slice|
         break if found_good_hit
@@ -1025,7 +1046,22 @@ conserved_f_lines = conserved_f_lines.compact.sort do |a, b|
 end
 
 File.open(criteria_check_full_out, "w") do |conserved_f|
-  conserved_f.puts %w[query target evalue which.region aln.region region.good has.start has.end has.extein.start intein.n.term intein.c.term c.extein].join "\t"
+  comment_line = [
+    "query",
+    "target",
+    "evalue",
+    "which.region",
+    "aln.region",
+    "region.good",
+    "has.start",
+    "has.end",
+    "has.extein.start",
+    "intein.n.term",
+    "intein.c.term",
+    "c.extein",
+  ].join "\t"
+
+  conserved_f.puts comment_line
 
   conserved_f_lines.compact.each_with_index do |ary, idx|
     conserved_f.puts ary.join "\t"
@@ -1050,7 +1086,8 @@ File.open(rpsblast_out, "rt").each_line do |line|
   evalue = rest[8].to_f
 
   abort_unless queries.has_key?(query),
-               "query #{query} was in the rpsblast output file but not in the queries file."
+               "query #{query} was in the rpsblast output file " \
+               "but not in the queries file."
 
   queries[query][:rpsblast_hits] += 1
 
@@ -1068,7 +1105,8 @@ File.open(mmseqs_out, "rt").each_line do |line|
   evalue = rest[8].to_f
 
   abort_unless queries.has_key?(query),
-               "query #{query} was in the mmseqs output file but not in the queries file."
+               "query #{query} was in the mmseqs output file " \
+               "but not in the queries file."
 
   queries[query][:mmseqs_hits] += 1
 
@@ -1078,16 +1116,28 @@ File.open(mmseqs_out, "rt").each_line do |line|
 end
 
 File.open(search_results_summary_out, "w") do |f|
-  f.puts %w[seq intein.hits intein.best.evalue conserved.domain.hits conserved.domain.best.evalue].join "\t"
+  comment_line = [
+    "seq",
+    "intein.hits",
+    "intein.best.evalue",
+    "conserved.domain.hits",
+    "conserved.domain.best.evalue",
+  ].join "\t"
+
+  f.puts comment_line
 
   queries_with_hits = queries.select do |query, info|
     info[:mmseqs_hits] > 0 || info[:rpsblast_hits] > 0
   end
 
   queries_with_hits.each do |query, info|
-    f.puts [query,
-            info[:mmseqs_hits], info[:mmseqs_best_evalue],
-            info[:rpsblast_hits], info[:rpsblast_best_evalue]].join "\t"
+    f.puts [
+      query,
+      info[:mmseqs_hits],
+      info[:mmseqs_best_evalue],
+      info[:rpsblast_hits],
+      info[:rpsblast_best_evalue]
+    ].join "\t"
   end
 end
 
@@ -1107,7 +1157,15 @@ AbortIf.logger.info { "Parsing conserved residue file" }
 query_good = {}
 File.open(criteria_check_full_out, "rt").each_line do |line|
   unless line.downcase.start_with? "query"
-    query, target, evalue, region_idx, region, region_good, start_good, end_good, extein_good = line.chomp.split "\t"
+    query,
+    target,
+    evalue,
+    region_idx,
+    region,
+    region_good,
+    start_good,
+    end_good,
+    extein_good = line.chomp.split "\t"
 
     start_test_pass, start_test_result = residue_test_pass? start_good, opts[:intein_n_term_test_strictness]
     end_test_pass, end_test_result = residue_test_pass? end_good, opts[:intein_c_term_dipeptide_test_strictness]
@@ -1135,7 +1193,9 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     # be first.  So if we only keep the first target for that region,
     # it will be the one with the best evalue.
     if all_good && query_good[query][region_idx][:single_target_all_good] == NO
-      query_good[query][region_idx][:single_target_all_good] = { seq: target, evalue: evalue, region: region }
+      query_good[query][region_idx][:single_target_all_good] = {
+        seq: target, evalue: evalue, region: region
+      }
     end
 
     if region_good == L1
@@ -1143,7 +1203,8 @@ File.open(criteria_check_full_out, "rt").each_line do |line|
     end
 
     if start_test_pass
-      query_good[query][region_idx][:start_good] = start_good # start good can have multiple levels
+      # start good can have multiple levels
+      query_good[query][region_idx][:start_good] = start_good
     end
 
     if end_test_pass
@@ -1159,7 +1220,20 @@ end
 AbortIf.logger.info { "Writing condensed criteria check" }
 
 File.open(criteria_check_condensed_out, "w") do |f|
-  f.puts %w[seq region.id single.target single.target.evalue single.target.region multi.target region start end extein].join "\t"
+  comment_line = [
+    "seq",
+    "region.id",
+    "single.target",
+    "single.target.evalue",
+    "single.target.region",
+    "multi.target",
+    "region",
+    "start",
+    "end",
+    "extein",
+  ].join "\t"
+
+  f.puts comment_line
 
   query_good.each do |query, regions|
     regions.each do |region, info|
@@ -1225,7 +1299,8 @@ File.open(containing_regions_out, "rt").each_line.with_index do |line, idx|
     end
 
     abort_if region_info[seq].has_key?(region_id),
-             "#{seq} - #{region_id} pair is duplicated in #{containing_regions_out}"
+             "#{seq} - #{region_id} pair is duplicated in " \
+             "#{containing_regions_out}"
 
     region_info[seq][region_id] = {
       start: start.to_i,
@@ -1358,8 +1433,12 @@ end
 
 AbortIf.logger.info { "Trimming inteins from queries" }
 
-trimmed_queries_out = File.join seq_dir, "#{query_basename}.query_seqs_with_inteins_removed.faa"
-trimmed_inteins_out = File.join seq_dir, "#{query_basename}.intein_seqs.faa"
+trimmed_queries_out =
+  File.join seq_dir,
+            "#{query_basename}.query_seqs_with_inteins_removed.faa"
+trimmed_inteins_out =
+  File.join seq_dir,
+            "#{query_basename}.intein_seqs.faa"
 
 intein_count_info = { n_term: Hash.new(0), c_term: Hash.new(0) }
 
@@ -1387,7 +1466,8 @@ File.open(trimmed_queries_out, "w") do |queries_f|
             abort_unless start_idx >= 0,
                          "bad start idx for #{rec.id}-#{region_id}"
             abort_unless start_idx < stop_idx,
-                         "start idx not less than stop idx for #{rec.id}-#{region_id}"
+                         "start idx not less than stop idx for " \
+                         "#{rec.id}-#{region_id}"
             abort_unless stop_idx < rec.seq.length,
                          "bad stop idx for #{rec.id}-#{region_id}"
 
@@ -1398,7 +1478,9 @@ File.open(trimmed_queries_out, "w") do |queries_f|
             intein_count_info[:n_term][intein_first] += 1
             intein_count_info[:c_term][intein_dipep] += 1
 
-            inteins_f.puts ">#{rec.id}___intein_#{region_id} n_term___#{intein_first} c_term___#{intein_dipep}"
+            inteins_f.puts ">#{rec.id}___intein_#{region_id} " \
+                           "n_term___#{intein_first} " \
+                           "c_term___#{intein_dipep}"
             inteins_f.puts intein_seq
             num_inteins_written += 1
 
@@ -1406,18 +1488,22 @@ File.open(trimmed_queries_out, "w") do |queries_f|
           end
         end
 
-        # Make sure the intein isn't repeated.  It will break the splicing if it is.
+        # Make sure the intein isn't repeated.  It will break the
+        # splicing if it is.
         intein_seqs.each do |iseq|
           abort_unless rec.seq.scan(iseq).count == 1,
-                       "An intein was present more than once in #{rec.id}"
+                       "An intein was present more than once in " \
+                       "#{rec.id}"
         end
 
         regex = Regexp.new intein_seqs.join("|")
         trimmed_query_seq = rec.seq.split(regex).join
 
         # TODO sometimes total_inteins is 0...when will this happen?
-        intein_trim_info[rec.id] = "#{intein_seqs.count}_of_#{total_inteins}"
-        queries_f.puts ">#{rec.id} inteins_removed___#{intein_seqs.count}_of_#{total_inteins}"
+        intein_trim_info[rec.id] =
+          "#{intein_seqs.count}_of_#{total_inteins}"
+        queries_f.puts ">#{rec.id} inteins_removed___" \
+                       "#{intein_seqs.count}_of_#{total_inteins}"
         queries_f.puts trimmed_query_seq
 
         # More sanity checks
@@ -1425,7 +1511,11 @@ File.open(trimmed_queries_out, "w") do |queries_f|
           total_intein_length = intein_seqs.map(&:length).reduce(:+)
 
           unless total_intein_length + trimmed_query_seq.length == rec.seq.length
-            AbortIf.logger.error { "Pre trimming length and post trimming length plus intein length don't match up for seq #{rec.id}.  Don't trust this sequence!!!" }
+            AbortIf.logger.error do
+              "Pre trimming length and post trimming length " \
+              "plus intein length don't match up for seq #{rec.id}." \
+              "  Don't trust this sequence!!!"
+            end
           end
         end
 
@@ -1449,20 +1539,35 @@ end
 
 AbortIf.logger.info { "Checking the trimmed sequences against superfamilies and intein DB" }
 
-trimmed_queries_rpsblast_out = File.join search_results_dir, "trimmed_queries_search_superfamilies.txt"
-trimmed_inteins_rpsblast_out = File.join search_results_dir, "trimmed_inteins_search_superfamilies.txt"
+trimmed_queries_rpsblast_out =
+  File.join search_results_dir,
+            "trimmed_queries_search_superfamilies.txt"
+trimmed_inteins_rpsblast_out =
+  File.join search_results_dir,
+            "trimmed_inteins_search_superfamilies.txt"
 
-trimmed_queries_mmseqs_out = File.join search_results_dir, "trimmed_queries_search_inteins.txt"
-trimmed_inteins_mmseqs_out = File.join search_results_dir, "trimmed_inteins_search_inteins.txt"
+trimmed_queries_mmseqs_out =
+  File.join search_results_dir,
+            "trimmed_queries_search_inteins.txt"
+trimmed_inteins_mmseqs_out =
+  File.join search_results_dir,
+            "trimmed_inteins_search_inteins.txt"
 
-trimmed_queries_all_search_out = File.join search_results_dir, "trimmed_queries_search.txt"
-trimmed_inteins_all_search_out = File.join search_results_dir, "trimmed_inteins_search.txt"
+trimmed_queries_all_search_out =
+  File.join search_results_dir,
+            "trimmed_queries_search.txt"
+trimmed_inteins_all_search_out =
+  File.join search_results_dir,
+            "trimmed_inteins_search.txt"
 
-# there are enough seqs for parallel blast to be worth it and the user asked for splits
+# there are enough seqs for parallel blast to be worth it and the user
+# asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
-  rpsblast_search_parallel! trimmed_queries_out, trimmed_queries_rpsblast_out
+  rpsblast_search_parallel! trimmed_queries_out,
+                            trimmed_queries_rpsblast_out
 else
-  rpsblast_search! trimmed_queries_out, trimmed_queries_rpsblast_out
+  rpsblast_search! trimmed_queries_out,
+                   trimmed_queries_rpsblast_out
 end
 
 # First convert the headers. For the mmseqs, we need to change to
@@ -1471,7 +1576,9 @@ end
 
 n = 0
 new_query_name_map = {}
-trimmed_queries_simple_headers_out = trimmed_queries_out + ".simple_headers"
+trimmed_queries_simple_headers_out =
+  trimmed_queries_out + ".simple_headers"
+
 File.open(trimmed_queries_simple_headers_out, "w") do |f|
   ParseFasta::SeqFile.open(trimmed_queries_out).each_record do |rec|
     n += 1
@@ -1484,7 +1591,8 @@ File.open(trimmed_queries_simple_headers_out, "w") do |f|
   end
 end
 
-mmseqs_search! trimmed_queries_simple_headers_out, trimmed_queries_mmseqs_out
+mmseqs_search! trimmed_queries_simple_headers_out,
+               trimmed_queries_mmseqs_out
 
 # Now map the names back to how they were.
 File.open(tmpfile, "w") do |f|
@@ -1498,9 +1606,12 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in query mmseqs search", "mv #{tmpfile} #{trimmed_queries_mmseqs_out}"
+Utils.run_and_time_it! "Changing IDs in query mmseqs search",
+                       "mv #{tmpfile} #{trimmed_queries_mmseqs_out}"
 
-cmd = "cat #{trimmed_queries_rpsblast_out} #{trimmed_queries_mmseqs_out} > #{trimmed_queries_all_search_out}"
+cmd =
+  "cat #{trimmed_queries_rpsblast_out} #{trimmed_queries_mmseqs_out}" \
+  " > #{trimmed_queries_all_search_out}"
 Utils.run_and_time_it! "Catting query search results", cmd
 
 AbortIf.logger.info { "Summarizing 2nd query search" }
@@ -1530,32 +1641,44 @@ File.open(trimmed_queries_all_search_out, "rt").each_line do |line|
   end
 end
 
-second_blast_summary_queries_out = File.join search_results_dir, "trimmed_queries_search_summary.txt"
+second_blast_summary_queries_out =
+  File.join search_results_dir, "trimmed_queries_search_summary.txt"
 
 File.open(second_blast_summary_queries_out, "w") do |f|
   f.puts %w[seq iteins.removed hits best.evalue].join "\t"
 
   second_blast_summary_queries.each do |rec_id, info|
-    f.puts [rec_id, info[:inteins_removed], info[:num_hits], info[:best_evalue]].join "\t"
+    f.puts [
+      rec_id,
+      info[:inteins_removed],
+      info[:num_hits],
+      info[:best_evalue]
+    ].join "\t"
   end
 end
 
 
 
 if num_inteins_written.zero?
-  AbortIf.logger.info { "We couldn't trim out any inteins, so the 2nd round searching won't happen." }
+  AbortIf.logger.info do
+    "We couldn't trim out any inteins, " \
+    "so the 2nd round searching won't happen."
+  end
 else
   # We actually have inteins to search against.
 
   if opts[:split_queries] && num_inteins_written > opts[:cpus_search] * 2
-    rpsblast_search_parallel! trimmed_inteins_out, trimmed_inteins_rpsblast_out
+    rpsblast_search_parallel! trimmed_inteins_out,
+                              trimmed_inteins_rpsblast_out
   else
     rpsblast_search! trimmed_inteins_out, trimmed_inteins_rpsblast_out
   end
 
   n = 0
   new_intein_name_map = {}
-  trimmed_inteins_simple_headers_out = trimmed_inteins_out + ".simple_headers"
+  trimmed_inteins_simple_headers_out =
+    trimmed_inteins_out + ".simple_headers"
+
   File.open(trimmed_inteins_simple_headers_out, "w") do |f|
     ParseFasta::SeqFile.open(trimmed_inteins_out).each_record do |rec|
       n += 1
@@ -1568,7 +1691,8 @@ else
     end
   end
 
-  mmseqs_search! trimmed_inteins_simple_headers_out, trimmed_inteins_mmseqs_out
+  mmseqs_search! trimmed_inteins_simple_headers_out,
+                 trimmed_inteins_mmseqs_out
 
   File.open(tmpfile, "w") do |f|
     File.open(trimmed_inteins_mmseqs_out, "rt").each_line do |line|
@@ -1581,9 +1705,12 @@ else
       end
     end
   end
-  Utils.run_and_time_it! "Changing IDs in intein mmseqs search", "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
+  Utils.run_and_time_it! "Changing IDs in intein mmseqs search",
+                         "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
 
-  cmd = "cat #{trimmed_inteins_rpsblast_out} #{trimmed_inteins_mmseqs_out} > #{trimmed_inteins_all_search_out}"
+  cmd = "cat #{trimmed_inteins_rpsblast_out} " \
+        "#{trimmed_inteins_mmseqs_out} > " \
+        "#{trimmed_inteins_all_search_out}"
   Utils.run_and_time_it! "Catting intein search results", cmd
 
   AbortIf.logger.info { "Summarizing 2nd intein search" }
@@ -1608,8 +1735,9 @@ else
     end
   end
 
-  second_blast_summary_inteins_out = File.join search_results_dir,
-                                               "trimmed_inteins_search_summary.txt"
+  second_blast_summary_inteins_out =
+    File.join search_results_dir,
+              "trimmed_inteins_search_summary.txt"
 
   File.open(second_blast_summary_inteins_out, "w") do |f|
     f.puts %w[seq hits best.evalue].join "\t"
@@ -1626,8 +1754,11 @@ end
 
 AbortIf.logger.info { "Writing intein info" }
 
-c_term_residue_counts_out = File.join details_dir, "intein_c_term_residue_counts.txt"
-n_term_residue_counts_out = File.join details_dir, "intein_n_term_residue_counts.txt"
+c_term_residue_counts_out =
+  File.join details_dir, "intein_c_term_residue_counts.txt"
+n_term_residue_counts_out =
+  File.join details_dir, "intein_n_term_residue_counts.txt"
+
 File.open(c_term_residue_counts_out, "w") do |cf|
   File.open(n_term_residue_counts_out, "w") do |nf|
     cf.puts %w[location oligo count perc].join "\t"
