@@ -37,7 +37,7 @@ opts = Trollop.options do
 
   Screens sequences against:
 
-    - 585 sequences from inteins.com
+    - A database of known intein sequences.
     - Conserved domains from superfamilies cl22434 (Hint), cl25944
       (Intein_splicing) and cl00083 (HNHc).
 
@@ -73,6 +73,16 @@ opts = Trollop.options do
                   to split up the RPS-BLAST search step to speed
                   things up.  If you have a lot of queries, pass this
                   option.
+
+  Other info:
+
+    - The CPU options.... you should set the --cpus-search to as many
+      CPUs as you have available as MMseqs2 is very good at utilizing
+      all the CPUs that you give it.  If you're running this on a
+      fancy server with lots of processors, you should probably set
+      --cpus-alignment lower, maybe like half of the number of total
+      CPUs.  On the 32 core machine I tested on, 8 to 16 generally
+      worked better than all 32.
 
   Options:
   EOS
@@ -110,7 +120,11 @@ opts = Trollop.options do
       "Keep the alignment files",
       default: false)
 
-  opt(:cpus, "Number of cpus to use", default: 1)
+  opt(:cpus_search,
+      "Number of cpus to use for homology search",
+      default: 1)
+  opt(:cpus_alignment,
+      "Number of alignments to run in parallel", default: 1)
   opt(:parallel_mode,
       "0: automatic, 1: one query-region pair per CPU (good for lots of sequences), 2: fancy thing (good for fewer sequences)",
       default: 0)
@@ -212,7 +226,9 @@ abort_unless opts[:evalue_rpsblast] <= 0.1,
 abort_unless opts[:evalue_mmseqs] <= 0.1,
              "--evalue-mmseqs should definetely be <= 0.1"
 
-abort_unless opts[:cpus] >= 1,
+abort_unless opts[:cpus_search] >= 1,
+             "--cpus-search must be >= 1"
+abort_unless opts[:cpus_alignment] >= 1,
              "--cpus must be >= 1"
 
 abort_unless opts[:ignore_queries_less_than] >= 0,
@@ -229,39 +245,80 @@ REGION_MAX_LEN = opts[:region_max_length]
 IGNORE_QUERIES_LESS_THAN = opts[:ignore_queries_less_than]
 
 
-tmp_dir = File.join opts[:outdir], "tmp"
+tmp_dir =
+  File.join opts[:outdir],
+            "tmp"
 
-profile_db_dir = File.join opts[:outdir], "profile_db"
-profile_db = File.join profile_db_dir, "intein_db"
+profile_db_dir =
+  File.join opts[:outdir],
+            "profile_db"
+profile_db =
+  File.join profile_db_dir,
+            "intein_db"
 
-search_results_dir = File.join opts[:outdir], "search_results"
-aln_dir = File.join search_results_dir, "alignments"
-details_dir = File.join opts[:outdir], "details"
-results_dir = File.join opts[:outdir], "results"
-seq_dir = File.join opts[:outdir], "sequences"
+search_results_dir =
+  File.join opts[:outdir],
+            "search_results"
+aln_dir =
+  File.join search_results_dir,
+            "alignments"
+details_dir =
+  File.join opts[:outdir],
+            "details"
+results_dir =
+  File.join opts[:outdir],
+            "results"
+seq_dir =
+  File.join opts[:outdir],
+            "sequences"
 
 
-mmseqs_log = File.join search_results_dir, "mmseqs_log.txt"
+mmseqs_log =
+  File.join search_results_dir,
+            "mmseqs_log.txt"
 
-rpsblast_out = File.join search_results_dir, "initial_queries_search_superfamilies.txt"
-mmseqs_out = File.join search_results_dir, "initial_queries_search_inteins.txt"
-all_blast_out = File.join search_results_dir, "initial_queries_search.txt"
-search_results_summary_out = File.join search_results_dir, "initial_queries_search_summary.txt"
+rpsblast_out =
+  File.join search_results_dir,
+            "initial_queries_search_superfamilies.txt"
+mmseqs_out =
+  File.join search_results_dir,
+            "initial_queries_search_inteins.txt"
+all_blast_out =
+  File.join search_results_dir,
+            "initial_queries_search.txt"
+search_results_summary_out =
+  File.join search_results_dir,
+            "initial_queries_search_summary.txt"
 
-query_basename = File.basename(opts[:queries], File.extname(opts[:queries]))
+query_basename =
+  File.basename(opts[:queries],
+                File.extname(opts[:queries]))
 
-queries_simple_name_out = File.join opts[:outdir], "queries_with_simple_names.faa"
+queries_simple_name_out =
+  File.join opts[:outdir],
+            "queries_with_simple_names.faa"
 
 # Outfiles
-containing_regions_out = File.join details_dir, "intein_regions_putative.txt"
-refined_containing_regions_out = File.join details_dir, "intein_regions_refined.txt"
-refined_containing_regions_simple_out = File.join results_dir, "intein_regions_refined_condensed.txt"
-criteria_check_full_out = File.join details_dir, "intein_criteria_check.txt"
-criteria_check_condensed_out = File.join details_dir, "intein_criteria_check_condensed.txt"
+containing_regions_out =
+  File.join details_dir,
+            "intein_regions_putative.txt"
+refined_containing_regions_out =
+  File.join details_dir,
+            "intein_regions_refined.txt"
+refined_containing_regions_simple_out =
+  File.join results_dir,
+            "intein_regions_refined_condensed.txt"
+criteria_check_full_out =
+  File.join details_dir,
+            "intein_criteria_check.txt"
+criteria_check_condensed_out =
+  File.join details_dir,
+            "intein_criteria_check_condensed.txt"
 
 
 abort_if Dir.exist?(opts[:outdir]),
-         "The outdir #{opts[:outdir]} already exists!  Specify a different outdir!"
+         "The outdir #{opts[:outdir]} already exists!  " +
+         "Specify a different outdir!"
 
 AbortIf.logger.info { "Making directories" }
 
@@ -280,19 +337,45 @@ FileUtils.mkdir_p seq_dir
 # search constants
 ##################
 
-MAFFT = "#{opts[:mafft]} --quiet --auto --thread 1 '%s' > '%s'"
+# first -- infile
+# second -- outfile
+MAFFT = "#{opts[:mafft]} " \
+        "--quiet " \
+        "--auto " \
+        "--thread 1 '%s' " \
+        "> '%s'"
 
 # first -- infile
 # second -- outfile
-MMSEQS_SEARCH = "#{search} %s #{opts[:inteins]} %s #{tmp_dir} --format-mode 2 -s #{opts[:mmseqs_sensitivity]} --num-iterations #{opts[:mmseqs_iterations]} -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} >> #{mmseqs_log}"
+MMSEQS_SEARCH = "#{search} %s #{opts[:inteins]} %s #{tmp_dir} " \
+                "--format-mode 2 " \
+                "-s #{opts[:mmseqs_sensitivity]} " \
+                "--num-iterations #{opts[:mmseqs_iterations]} " \
+                "-e #{opts[:evalue_mmseqs]} " \
+                "--threads #{opts[:cpus_search]} " \
+                ">> #{mmseqs_log}"
 
 # first -- infile
 # second -- outfile
-RPSBLAST_SEARCH =  "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query %s -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out %s"
+RPSBLAST_SEARCH =  "#{opts[:rpsblast]} " \
+                   "-num_threads #{opts[:cpus_search]} " \
+                   "-db #{profile_db} " \
+                   "-query %s " \
+                   "-evalue #{opts[:evalue_rpsblast]} " \
+                   "-outfmt 6 " \
+                   "-out %s"
 
 # first -- infile
 # second -- outfile
-RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile %s --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile %s --blast-program #{opts[:rpsblast]} --split-program #{opts[:split_seqs]}"
+RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} " \
+                           "--cpus #{opts[:cpus_search]} " \
+                           "--evalue #{opts[:evalue_rpsblast]} " \
+                           "--infile %s " \
+                           "--blast-db #{profile_db} " \
+                           "--outdir #{opts[:outdir]} " \
+                           "--specific-outfile %s " \
+                           "--blast-program #{opts[:rpsblast]} " \
+                           "--split-program #{opts[:split_seqs]}"
 
 
 ##################
@@ -309,8 +392,12 @@ AbortIf.logger.info { "Writing smp list file" }
 if opts[:pssm_list]
   pssm_list = opts[:pssm_list]
 else
-  AbortIf.logger.info { "No --pssm-list arg was passed.  Using the default pssm list." }
-  # Write the default list.  TODO why don't we just read this from the assets folder?
+  AbortIf.logger.info {
+    "No --pssm-list arg was passed.  Using the default pssm list."
+  }
+
+  # Write the default list.  TODO why don't we just read this from the
+  # assets folder?
   pssm_list = File.join opts[:outdir], "pssm_list.txt"
   File.open(pssm_list, "w") do |f|
     PSSM_PATHS.each do |path|
@@ -325,7 +412,8 @@ AbortIf.logger.info { "Checking smp files" }
 File.open(pssm_list, "rt").each_line do |line|
   line.chomp.split.each do |smp_fname|
     abort_unless File.exist?(smp_fname),
-                 "File #{smp_fname} was listed in #{pssm_list} but it does not exist!"
+                 "File #{smp_fname} was listed in #{pssm_list} " \
+                 "but it does not exist!"
   end
 end
 
@@ -407,22 +495,43 @@ AbortIf.logger.info { "#{perc_too_short}% of queries passed the length filter." 
 
 AbortIf.logger.info { "Searching for homology" }
 
-cmd = "#{opts[:makeprofiledb]} -in #{pssm_list} -out #{profile_db}"
+cmd = "#{opts[:makeprofiledb]} " \
+      "-in #{pssm_list} " \
+      "-out #{profile_db}"
 Utils.run_and_time_it! "Making profile DB", cmd
 
 num_seqs = queries.count
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
-if opts[:split_queries] && num_seqs > opts[:cpus] * 2
+if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
   AbortIf.logger.info { "You asked for splits, and we have #{num_seqs} sequences, so we will split the queries before blasting." }
-  cmd = "#{opts[:parallel_blast]} --cpus #{opts[:cpus]} --evalue #{opts[:evalue_rpsblast]} --infile #{queries_simple_name_out} --blast-db #{profile_db} --outdir #{opts[:outdir]} --specific-outfile #{rpsblast_out} --blast-program #{opts[:rpsblast]} --split-program #{opts[:split_seqs]}"
+  cmd = "#{opts[:parallel_blast]} " \
+        "--cpus #{opts[:cpus_search]} " \
+        "--evalue #{opts[:evalue_rpsblast]} " \
+        "--infile #{queries_simple_name_out} " \
+        "--blast-db #{profile_db} " \
+        "--outdir #{opts[:outdir]} " \
+        "--specific-outfile #{rpsblast_out} " \
+        "--blast-program #{opts[:rpsblast]} " \
+        "--split-program #{opts[:split_seqs]}"
 else
   AbortIf.logger.info { "Not splitting the queries before blasting.  Either too few (#{num_seqs}) or you didn't ask for splits." }
-  cmd = "#{opts[:rpsblast]} -num_threads #{opts[:cpus]} -db #{profile_db} -query #{queries_simple_name_out} -evalue #{opts[:evalue_rpsblast]} -outfmt 6 -out #{rpsblast_out}"
+  cmd = "#{opts[:rpsblast]} " \
+        "-num_threads #{opts[:cpus_search]} " \
+        "-db #{profile_db} " \
+        "-query #{queries_simple_name_out} " \
+        "-evalue #{opts[:evalue_rpsblast]} " \
+        "-outfmt 6 " \
+        "-out #{rpsblast_out}"
 end
 Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
-cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} --format-mode 2 -s #{opts[:mmseqs_sensitivity]} --num-iterations #{opts[:mmseqs_iterations]} -e #{opts[:evalue_mmseqs]} --threads #{opts[:cpus]} >> #{mmseqs_log}"
+cmd = "#{search} #{queries_simple_name_out} #{opts[:inteins]} #{mmseqs_out} #{tmp_dir} " \
+      "--format-mode 2 " \
+      "-s #{opts[:mmseqs_sensitivity]} " \
+      "--num-iterations #{opts[:mmseqs_iterations]} " \
+      "-e #{opts[:evalue_mmseqs]} " \
+      "--threads #{opts[:cpus_search]} >> #{mmseqs_log}"
 Utils.run_and_time_it! "Running mmseqs", cmd
 
 #################
@@ -693,7 +802,7 @@ conserved_f_lines = []
 if parallel_mode == 1
   # Process each query-region pair in parallel
   tmp_lines = Parallel.map(mmseqs_hit_groups,
-                           in_processes: opts[:cpus],
+                           in_processes: opts[:cpus_alignment],
                            progress: "Checking conserved residues") do |group, items|
     # progbar.increment
 
@@ -823,14 +932,14 @@ elsif parallel_mode == 2
       #   "parallel."
       # end
 
-      subset_2.each_slice(opts[:cpus]) do |slice|
+      subset_2.each_slice(opts[:cpus_alignment]) do |slice|
         break if found_good_hit
 
         num_aligned += slice.count
 
         results = Parallel.map(
           slice,
-          in_processes: opts[:cpus]
+          in_processes: opts[:cpus_alignment]
         ) do |(blast_record, clipping_region)|
 
           tmp_aln_in = File.join aln_dir,
@@ -1350,7 +1459,7 @@ trimmed_queries_all_search_out = File.join search_results_dir, "trimmed_queries_
 trimmed_inteins_all_search_out = File.join search_results_dir, "trimmed_inteins_search.txt"
 
 # there are enough seqs for parallel blast to be worth it and the user asked for splits
-if opts[:split_queries] && num_seqs > opts[:cpus] * 2
+if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
   rpsblast_search_parallel! trimmed_queries_out, trimmed_queries_rpsblast_out
 else
   rpsblast_search! trimmed_queries_out, trimmed_queries_rpsblast_out
@@ -1438,7 +1547,7 @@ if num_inteins_written.zero?
 else
   # We actually have inteins to search against.
 
-  if opts[:split_queries] && num_inteins_written > opts[:cpus] * 2
+  if opts[:split_queries] && num_inteins_written > opts[:cpus_search] * 2
     rpsblast_search_parallel! trimmed_inteins_out, trimmed_inteins_rpsblast_out
   else
     rpsblast_search! trimmed_inteins_out, trimmed_inteins_rpsblast_out
