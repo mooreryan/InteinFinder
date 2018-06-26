@@ -1,3 +1,5 @@
+require_relative "intein_finder"
+
 ######################################################################
 # aligning
 ##########
@@ -20,7 +22,7 @@ end
 def align! aln_in, aln_out
   cmd = sprintf MAFFT, aln_in, aln_out
 
-  Utils.run_it! cmd
+  InteinFinder::Utils.run_it! cmd
 end
 
 
@@ -233,7 +235,7 @@ end
 
 # name can be either a name or a path to the program.
 def check_program name
-  abort_unless File.exists?(name) || Utils.command?(name),
+  abort_unless File.exists?(name) || InteinFinder::Utils.command?(name),
                "Either #{name} doesn't exist or it is not a command."
 end
 
@@ -279,20 +281,20 @@ end
 def mmseqs_search! infile, outfile
   cmd = sprintf MMSEQS_SEARCH, infile, outfile
 
-  Utils.run_and_time_it! "Running mmseqs", cmd
+  InteinFinder::Utils.run_and_time_it! "Running mmseqs", cmd
 end
 
 def rpsblast_search! infile, outfile
 
   cmd = sprintf RPSBLAST_SEARCH, infile, outfile
 
-  Utils.run_and_time_it! "Running rpsblast", cmd
+  InteinFinder::Utils.run_and_time_it! "Running rpsblast", cmd
 end
 
 def rpsblast_search_parallel! infile, outfile
   cmd = sprintf RPSBLAST_SEARCH_PARALLEL, infile, outfile
 
-  Utils.run_and_time_it! "Running rpsblast", cmd
+  InteinFinder::Utils.run_and_time_it! "Running rpsblast", cmd
 end
 
 ########

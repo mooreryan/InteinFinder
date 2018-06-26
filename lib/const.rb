@@ -74,7 +74,7 @@ IGNORE_REGIONS_LESS_THAN_DEFUALT = 100
 VERSION   = "v0.7.0-alpha"
 COPYRIGHT = "2018 Ryan Moore"
 CONTACT   = "moorer@udel.edu"
-WEBSITE   = "https://github.com/mooreryan/intein_finder"
+WEBSITE   = "https://github.com/mooreryan/InteinFinder"
 LICENSE   = "MIT"
 
 

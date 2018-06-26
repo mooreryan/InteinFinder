@@ -10,6 +10,7 @@ tara___seq_5	0	383	743	361	Yes
 tara___seq_6	0	466	785	320	Yes
 tara___seq_7	0	157	565	409	Yes
 tara___seq_8	0	453	646	194	No
+tara___seq_8	1	823	931	109	No
 tara___seq_9	0	408	775	368	Yes
 tara___seq_9	1	786	1122	337	Yes
 tara___seq_10	0	275	678	404	Yes

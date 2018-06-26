@@ -42,13 +42,16 @@ test_small: split_seqs
 # 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/no_inteins.faa --outdir $(TEST_OUTDIR) --cpus $(THREADS) && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/*
 
 split_seqs: $(OBJS)
-	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -fopt-info-optimized -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
 
 test_split_seqs: split_seqs
 	rm $(TEST_FILES)/split_seqs_in.fa.split_?; valgrind --leak-check=full $(BIN)/split_seqs 2 $(TEST_FILES)/split_seqs_in.fa && diff $(TEST_FILES)/split_seqs_in.fa.split_0 $(TEST_FILES)/split_seqs_split_0_expected.txt && diff $(TEST_FILES)/split_seqs_in.fa.split_1 $(TEST_FILES)/split_seqs_split_1_expected.txt
 
 simple_headers: $(OBJS)
-	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -fopt-info-optimized -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
 
 test_simple_headers: simple_headers
 	rm $(TEST_FILES)/*.simple_headers.*; valgrind --leak-check=full $(BIN)/simple_headers APPLE $(TEST_FILES)/simple_headers_in.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.fa $(TEST_FILES)/simple_headers_expected.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.name_map.txt $(TEST_FILES)/simple_headers_name_map_expected.txt
+
+test_homology_search: simple_headers split_seqs
+	rm test_files/snazzy_proteins.simple_headers.faa.split_*; rm -r QWFP/; time ruby bin/homology_search.rb assets/intein_sequences/all_derep.faa test_files/snazzy_proteins.faa QWFP 2 && tree QWFP

@@ -16,12 +16,6 @@ require_relative "lib/const"
 require_relative "lib/intein_finder"
 require_relative "lib/methods"
 
-module Utils
-  extend Aai::CoreExtensions::Time
-  extend Aai::CoreExtensions::Process
-  extend Aai::Utils
-end
-
 module PasvLib
   extend PasvLib::Utils
 end
@@ -503,7 +497,7 @@ AbortIf.logger.info { "Searching for homology" }
 cmd = "#{opts[:makeprofiledb]} " \
       "-in #{pssm_list} " \
       "-out #{profile_db}"
-Utils.run_and_time_it! "Making profile DB", cmd
+InteinFinder::Utils.run_and_time_it! "Making profile DB", cmd
 
 num_seqs = queries.count
 # there are enough seqs for parallel blast to be worth it and the user
@@ -537,7 +531,7 @@ else
         "-outfmt 6 " \
         "-out #{rpsblast_out}"
 end
-Utils.run_and_time_it! "Running rpsblast", cmd
+InteinFinder::Utils.run_and_time_it! "Running rpsblast", cmd
 
 # 5.7, 2
 cmd = "#{search} " \
@@ -551,7 +545,7 @@ cmd = "#{search} " \
       "-e #{opts[:evalue_mmseqs]} " \
       "--threads #{opts[:cpus_search]} " \
       ">> #{mmseqs_log}"
-Utils.run_and_time_it! "Running mmseqs", cmd
+InteinFinder::Utils.run_and_time_it! "Running mmseqs", cmd
 
 #################
 # homology search
@@ -581,7 +575,7 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in rpsblast",
+InteinFinder::Utils.run_and_time_it! "Changing IDs in rpsblast",
                        "mv #{tmpfile} #{rpsblast_out}"
 
 tmpfile = File.join opts[:outdir], "tmptmp"
@@ -596,7 +590,7 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in mmseqs search",
+InteinFinder::Utils.run_and_time_it! "Changing IDs in mmseqs search",
                        "mv #{tmpfile} #{mmseqs_out}"
 
 # From here out, the sequence IDs should be back to normal.
@@ -614,7 +608,7 @@ Utils.run_and_time_it! "Changing IDs in mmseqs search",
 AbortIf.logger.info { "Getting putative intein regions" }
 
 cmd = "cat #{rpsblast_out} #{mmseqs_out} > #{all_blast_out}"
-Utils.run_and_time_it! "Catting search results", cmd
+InteinFinder::Utils.run_and_time_it! "Catting search results", cmd
 
 query2hits = {}
 File.open(all_blast_out, "rt").each_line do |line|
@@ -1537,7 +1531,9 @@ end
 # check the sequences that were trimmed
 #######################################
 
-AbortIf.logger.info { "Checking the trimmed sequences against superfamilies and intein DB" }
+AbortIf.logger.info do
+  "Checking the trimmed sequences against superfamilies and intein DB"
+end
 
 trimmed_queries_rpsblast_out =
   File.join search_results_dir,
@@ -1606,13 +1602,13 @@ File.open(tmpfile, "w") do |f|
     end
   end
 end
-Utils.run_and_time_it! "Changing IDs in query mmseqs search",
+InteinFinder::Utils.run_and_time_it! "Changing IDs in query mmseqs search",
                        "mv #{tmpfile} #{trimmed_queries_mmseqs_out}"
 
 cmd =
   "cat #{trimmed_queries_rpsblast_out} #{trimmed_queries_mmseqs_out}" \
   " > #{trimmed_queries_all_search_out}"
-Utils.run_and_time_it! "Catting query search results", cmd
+InteinFinder::Utils.run_and_time_it! "Catting query search results", cmd
 
 AbortIf.logger.info { "Summarizing 2nd query search" }
 
@@ -1705,13 +1701,13 @@ else
       end
     end
   end
-  Utils.run_and_time_it! "Changing IDs in intein mmseqs search",
+  InteinFinder::Utils.run_and_time_it! "Changing IDs in intein mmseqs search",
                          "mv #{tmpfile} #{trimmed_inteins_mmseqs_out}"
 
   cmd = "cat #{trimmed_inteins_rpsblast_out} " \
         "#{trimmed_inteins_mmseqs_out} > " \
         "#{trimmed_inteins_all_search_out}"
-  Utils.run_and_time_it! "Catting intein search results", cmd
+  InteinFinder::Utils.run_and_time_it! "Catting intein search results", cmd
 
   AbortIf.logger.info { "Summarizing 2nd intein search" }
 
