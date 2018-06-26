@@ -1,5 +1,7 @@
 require "aai"
 require "abort_if"
+require "parallel"
+require "tempfile"
 
 include AbortIf
 
@@ -121,11 +123,43 @@ module InteinFinder
   end
 
   module Parsers
-
   end
 
   # Functions for running/calling out to other scripts and programs.
   module Runners
+
+    def makeprofiledb! exe, smp_paths, output
+      # First write the tmp infile
+      tmp_f = Tempfile.new
+      begin
+        tmp_f.puts smp_paths.join "\n"
+        tmp_f.fsync
+
+        # Check and make sure that all the paths actually point to
+        # files that exist.
+        File.open(tmp_f.path, "rt").each_line do |line|
+          line.chomp!
+
+          abort_unless File.exist?(line),
+                       "SMP file #{line} was listed, " \
+                       "but it does not exist."
+        end
+
+        cmd = "#{exe} " \
+              "-in #{tmp_f.path} " \
+              "-out #{output}"
+
+        # puts `cat #{tmp_f.path}`
+
+        InteinFinder::Utils.run_and_time_it! "Make rpsblast db", cmd
+      ensure
+        tmp_f.close
+        tmp_f.unlink
+      end
+
+      { output: "#{output}.*" }
+    end
+
     # @note Removes the tmpdir before starting if it exists.
     def mmseqs!(exe:,
                 queries:,
@@ -162,10 +196,56 @@ module InteinFinder
 
       # Output the output file name for consistency with the other
       # functions.
-      {
-        output: output
-      }
+      { output: output }
     end
+
+    def parallel_rpsblast!(exe:,
+                           query_files:,
+                           target_db:,
+                           output:,
+                           evalue: 1e-3,
+                           threads: 1)
+
+      query_files.each do |fname|
+        abort_unless File.exist?(fname),
+                     "Query file #{fname} does not exist"
+      end
+
+      tmp_btabs = nil
+
+      InteinFinder::Utils.time_it "Parallel rpsblast", AbortIf::logger do
+        tmp_btabs =
+          Parallel.map(query_files, in_processes: threads) do |fname|
+
+          tmp_btab = "#{fname}.tmp_btab"
+
+          cmd = "#{exe} " \
+                "-query #{fname} " \
+                "-db #{target_db} " \
+                "-num_threads 1 " \
+                "-outfmt 6 " \
+                "-out #{tmp_btab} " \
+                "-evalue #{evalue}"
+
+          InteinFinder::Utils.run_it! cmd
+
+          tmp_btab
+        end
+      end
+
+      File.open(output, "w") do |f|
+        tmp_btabs.each do |btab|
+          File.open(btab, "rt").each_line do |line|
+            f.puts line
+          end
+
+          FileUtils.rm btab
+        end
+      end
+
+      { output: output }
+    end
+
 
     def simple_headers! exe, annotation, seqs
       cmd = "#{File.absolute_path exe} #{annotation} #{seqs}"

@@ -37,6 +37,50 @@ RSpec.describe InteinFinder do
   describe InteinFinder::Runners do
     let(:runners) { Class.new.extend InteinFinder::Runners }
 
+    describe "makeprofiledb" do
+      let(:makeprofiledb_exe) do
+        "makeprofiledb"
+      end
+      let(:makeprofiledb_smp_paths) do
+        [File.join(TEST_FILE_INPUT_DIR, "cd00081.smp")]
+      end
+      let(:makeprofiledb_output_base) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "makeprofiledb_output"
+      end
+
+      before :each do
+        SpecHelper::try_rm(*Dir.glob("#{makeprofiledb_output_base}.*"))
+      end
+
+      after :each do
+        SpecHelper::try_rm(*Dir.glob("#{makeprofiledb_output_base}.*"))
+      end
+
+      it "produces the expected files" do
+        ret_val = nil
+
+        expect {
+          ret_val = runners.makeprofiledb! makeprofiledb_exe,
+                                           makeprofiledb_smp_paths,
+                                           makeprofiledb_output_base
+        }.not_to raise_error
+
+        expect(Dir.glob "#{makeprofiledb_output_base}.*").not_to be_empty
+      end
+
+      it "raises error if one of the smp files doesn't exist" do
+        bad_path = File.join TEST_FILE_INPUT_DIR, "arstoien"
+        paths = makeprofiledb_smp_paths.push bad_path
+
+        expect {
+          runners.makeprofiledb! makeprofiledb_exe,
+                                 paths,
+                                 makeprofiledb_output_base
+        }.to raise_error AbortIf::Exit, /does not exist/
+      end
+    end
+
     describe "mmseqs!" do
       let(:mmseqs_exe) do
         "mmseqs"
@@ -74,7 +118,7 @@ RSpec.describe InteinFinder do
       end
 
       # Do everything in a single test as it is a slow one.
-      it "produces the expected files and deletes tmp folder" do
+      it "produces the expected files" do
         ret_val = nil
 
         expect {
@@ -110,6 +154,48 @@ RSpec.describe InteinFinder do
                             num_iterations: 1,
                             threads: 4
           }.to raise_error AbortIf::Exit, /output file.*already exists/
+      end
+    end
+
+    describe "parallel_rpsblast!" do
+      let(:parallel_rpsblast_exe) do
+        "rpsblast"
+      end
+      let(:parallel_rpsblast_query_files) do
+        Dir.glob(File.join(TEST_FILE_INPUT_DIR,
+                           "parallel_rpsblast_input.fa.split_?"))
+      end
+      let(:parallel_rpsblast_target_db) do
+        File.join TEST_FILE_INPUT_DIR,
+                  "parallel_rpsblast_target_db"
+      end
+      let(:parallel_rpsblast_output) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "parallel_rpsblast_output.txt"
+      end
+
+      it "raises nice error if one of the query files does not exist" do
+        expect {
+          runners.parallel_rpsblast! exe: parallel_rpsblast_exe,
+                                     query_files: ["arstoien"],
+                                     target_db: parallel_rpsblast_target_db,
+                                     output: parallel_rpsblast_output,
+                                     threads: 4
+        }.to raise_error AbortIf::Exit, /does not exist/
+      end
+
+      it "produces the expected file" do
+        ret_val = nil
+
+        expect {
+          ret_val = runners.parallel_rpsblast! exe: parallel_rpsblast_exe,
+                                               query_files: parallel_rpsblast_query_files,
+                                               target_db: parallel_rpsblast_target_db,
+                                               output: parallel_rpsblast_output,
+                                               threads: 4
+        }.not_to raise_error
+
+        expect(File).to exist ret_val[:output]
       end
     end
 

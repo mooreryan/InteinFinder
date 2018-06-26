@@ -1,0 +1,309 @@
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/input/mmseqs_queries.fa /home/moorer/projects/InteinFinder/spec/test_files/input/mmseqs_targets.fa /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_output.txt /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir --format-mode 2 -s 1 --num-iterations 1 -e 0.001 --threads 4 
+
+MMseqs Version:                    	8f44a3195116bd6932f559805a86b93b0e41da71
+Sub Matrix                         	blosum62.out
+Add backtrace                      	false
+Alignment mode                     	3
+E-value threshold                  	0.001
+Seq. Id Threshold                  	0
+Coverage threshold                 	0
+Coverage Mode                      	0
+Max. sequence length               	32000
+Max. results per query             	300
+Compositional bias                 	1
+Realign hit                        	false
+Max Reject                         	2147483647
+Max Accept                         	2147483647
+Include identical Seq. Id.         	false
+No preload                         	false
+Early exit                         	false
+Pseudo count a                     	1
+Pseudo count b                     	1.5
+Threads                            	4
+Verbosity                          	3
+Sensitivity                        	1
+K-mer size                         	0
+K-score                            	2147483647
+Alphabet size                      	21
+Offset result                      	0
+Split DB                           	0
+Split mode                         	2
+Split Memory Limit                 	0
+Diagonal Scoring                   	1
+Exact k-mer matching               	0
+Mask Residues                      	1
+Minimum Diagonal score             	15
+Spaced Kmer                        	1
+Profile e-value threshold          	0.001
+Use global sequence weighting      	false
+Filter MSA                         	1
+Maximum sequence identity threshold	0.9
+Minimum seq. id.                   	0
+Minimum score per column           	-20
+Minimum coverage                   	0
+Select n most diverse seqs         	1000
+Omit Consensus                     	false
+Min codons in orf                  	1
+Max codons in length               	2147483647
+Max orf gaps                       	2147483647
+Contig start mode                  	2
+Contig end mode                    	2
+Orf start mode                     	0
+Forward Frames                     	1,2,3
+Reverse Frames                     	1,2,3
+Translation Table                  	1
+Use all table starts               	false
+Offset of numeric ids              	0
+Add Orf Stop                       	false
+Number search iterations           	1
+Start sensitivity                  	4
+Search steps                       	1
+Sets the MPI runner                	
+Remove Temporary Files             	true
+Alignment Format                   	2
+Database Output                    	false
+Overlap                            	0
+Greedy best hits                   	false
+
+Tmp /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir folder does not exist or is not a directory.
+Created dir /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/input/mmseqs_queries.fa /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query 
+
+MMseqs Version:      	8f44a3195116bd6932f559805a86b93b0e41da71
+Max. sequence length 	32000
+Split Seq. by len    	true
+Offset of numeric ids	0
+Verbosity            	3
+
+Time for merging files: 0 h 0 m 0 s
+Time for merging files: 0 h 0 m 0 s
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/input/mmseqs_targets.fa /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target 
+
+MMseqs Version:      	8f44a3195116bd6932f559805a86b93b0e41da71
+Max. sequence length 	32000
+Split Seq. by len    	true
+Offset of numeric ids	0
+Verbosity            	3
+
+Time for merging files: 0 h 0 m 0 s
+Time for merging files: 0 h 0 m 0 s
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/result /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/search_tmp --sub-mat blosum62.out --alignment-mode 3 -e 0.001 --min-seq-id 0 -c 0 --cov-mode 0 --max-seq-len 32000 --max-seqs 300 --comp-bias-corr 1 --max-rejected 2147483647 --max-accept 2147483647 --pca 1 --pcb 1.5 --threads 4 -v 3 -s 1 -k 0 --k-score 2147483647 --alph-size 21 --offset-result 0 --split 0 --split-mode 2 --split-memory-limit 0 --diag-score 1 --exact-kmer-matching 0 --mask 1 --min-ungapped-score 15 --spaced-kmer-mode 1 --e-profile 0.001 --filter-msa 1 --max-seq-id 0.9 --qid 0 --qsc -20 --cov 0 --diff 1000 --min-length 1 --max-length 2147483647 --max-gaps 2147483647 --contig-start-mode 2 --contig-end-mode 2 --orf-start-mode 0 --forward-frames 1,2,3 --reverse-frames 1,2,3 --translation-table 1 --id-offset 0 --num-iterations 1 --start-sens 4 --sens-steps 1 --remove-tmp-files 
+
+MMseqs Version:                    	8f44a3195116bd6932f559805a86b93b0e41da71
+Sub Matrix                         	blosum62.out
+Add backtrace                      	false
+Alignment mode                     	3
+E-value threshold                  	0.001
+Seq. Id Threshold                  	0
+Coverage threshold                 	0
+Coverage Mode                      	0
+Max. sequence length               	32000
+Max. results per query             	300
+Compositional bias                 	1
+Realign hit                        	false
+Max Reject                         	2147483647
+Max Accept                         	2147483647
+Include identical Seq. Id.         	false
+No preload                         	false
+Early exit                         	false
+Pseudo count a                     	1
+Pseudo count b                     	1.5
+Threads                            	4
+Verbosity                          	3
+Sensitivity                        	1
+K-mer size                         	0
+K-score                            	2147483647
+Alphabet size                      	21
+Offset result                      	0
+Split DB                           	0
+Split mode                         	2
+Split Memory Limit                 	0
+Diagonal Scoring                   	1
+Exact k-mer matching               	0
+Mask Residues                      	1
+Minimum Diagonal score             	15
+Spaced Kmer                        	1
+Profile e-value threshold          	0.001
+Use global sequence weighting      	false
+Filter MSA                         	1
+Maximum sequence identity threshold	0.9
+Minimum seq. id.                   	0
+Minimum score per column           	-20
+Minimum coverage                   	0
+Select n most diverse seqs         	1000
+Omit Consensus                     	false
+Min codons in orf                  	1
+Max codons in length               	2147483647
+Max orf gaps                       	2147483647
+Contig start mode                  	2
+Contig end mode                    	2
+Orf start mode                     	0
+Forward Frames                     	1,2,3
+Reverse Frames                     	1,2,3
+Translation Table                  	1
+Use all table starts               	false
+Offset of numeric ids              	0
+Add Orf Stop                       	false
+Number search iterations           	1
+Start sensitivity                  	4
+Search steps                       	1
+Sets the MPI runner                	
+Remove Temporary Files             	true
+
+Tmp /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/search_tmp folder does not exist or is not a directory.
+Created dir /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/search_tmp
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/search_tmp/18372087918308353997/pref_1.0 --sub-mat blosum62.out -k 0 --k-score 2147483647 --alph-size 21 --max-seq-len 32000 --max-seqs 300 --offset-result 0 --split 0 --split-mode 2 --split-memory-limit 0 -c 0 --cov-mode 0 --comp-bias-corr 1 --diag-score 1 --exact-kmer-matching 0 --mask 1 --min-ungapped-score 15 --spaced-kmer-mode 1 --pca 1 --pcb 1.5 --threads 4 -v 3 -s 1.0 
+
+MMseqs Version:           	8f44a3195116bd6932f559805a86b93b0e41da71
+Sub Matrix                	blosum62.out
+Sensitivity               	1
+K-mer size                	0
+K-score                   	2147483647
+Alphabet size             	21
+Max. sequence length      	32000
+Max. results per query    	300
+Offset result             	0
+Split DB                  	0
+Split mode                	2
+Split Memory Limit        	0
+Coverage threshold        	0
+Coverage Mode             	0
+Compositional bias        	1
+Diagonal Scoring          	1
+Exact k-mer matching      	0
+Mask Residues             	1
+Minimum Diagonal score    	15
+Include identical Seq. Id.	false
+Spaced Kmer               	1
+No preload                	false
+Early exit                	false
+Pseudo count a            	1
+Pseudo count b            	1.5
+Threads                   	4
+Verbosity                 	3
+
+Initialising data structures...
+Using 4 threads.
+Could not find precomputed index. Compute index.
+Substitution matrices...
+Use kmer size 6 and split 1 using Target split mode.
+Needed memory (1025312278 byte) of total memory (243419668070 byte)
+Target database: /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target(Size: 4)
+Query database type: Aminoacid
+Target database type: Aminoacid
+Time for init: 0 h 0 m 1s
+
+
+Query database: /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query(size=1)
+Process prefiltering step 1 of 1
+
+Index table: counting k-mers...
+
+Index table: Masked residues: 0
+Index table: fill...
+
+Index table: removing duplicate entries...
+Index table init done.
+
+DB statistic
+Entries:         618
+DB Size:         512003708 (byte)
+Avg Kmer Size:   9.65625e-06
+Top 10 Kmers
+   	PECRAA		1
+	PDPRAA		1
+	SDHPCA		1
+	CNNDEA		1
+	FTEPFA		1
+	WRCSFA		1
+	CFVFGA		1
+	LPDYGA		1
+	PWECHA		1
+	TPGGHA		1
+Min Kmer Size:   0
+Empty list: 63999382
+
+Time for index table init: 0h 0m 1s.
+
+k-mer similarity threshold: 130
+k-mer match probability: 0
+
+Starting prefiltering scores calculation (step 1 of 1)
+Query db start  1 to 1
+Target db start  1 to 4
+
+4 k-mers per position.
+223 DB matches per sequence.
+0 Overflows.
+1 sequences passed prefiltering per query sequence.
+Median result list size: 1
+0 sequences with 0 size result lists.
+
+
+Time for prefiltering scores calculation: 0 h 0 m 0s
+Time for merging files: 0 h 0 m 0 s
+
+Overall time for prefiltering run: 0 h 0 m 2s
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/search_tmp/18372087918308353997/pref_1.0 /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/search_tmp/18372087918308353997/aln_1.0 --sub-mat blosum62.out --alignment-mode 3 -e 0.001 --min-seq-id 0 -c 0 --cov-mode 0 --max-seq-len 32000 --max-seqs 300 --comp-bias-corr 1 --max-rejected 2147483647 --max-accept 2147483647 --pca 1 --pcb 1.5 --threads 4 -v 3 
+
+MMseqs Version:           	8f44a3195116bd6932f559805a86b93b0e41da71
+Sub Matrix                	blosum62.out
+Add backtrace             	false
+Alignment mode            	3
+E-value threshold         	0.001
+Seq. Id Threshold         	0
+Coverage threshold        	0
+Coverage Mode             	0
+Max. sequence length      	32000
+Max. results per query    	300
+Compositional bias        	1
+Realign hit               	false
+Max Reject                	2147483647
+Max Accept                	2147483647
+Include identical Seq. Id.	false
+No preload                	false
+Early exit                	false
+Pseudo count a            	1
+Pseudo count b            	1.5
+Threads                   	4
+Verbosity                 	3
+
+Init data structures...
+Compute score, coverage and sequence id.
+Using 1 threads.
+Query database type: Aminoacid
+Target database type: Aminoacid
+Calculation of Smith-Waterman alignments.
+Time for merging files: 0 h 0 m 0 s
+
+All sequences processed.
+
+1 alignments calculated.
+1 sequence pairs passed the thresholds (1 of overall calculated).
+1 hits per query sequence.
+Time for alignments calculation: 0 h 0 m 0s
+Remove temporary files
+Program call:
+/home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/result /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/alis --format-mode 2 --threads 4 -v 3 
+
+MMseqs Version: 	8f44a3195116bd6932f559805a86b93b0e41da71
+Alignment Format	2
+No preload      	false
+Early exit      	false
+Database Output 	false
+Threads         	4
+Verbosity       	3
+
+Query Header file: /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/query_h
+Target Header file: /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/target_h
+Alignment database: /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/result
+Start writing file to /home/moorer/projects/InteinFinder/spec/test_files/output/mmseqs_tmpdir/6936749254668779344/alis
+Time for merging files: 0 h 0 m 0 s
+Done.
+Removing temporary files

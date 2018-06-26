@@ -36,3 +36,7 @@ bin/split_seqs
 bin/simple_headers
 
 test_files.fold*
+
+QWFP
+
+bin/pre_filter.rb
