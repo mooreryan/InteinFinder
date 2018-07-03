@@ -85,7 +85,8 @@ opts = Trollop.options do
       "Input fasta file with protein queries",
       type: :string)
   opt(:ignore_queries_less_than,
-      "Ignore query peptides with fewer than this number of amino acids.  Pass 0 if you want to include all queries.",
+      "Ignore query peptides with fewer than this number of " \
+      "amino acids.  Pass 0 if you want to include all queries.",
       default: IGNORE_QUERIES_LESS_THAN_DEFUALT)
   opt(:ignore_regions_less_than,
       "Ignore putative regions that are shorter than this length",
@@ -94,9 +95,14 @@ opts = Trollop.options do
 
   opt(:inteins,
       "Input fasta file with Inteins",
-      default: File.join(__dir__, "assets", "intein_sequences", "all_derep.faa"))
+      default: File.join(__dir__,
+                         "assets",
+                         "intein_sequences",
+                         "all_derep.faa"))
   opt(:pssm_list,
-      "Input file that contains a list of smp files (delimited by space, tab or newline).  Don't pass this argument to use the default.",
+      "Input file that contains a list of smp files " \
+      "(delimited by space, tab or newline).  " \
+      "Don't pass this argument to use the default.",
       type: :string)
 
   opt(:evalue_rpsblast,
@@ -107,7 +113,8 @@ opts = Trollop.options do
       default: 1e-3)
 
   opt(:evalue_region_refinement,
-      "Only use single target hits with evalue less than this for refinement of intein regions.",
+      "Only use single target hits with evalue less than this " \
+      "for refinement of intein regions.",
       default: 1e-3)
 
   opt(:keep_alignment_files,
@@ -120,8 +127,14 @@ opts = Trollop.options do
   opt(:cpus_alignment,
       "Number of alignments to run in parallel", default: 1)
   opt(:parallel_mode,
-      "0: automatic, 1: one query-region pair per CPU (good for lots of sequences), 2: fancy thing (good for fewer sequences)",
+      "0: automatic, 1: one query-region pair per CPU " \
+      "(good for lots of sequences), 2: fancy thing " \
+      "(good for fewer sequences)",
       default: 0)
+  opt(:num_splits,
+      "Number of splits for the query sequences.  " \
+      "The more of these, the less memory I will use.",
+      default: 1)
 
 
   opt(:split_queries,
@@ -175,6 +188,15 @@ opts = Trollop.options do
   opt(:mafft,
       "Path to mafft binary",
       default: "mafft")
+  opt(:homology_search,
+      "Path to homology_search ruby script",
+      default: File.join(__dir__, "bin", "homology_search.rb"))
+  opt(:simple_headers,
+      "Path to simple_headers program",
+      default: File.join(InteinFinder::ROOT_DIR,
+                         "bin",
+                         "simple_headers"))
+
 end
 
 AbortIf.logger.info { "Checking arguments" }
@@ -186,7 +208,8 @@ abort_unless Set.new([1,2]).include?(opts[:intein_c_term_dipeptide_test_strictne
 abort_unless Set.new([1]).include?(opts[:refinement_strictness]),
              "Currently, the only option for --refinement-strictness is 1."
 
-abort_unless Set.new([0,1,2]).include?(opts[:parallel_mode]), "--parallel-mode must be 0, 1, or 2"
+abort_unless Set.new([0,1,2]).include?(opts[:parallel_mode]),
+             "--parallel-mode must be 0, 1, or 2"
 
 
 # TODO make sure that you have a version of MMseqs2 that has the
@@ -199,6 +222,8 @@ check_program opts[:mmseqs]
 check_program opts[:mafft]
 check_program opts[:split_seqs]
 check_program opts[:parallel_blast]
+check_program opts[:homology_search]
+check_program opts[:simple_headers]
 
 check_file opts[:pssm_list]
 
@@ -248,7 +273,7 @@ profile_db_dir =
             "profile_db"
 profile_db =
   File.join profile_db_dir,
-            "intein_db"
+            "profile_db"
 
 search_results_dir =
   File.join opts[:outdir],
@@ -267,6 +292,9 @@ seq_dir =
             "sequences"
 
 
+# @todo Replace with actual Tempfile object
+tmpfile = File.join opts[:outdir], "tmptmp"
+
 mmseqs_log =
   File.join search_results_dir,
             "mmseqs_log.txt"
@@ -277,7 +305,7 @@ rpsblast_out =
 mmseqs_out =
   File.join search_results_dir,
             "initial_queries_search_inteins.txt"
-all_blast_out =
+all_blast_out = # This comes from the homology_search.rb script
   File.join search_results_dir,
             "initial_queries_search.txt"
 search_results_summary_out =
@@ -287,6 +315,12 @@ search_results_summary_out =
 query_basename =
   File.basename(opts[:queries],
                 File.extname(opts[:queries]))
+
+# The query sequences that have hits to something in the databases.
+# @question Will these sequences will  have the original names or just
+# the ID part of the name?
+queries_with_hits =
+  File.join seq_dir, "#{query_basename}.seqs_with_hits.faa"
 
 queries_simple_name_out =
   File.join opts[:outdir],
@@ -376,45 +410,33 @@ RPSBLAST_SEARCH_PARALLEL = "#{opts[:parallel_blast]} " \
 # search constants
 ######################################################################
 
+
 ######################################################################
-# write the rpsblast db
-#######################
+# First do the initial query homology search
+############################################
 
+cmd = "ruby #{opts[:homology_search]} " \
+      "--inteins-db #{opts[:inteins]} " \
+      "--seqs #{opts[:queries]} " \
+      "--outdir #{opts[:outdir]} " \
+      "--num-splits #{opts[:num_splits]} " \
+      "--mmseqs-threads #{opts[:cpus_search]} " \
+      "--mmseqs-sensitivity #{opts[:mmseqs_sensitivity]} " \
+      "--mmseqs-iterations #{opts[:mmseqs_iterations]} " \
+      "--mmseqs-evalue #{opts[:evalue_mmseqs]} " \
+      "--rpsblast-instances #{opts[:cpus_search]} " \
+      "--rpsblast-evalue #{opts[:evalue_rpsblast]} " \
+      "--makeprofiledb #{opts[:makeprofiledb]} " \
+      "--rpsblast #{opts[:rpsblast]} " \
+      "--mmseqs #{opts[:mmseqs]} " \
+      "--split-seqs #{opts[:split_seqs]} " \
+      "--simple-headers #{opts[:simple_headers]} "
 
-AbortIf.logger.info { "Writing smp list file" }
+InteinFinder::Utils.run_and_time_it! "Initial homology search", cmd
 
-if opts[:pssm_list]
-  pssm_list = opts[:pssm_list]
-else
-  AbortIf.logger.info {
-    "No --pssm-list arg was passed.  Using the default pssm list."
-  }
-
-  # Write the default list.  TODO why don't we just read this from the
-  # assets folder?
-  pssm_list = File.join opts[:outdir], "pssm_list.txt"
-  File.open(pssm_list, "w") do |f|
-    PSSM_PATHS.each do |path|
-      f.puts path
-    end
-  end
-end
-
-AbortIf.logger.info { "Checking smp files" }
-
-# Check that all the smp files actually exist.
-File.open(pssm_list, "rt").each_line do |line|
-  line.chomp.split.each do |smp_fname|
-    abort_unless File.exist?(smp_fname),
-                 "File #{smp_fname} was listed in #{pssm_list} " \
-                 "but it does not exist!"
-  end
-end
-
-#######################
-# write the rpsblast db
+############################################
+# First do the initial query homology search
 ######################################################################
-
 
 ######################################################################
 # read in the queries
@@ -424,6 +446,7 @@ AbortIf.logger.info { "Setting up queries hash table" }
 
 
 # Set up the queries hash table
+num_seqs = 0
 queries = {}
 query_records = {}
 query_name_map = {}
@@ -433,7 +456,8 @@ total_queries = 0
 # Only seqs with length greater than the threshold will be included
 # from here on out.
 File.open(queries_simple_name_out, "w") do |f|
-  ParseFasta::SeqFile.open(opts[:queries]).each_record do |rec|
+  ParseFasta::SeqFile.open(queries_with_hits).each_record do |rec|
+    num_seqs += 1
     total_queries += 1
 
     if rec.seq.length >= IGNORE_QUERIES_LESS_THAN
@@ -489,126 +513,10 @@ end
 
 
 ######################################################################
-# homology search
-#################
-
-AbortIf.logger.info { "Searching for homology" }
-
-cmd = "#{opts[:makeprofiledb]} " \
-      "-in #{pssm_list} " \
-      "-out #{profile_db}"
-InteinFinder::Utils.run_and_time_it! "Making profile DB", cmd
-
-num_seqs = queries.count
-# there are enough seqs for parallel blast to be worth it and the user
-# asked for splits
-if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
-  AbortIf.logger.info do
-    "You asked for splits, and we have #{num_seqs} sequences, " \
-    "so we will split the queries before blasting."
-  end
-
-  cmd = "#{opts[:parallel_blast]} " \
-        "--cpus #{opts[:cpus_search]} " \
-        "--evalue #{opts[:evalue_rpsblast]} " \
-        "--infile #{queries_simple_name_out} " \
-        "--blast-db #{profile_db} " \
-        "--outdir #{opts[:outdir]} " \
-        "--specific-outfile #{rpsblast_out} " \
-        "--blast-program #{opts[:rpsblast]} " \
-        "--split-program #{opts[:split_seqs]}"
-else
-  AbortIf.logger.info do
-    "Not splitting the queries before blasting.  " \
-    "Either too few (#{num_seqs}) or you didn't ask for splits."
-  end
-
-  cmd = "#{opts[:rpsblast]} " \
-        "-num_threads #{opts[:cpus_search]} " \
-        "-db #{profile_db} " \
-        "-query #{queries_simple_name_out} " \
-        "-evalue #{opts[:evalue_rpsblast]} " \
-        "-outfmt 6 " \
-        "-out #{rpsblast_out}"
-end
-InteinFinder::Utils.run_and_time_it! "Running rpsblast", cmd
-
-# 5.7, 2
-cmd = "#{search} " \
-      "#{queries_simple_name_out} " \
-      "#{opts[:inteins]} " \
-      "#{mmseqs_out} " \
-      "#{tmp_dir} " \
-      "--format-mode 2 " \
-      "-s #{opts[:mmseqs_sensitivity]} " \
-      "--num-iterations #{opts[:mmseqs_iterations]} " \
-      "-e #{opts[:evalue_mmseqs]} " \
-      "--threads #{opts[:cpus_search]} " \
-      ">> #{mmseqs_log}"
-InteinFinder::Utils.run_and_time_it! "Running mmseqs", cmd
-
-#################
-# homology search
-######################################################################
-
-
-
-######################################################################
-# change the IDs in the search files back
-##########################################
-
-AbortIf.logger.info { "Swapping IDs in search files" }
-
-# It looks like the evalue cutoff doesn't always work for mmseqs.  So
-# just add an evalue filter to these steps as well.
-
-# We do this so the user can actually read the search details.
-tmpfile = File.join opts[:outdir], "tmptmp"
-File.open(tmpfile, "w") do |f|
-  File.open(rpsblast_out, "rt").each_line do |line|
-    query, *rest = line.chomp.split "\t"
-
-    evalue = rest[9].to_f
-
-    if evalue <= opts[:evalue_rpsblast]
-      f.puts [query_name_map[query], rest].join "\t"
-    end
-  end
-end
-InteinFinder::Utils.run_and_time_it! "Changing IDs in rpsblast",
-                       "mv #{tmpfile} #{rpsblast_out}"
-
-tmpfile = File.join opts[:outdir], "tmptmp"
-File.open(tmpfile, "w") do |f|
-  File.open(mmseqs_out, "rt").each_line do |line|
-    query, *rest = line.chomp.split "\t"
-
-    evalue = rest[9].to_f
-
-    if evalue <= opts[:evalue_mmseqs]
-      f.puts [query_name_map[query], rest].join "\t"
-    end
-  end
-end
-InteinFinder::Utils.run_and_time_it! "Changing IDs in mmseqs search",
-                       "mv #{tmpfile} #{mmseqs_out}"
-
-# From here out, the sequence IDs should be back to normal.
-
-##########################################
-# change the IDs in the search files back
-######################################################################
-
-
-
-######################################################################
 # get regions
 #############
 
 AbortIf.logger.info { "Getting putative intein regions" }
-
-cmd = "cat #{rpsblast_out} #{mmseqs_out} > #{all_blast_out}"
-InteinFinder::Utils.run_and_time_it! "Catting search results", cmd
 
 query2hits = {}
 File.open(all_blast_out, "rt").each_line do |line|
@@ -1556,6 +1464,7 @@ trimmed_inteins_all_search_out =
   File.join search_results_dir,
             "trimmed_inteins_search.txt"
 
+
 # there are enough seqs for parallel blast to be worth it and the user
 # asked for splits
 if opts[:split_queries] && num_seqs > opts[:cpus_search] * 2
@@ -1793,9 +1702,9 @@ remove_these = [
 
 try_rm remove_these
 
-unless opts[:pssm_list]
-  # This is the temporary one we made.
-  FileUtils.rm pssm_list
-end
+# unless opts[:pssm_list]
+#   # This is the temporary one we made.
+#   FileUtils.rm pssm_list
+# end
 
 AbortIf.logger.info { "Done!" }

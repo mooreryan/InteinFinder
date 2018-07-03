@@ -9,7 +9,7 @@ TEST_FILES = test_files
 TEST_OUTDIR = TEST_OUTPUT
 
 THREADS_ALIGNMENT = 16
-THREADS_SEARCH = 32
+THREADS_SEARCH = 16
 
 OBJS := $(SRC)/kseq_helper.o
 
@@ -19,6 +19,13 @@ ifeq ($(OPTIMIZE),)
 OPTIMIZE = 3
 endif
 
+# MMseqs2 needs a certain binary option depending on the node you're
+# on.
+ifeq ($(MMSEQS),)
+MMSEQS = "mmseqs"
+endif
+
+
 .PHONY: test
 .PHONY: test_small
 .PHONY: test_small2
@@ -26,11 +33,11 @@ endif
 
 all: split_seqs
 
-test: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --queries test_files/rnr.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff TEST_OUTPUT/results/intein_regions_refined_condensed.txt test_files/test_expected.txt
+test: split_seqs simple_headers
+	rm -r $(TEST_OUTDIR); ./intein_finder --mmseqs $(MMSEQS) --use-length-in-refinement --queries test_files/rnr.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff TEST_OUTPUT/results/intein_regions_refined_condensed.txt test_files/test_expected.txt
 
 test_small: split_seqs
-	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --evalue-rpsblast 1e-10 --evalue-mmseqs 1e-10 --evalue-region-refinement 1e-10 --mmseqs-sensitivity 1 --mmseqs-iterations 1 --queries test_files/rnr_seq_4.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small_expected.txt
+	rm -r $(TEST_OUTDIR); ./intein_finder --mmseqs $(MMSEQS) --use-length-in-refinement --evalue-rpsblast 1e-10 --evalue-mmseqs 1e-10 --evalue-region-refinement 1e-10 --mmseqs-sensitivity 1 --mmseqs-iterations 1 --queries test_files/rnr_seq_4.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small_expected.txt
 
 # test_small2: split_seqs
 # 	rm -r $(TEST_OUTDIR); ./intein_finder --use-length-in-refinement --mmseqs-sensitivity 5.7 --mmseqs-iterations 2 --queries test_files/small_2.faa --outdir $(TEST_OUTDIR) --cpus $(THREADS) && tree $(TEST_OUTDIR) && head $(TEST_OUTDIR)/results/* && diff $(TEST_OUTDIR)/results/intein_regions_refined_condensed.txt test_files/test_small2_expected.txt
@@ -53,5 +60,6 @@ simple_headers: $(OBJS)
 test_simple_headers: simple_headers
 	rm $(TEST_FILES)/*.simple_headers.*; valgrind --leak-check=full $(BIN)/simple_headers APPLE $(TEST_FILES)/simple_headers_in.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.fa $(TEST_FILES)/simple_headers_expected.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.name_map.txt $(TEST_FILES)/simple_headers_name_map_expected.txt
 
+# START HERE: fix the options to use the named ones
 test_homology_search: simple_headers split_seqs
-	rm test_files/snazzy_proteins.simple_headers.faa.split_*; rm -r QWFP/; time ruby bin/homology_search.rb assets/intein_sequences/all_derep.faa test_files/snazzy_proteins.faa QWFP 2 && tree QWFP
+	rm test_files/snazzy_proteins.simple_headers.faa.split_*; rm -r QWFP/; time ruby bin/homology_search.rb --inteins-db assets/intein_sequences/all_derep.faa --seqs test_files/snazzy_proteins.faa --outdir QWFP --mmseqs-threads 8 --mmseqs-iterations 1 --rpsblast-instances 8 --num-splits 2 && tree QWFP

@@ -94,3 +94,7 @@ PARALLEL_MODE_CUTOFF = 250
 
 QUERY_REJECT_LENGTH = "length"
 QUERY_REJECT_GAPS = "has gap chars"
+
+module InteinFinder
+  ROOT_DIR = File.absolute_path(File.join(__dir__, ".."))
+end

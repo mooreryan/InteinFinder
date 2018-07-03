@@ -1,6 +1,7 @@
 require "abort_if"
 require "parse_fasta"
 require "set"
+require "trollop"
 
 require_relative "../lib/const"
 require_relative "../lib/intein_finder"
@@ -10,42 +11,96 @@ include AbortIf
 
 Runners = Class.new { extend InteinFinder::Runners }
 
-# Parse args
+opts = Trollop.options do
+  opt(:inteins_db,
+      "Inteins DB",
+      type: :string)
+  opt(:seqs,
+      "Query sequences",
+      type: :string)
+  opt(:outdir,
+      "Out directory",
+      default: "if_hs_output")
 
-abort_unless ARGV.count == 4,
-             "usage: #{__FILE__} intein_db.fa seqs.fa outdir num_splits"
+  opt(:num_splits,
+      "Number of splits for the query sequences.  " \
+      "The more of these, the less memory I will use.",
+      default: 1)
 
-inteins_db = ARGV[0]
-seqs_infile = ARGV[1]
-outdir = ARGV[2]
-num_splits = ARGV[3].to_i
+  opt(:mmseqs_threads,
+      "Number of threads for MMseqs2 to use.",
+      default: 1)
+  opt(:mmseqs_sensitivity,
+      "-s for mmseqs",
+      default: 5.7)
+  opt(:mmseqs_iterations,
+      "--num-iterations for mmseqs",
+      default: 2)
+  opt(:mmseqs_evalue,
+      "Evalue for mmseqs",
+      default: 1e-3)
 
-seqs_infile_ext = File.extname seqs_infile
-seqs_infile_base = File.basename seqs_infile, seqs_infile_ext
+  opt(:rpsblast_instances,
+      "Number of independent RPS-BLAST instances to run.",
+      default: 1)
+  opt(:rpsblast_evalue,
+      "Evalue for rpsblast",
+      default: 1e-3)
 
+  opt(:makeprofiledb,
+      "Path to makeprofiledb binary",
+      default: "makeprofiledb")
+  opt(:rpsblast,
+      "Path to rpsblast binary",
+      default: "rpsblast")
+  opt(:mmseqs,
+      "Path to mmseqs binary",
+      default: "mmseqs")
+  opt(:split_seqs,
+      "Path to split_seqs program",
+      default: File.join(InteinFinder::ROOT_DIR,
+                         "bin",
+                         "split_seqs"))
+  opt(:simple_headers,
+      "Path to simple_headers program",
+      default: File.join(InteinFinder::ROOT_DIR,
+                         "bin",
+                         "simple_headers"))
+end
 
-mmseqs_sensitivity = 1
-mmseqs_num_iterations = 1
-mmseqs_evalue = 1e-3
-mmseqs_threads = 4
+inteins_db = opts[:inteins_db]
+seqs_infile = opts[:seqs]
+outdir = opts[:outdir]
+num_splits = opts[:num_splits]
 
-rpsblast_evalue = 1e-3
-rpsblast_threads = 4
+simple_headers_exe = opts[:simple_headers]
+split_seqs_exe = opts[:split_seqs]
+mmseqs_exe = opts[:mmseqs]
+makeprofiledb_exe = opts[:makeprofiledb]
+rpsblast_exe = opts[:rpsblast]
+
+mmseqs_sensitivity = opts[:mmseqs_sensitivity]
+mmseqs_num_iterations = opts[:mmseqs_iterations]
+mmseqs_evalue = opts[:mmseqs_evalue]
+mmseqs_threads = opts[:mmseqs_threads]
+
+rpsblast_evalue = opts[:rpsblast_evalue]
+rpsblast_threads = opts[:rpsblast_instances]
 
 
 # Needed executable files and external programs
 
-simple_headers_exe = File.join __dir__, "simple_headers"
-split_seqs_exe = File.join __dir__, "split_seqs"
-mmseqs_exe = "mmseqs"
-makeprofiledb_exe = "makeprofiledb"
 
 check_program simple_headers_exe
 check_program split_seqs_exe
 check_program mmseqs_exe
 check_program makeprofiledb_exe
+check_program rpsblast_exe
 
 # Needed directories
+
+seqs_infile_ext = File.extname seqs_infile
+seqs_infile_base = File.basename seqs_infile, seqs_infile_ext
 
 
 profile_db_dir = File.join outdir, "profile_db"
@@ -165,43 +220,72 @@ split_fnames.each_with_index do |input_seq_fname, idx|
 
 end
 
-query_seq_column = num_input_seqs > num_inteins ? 1 : 0
+if num_input_seqs > num_inteins
+  query_seq_column  = 1
+  target_seq_column = 0
+else
+  query_seq_column  = 0
+  target_seq_column = 1
+end
 
 seqs_with_hits = Set.new
 
-# Maps the names back and adds names with hits to the Set.
+# Maps the names back and adds names with hits to the Set.  Also
+# ensures that the query seq is in the 1st column of the output file.
 #
 # @param [String] infname The name of the file to write to.  It will
 #   be opened.
 # @param [File] outf This is an open File for writing.
-def map_names infname,
-              outf,
-              name_map,
-              query_seq_column,
-              seqs_with_hits
+# def map_names infname,
+#               outf,
+#               name_map,
+#               query_seq_column,
+#               target_seq_column,
+#               seqs_with_hits
 
-  File.open(infname, "rt").each_line do |line|
-    ary = line.chomp.split "\t"
+#   File.open(infname, "rt").each_line do |line|
+#     ary = line.chomp.split "\t"
 
-    query_seq_name = ary[query_seq_column]
-    orig_name = name_map[query_seq_name]
+#     target_seq_name = ary[target_seq_column]
+#     query_seq_name = ary[query_seq_column]
+#     orig_query_name = name_map[query_seq_name]
 
-    seqs_with_hits << orig_name
+#     seqs_with_hits << orig_name
 
-    ary[query_seq_column] = orig_name
+#     # Ensure the user seq is in 1st col, and DB seq is in 2nd col.
+#     ary[0] = orig_name
+#     ary[1] = target_seq_name
 
-    outf.puts ary.join "\t"
-  end
-end
+#     outf.puts ary.join "\t"
+#   end
+# end
 
 # Cat the seqs and also figure out the ones with hits.
 File.open(mmseqs_final_outfile, "w") do |outf|
   Dir.glob(mmseqs_outfile_glob).each do |fname|
-    map_names fname,
-              outf,
-              name_map,
-              query_seq_column,
-              seqs_with_hits
+    # map_names fname,
+    #           outf,
+    #           name_map,
+    #           query_seq_column,
+    #           target_seq_column,
+    #           seqs_with_hits
+
+
+    File.open(fname, "rt").each_line do |line|
+      ary = line.chomp.split "\t"
+
+      target_seq_name = ary[target_seq_column]
+      query_seq_name = ary[query_seq_column]
+      orig_query_name = name_map[query_seq_name]
+
+      seqs_with_hits << orig_query_name
+
+      # Ensure the user seq is in 1st col, and DB seq is in 2nd col.
+      ary[0] = orig_query_name
+      ary[1] = target_seq_name
+
+      outf.puts ary.join "\t"
+    end
 
     # And remove the tmp file
     FileUtils.rm fname
@@ -214,10 +298,10 @@ end
 ##########
 
 # First we need to make the profile db to blast against.
-Runners.makeprofiledb! "makeprofiledb", PSSM_PATHS, profile_db
+Runners.makeprofiledb! makeprofiledb_exe, PSSM_PATHS, profile_db
 
 # Then we actually run the blast.
-Runners.parallel_rpsblast! exe: "rpsblast",
+Runners.parallel_rpsblast! exe: rpsblast_exe,
                            query_files: split_fnames,
                            target_db: profile_db,
                            output: rpsblast_outfile,
@@ -226,11 +310,28 @@ Runners.parallel_rpsblast! exe: "rpsblast",
 
 # And map back the simple headers to the original ones.
 File.open(rpsblast_final_outfile, 'w') do |outf|
-  map_names rpsblast_outfile,
-            outf,
-            name_map,
-            query_seq_column,
-            seqs_with_hits
+  # map_names rpsblast_outfile,
+  #           outf,
+  #           name_map,
+  #           query_seq_column,
+  #           target_seq_column,
+  #           seqs_with_hits
+
+  # Unlike above, rpsblast always has the actual query in the 1st
+  # column.
+  File.open(rpsblast_outfile, "rt").each_line do |line|
+    ary = line.chomp.split "\t"
+
+    query_seq_name = ary[0]
+    orig_query_name = name_map[query_seq_name]
+
+    seqs_with_hits << orig_query_name
+
+    # And map the name to the original.
+    ary[0] = orig_query_name
+
+    outf.puts ary.join "\t"
+  end
 
   FileUtils.rm rpsblast_outfile
 end
@@ -241,19 +342,21 @@ end
 
 # And finally combine the two search files into a single one.
 
+AbortIf.logger.info { "Combining search output" }
 File.open(homology_search_outfile, 'w') do |outf|
   File.open(mmseqs_final_outfile, "rt").each_line do |line|
     outf.puts line
   end
-  FileUtils.rm mmseqs_final_outfile
+  # FileUtils.rm mmseqs_final_outfile
 
 
   File.open(rpsblast_final_outfile, "rt").each_line do |line|
     outf.puts line
   end
-  FileUtils.rm rpsblast_final_outfile
+  # FileUtils.rm rpsblast_final_outfile
 end
 
+AbortIf.logger.info { "Printing sequences with hits" }
 # Print out seqs with hits
 File.open(queries_with_hits, 'w') do |f|
   ParseFasta::SeqFile.open(seqs_infile).each_record do |rec|
@@ -262,3 +365,18 @@ File.open(queries_with_hits, 'w') do |f|
     end
   end
 end
+
+
+######################################################################
+# clean up temp files
+#####################
+
+AbortIf.logger.info { "Cleaning up outdir" }
+
+# We need to keep the profile db around for later on in InteinFinder.
+# FileUtils.rm_r profile_db_dir
+FileUtils.rm_r tmp_dir
+
+#####################
+# clean up temp files
+######################################################################
