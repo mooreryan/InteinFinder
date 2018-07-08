@@ -46,3 +46,5 @@ test_files/PROCESS_INPUT_SEQS_TEST_OUTDIR
 bin/process_input_seqs
 
 i_dont_exist*
+
+spec/test_files/output/mmseqs_log.txt

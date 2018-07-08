@@ -438,6 +438,75 @@ RSpec.describe InteinFinder do
 
         expect(actual).to eq expected
       end
+
+
+      it "writes rpsblast split 0" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read(File.join(outdir,
+                              "rpsblast_splits",
+                              "process_input_seqs_input.fa.intein_finder.split_0"))
+        expected =
+          File.read expected_output_rpsblast_split_0
+
+        expect(actual).to eq expected
+      end
+
+
+      it "writes rpsblast split 1" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read(File.join(outdir,
+                              "rpsblast_splits",
+                              "process_input_seqs_input.fa.intein_finder.split_1"))
+        expected =
+          File.read expected_output_rpsblast_split_1
+
+        expect(actual).to eq expected
+      end
+
+      it "writes rpsblast split 2" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read(File.join(outdir,
+                              "rpsblast_splits",
+                              "process_input_seqs_input.fa.intein_finder.split_2"))
+        expected =
+          File.read expected_output_rpsblast_split_2
+
+        expect(actual).to eq expected
+      end
+
     end
 
     describe "simple_headers!" do
