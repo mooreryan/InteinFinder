@@ -196,6 +196,11 @@ opts = Trollop.options do
       default: File.join(InteinFinder::ROOT_DIR,
                          "bin",
                          "simple_headers"))
+  opt(:process_input_seqs,
+      "Path to process_input_seqs program",
+      default: File.join(InteinFinder::ROOT_DIR,
+                         "bin",
+                         "process_input_seqs"))
 
 end
 
@@ -224,6 +229,7 @@ check_program opts[:split_seqs]
 check_program opts[:parallel_blast]
 check_program opts[:homology_search]
 check_program opts[:simple_headers]
+check_program opts[:process_input_seqs]
 
 check_file opts[:pssm_list]
 
@@ -419,7 +425,7 @@ cmd = "ruby #{opts[:homology_search]} " \
       "--inteins-db #{opts[:inteins]} " \
       "--seqs #{opts[:queries]} " \
       "--outdir #{opts[:outdir]} " \
-      "--num-splits #{opts[:num_splits]} " \
+      "--mmseqs-splits #{opts[:num_splits]} " \
       "--mmseqs-threads #{opts[:cpus_search]} " \
       "--mmseqs-sensitivity #{opts[:mmseqs_sensitivity]} " \
       "--mmseqs-iterations #{opts[:mmseqs_iterations]} " \
@@ -429,8 +435,7 @@ cmd = "ruby #{opts[:homology_search]} " \
       "--makeprofiledb #{opts[:makeprofiledb]} " \
       "--rpsblast #{opts[:rpsblast]} " \
       "--mmseqs #{opts[:mmseqs]} " \
-      "--split-seqs #{opts[:split_seqs]} " \
-      "--simple-headers #{opts[:simple_headers]} "
+      "--process-input-seqs #{opts[:process_input_seqs]}"
 
 InteinFinder::Utils.run_and_time_it! "Initial homology search", cmd
 
@@ -694,7 +699,7 @@ perc_blast_hits_passed =
 
 # TODO somewhere around here it is slow.
 
-AbortIf.logger.info do
+AbortIf.logger.info do # TODO what does this mean?
   "#{perc_blast_hits_passed}% of blast hits were in regions that " \
   "passed length filter (that's #{num_blast_hits_passed} hits!)"
 end
@@ -850,6 +855,7 @@ elsif parallel_mode == 2
       align! tmp_aln_in, tmp_aln_out
 
 
+      # These can both be nil if there is nothing good.
       all_good, out_line = parse_aln_out tmp_aln_out,
                                          blast_record,
                                          clipping_region,

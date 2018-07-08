@@ -64,7 +64,7 @@ module InteinFinder
         @evalue,
         @bitscore,
         @qlen,
-        @slem
+        @slen
       ].join "\t"
     end
   end

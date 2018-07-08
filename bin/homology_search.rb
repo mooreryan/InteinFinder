@@ -277,6 +277,11 @@ seqs_with_hits = Set.new
 #   end
 # end
 
+AbortIf.logger.debug { "num_input_seqs: #{num_input_seqs}" }
+AbortIf.logger.debug { "num_inteins: #{num_inteins}" }
+
+
+
 # Cat the seqs and also figure out the ones with hits.
 File.open(mmseqs_final_outfile, "w") do |outf|
   Dir.glob(mmseqs_outfile_glob).each do |fname|
@@ -296,24 +301,16 @@ File.open(mmseqs_final_outfile, "w") do |outf|
         # than the query.
 
         # Swap query and subject
-        query = br.query
-        br.query = br.subject
-        br.subject = query
+        br.query, br.subject = br.subject, br.query
 
         # Swap qstart and sstart
-        qstart = br.qstart
-        br.qstart = br.sstart
-        br.sstart = qstart
+        br.qstart, br.sstart = br.sstart, br.qstart
 
         # Swap qend and ssend
-        qend = br.qend
-        br.qend = br.send
-        br.send = qend
+        br.qend, br.send = br.send, br.qend
 
         # Swap qlen and slen
-        qlen = br.qlen
-        br.qlen = br.slen
-        br.slen = qlen
+        br.qlen, br.slen = br.slen, br.qlen
       end
 
       # We want the original names now and not the simple names.

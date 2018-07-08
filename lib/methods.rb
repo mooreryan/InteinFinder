@@ -74,21 +74,25 @@ def parse_query_aln rec,
   # gapped_pos_to_true_pos hash table, then this query
   # probably has a gap at that location?
   unless gapped_pos_to_true_pos.has_key?(first_non_gap_idx + 1)
-    # AbortIf.logger.debug do
-    #   "Skipping query target pair (#{blast_record.query}, " \
-    #   "#{blast_record.subject}) as we couldn't determine " \
-    #   "the region start."
-    # end
+    AbortIf.logger.debug do
+      "Skipping query target pair (#{blast_record.query}, " \
+      "#{blast_record.subject}) as we couldn't determine " \
+      "the region start.  This is probably because of the " \
+      "alignments being wonky at the start or the end due " \
+      "length of either the intein or the query sequence."
+    end
 
     return nil
   end
 
   unless gapped_pos_to_true_pos.has_key?(last_non_gap_idx + 1)
-    # AbortIf.logger.debug do
-    #   "Skipping query target pair (#{blast_record.query}, " \
-    #   "#{blast_record.subject}) as we couldn't determine " \
-    #   "the region end."
-    # end
+    AbortIf.logger.debug do
+      "Skipping query target pair (#{blast_record.query}, " \
+      "#{blast_record.subject}) as we couldn't determine " \
+      "the region end.  This is probably because of the " \
+      "alignments being wonky at the start or the end due " \
+      "length of either the intein or the query sequence."
+    end
 
     return nil
   end
@@ -169,14 +173,28 @@ def parse_aln_out aln_out,
   all_good = nil
   first_non_gap_idx = nil
   last_non_gap_idx = nil
+
+  intein_len = 0
   ParseFasta::SeqFile.open(aln_out).each_record do |rec|
     num += 1
 
     if num == 1
+      intein_len = rec.seq.tr("-", "").length
       # Intein
       first_non_gap_idx, last_non_gap_idx = parse_intein_aln rec
     elsif num == 3
       # This query
+
+      if intein_len > rec.seq.tr("-", "").length
+        # Then this is definetely not a good one
+        AbortIf.logger.debug do
+          "Skipping query target pair (#{blast_record.query}, " \
+          "#{blast_record.subject}) the intein is longer than " \
+          "the query seq."
+        end
+
+        return [nil, nil]
+      end
 
       result = parse_query_aln rec,
                                blast_record,
