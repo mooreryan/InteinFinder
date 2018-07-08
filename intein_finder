@@ -754,30 +754,45 @@ if parallel_mode == 1
                               "aln_out_#{blast_record.query}" +
                               "_#{blast_record.subject}.faa"
 
-      # TODO check for missing seqs
       this_query = query_records[blast_record.query]
       this_intein = intein_records[blast_record.subject]
 
-      write_aln_in tmp_aln_in,
-                   this_intein,
-                   this_query,
-                   clipping_region
+      # @note As of v0.7.0, length filtering is done after homology
+      # search, so you need to only run the aligment if there is
+      # actually a corresponding record in the query_records and
+      # intein_records tables.  You could filter for length in the
+      # first step....
+      if this_query && this_intein
 
-      align! tmp_aln_in, tmp_aln_out
+        write_aln_in tmp_aln_in,
+                     this_intein,
+                     this_query,
+                     clipping_region
+
+        align! tmp_aln_in, tmp_aln_out
 
 
-      all_good, out_line = parse_aln_out tmp_aln_out,
-                                         blast_record,
-                                         clipping_region,
-                                         query2regions
+        all_good, out_line = parse_aln_out tmp_aln_out,
+                                           blast_record,
+                                           clipping_region,
+                                           query2regions
 
-      out_lines << out_line
+        out_lines << out_line
 
-      FileUtils.rm tmp_aln_in
-      FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
+        FileUtils.rm tmp_aln_in
+        FileUtils.rm tmp_aln_out unless opts[:keep_alignment_files]
 
-      if all_good
-        found_good_hit = true
+        if all_good
+          found_good_hit = true
+        end
+      else
+        AbortIf.logger.warn do
+          "Skipping #{blast_record.query}--#{blast_record.subject} " \
+          "pair.  Not in the hash table.  Maybe one was filtered " \
+          "because of length after homology search?"
+        end
+
+
       end
     end
 
