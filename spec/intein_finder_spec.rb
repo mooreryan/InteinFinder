@@ -199,6 +199,212 @@ RSpec.describe InteinFinder do
       end
     end
 
+    describe "process_input_seqs!" do
+      let(:annotation) { "snazzy_lala" }
+      let(:num_splits) { 2 }
+      let(:min_len) { 8 }
+      let(:process_input_seqs_exe) do
+        File.join BIN_DIR, "process_input_seqs"
+      end
+      let(:input) do
+        File.join TEST_FILE_INPUT_DIR,
+                  "process_input_seqs_input.fa"
+      end
+      let(:outdir) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "PROCESS_INPUT_FILES_TMP"
+      end
+
+      # These are the expected files.
+      let(:expected_output_name_map) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "process_input_seqs_input.fa.intein_finder.name_map"
+      end
+      let(:expected_output_stats) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "process_input_seqs_input.fa.intein_finder.stats"
+      end
+      let(:expected_output_single_file) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "process_input_seqs_input.fa.intein_finder"
+      end
+      let(:expected_output_splits_dir) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "splits"
+      end
+      let(:expected_output_split_0) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "splits",
+                  "process_input_seqs_input.fa.intein_finder.split_0"
+      end
+      let(:expected_output_split_1) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "splits",
+                  "process_input_seqs_input.fa.intein_finder.split_1"
+      end
+
+      before :each do
+        SpecHelper::try_rm outdir
+
+      end
+
+      after :each do
+        SpecHelper::try_rm outdir
+      end
+
+      # shared_examples_for "writes the file" do |file_sym, filename|
+      #   it "writes the #{file_sym} file" do
+      #     output = nil
+      #     expect {
+      #       output = runners.process_input_seqs! process_input_seqs_exe,
+      #                                            input,
+      #                                            outdir,
+      #                                            annotation,
+      #                                            num_splits,
+      #                                            min_len
+      #     }.not_to raise_error
+
+      #     actual =
+      #       File.read output[file_sym]
+      #     expected =
+      #       File.read filename
+
+      #     expect(actual).to eq expected
+
+      #   end
+      # end
+
+      it "outputs the files in a hash" do
+        SpecHelper::try_rm outdir
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_splits,
+                                               min_len
+        }.not_to raise_error
+
+        expected = {
+          name_map: File.join(outdir, File.basename(expected_output_name_map)),
+          stats: File.join(outdir, File.basename(expected_output_stats)),
+          single_file: File.join(outdir, File.basename(expected_output_single_file)),
+          splits_dir: File.join(outdir, File.basename(expected_output_splits_dir)),
+          splits: File.join(outdir, "splits", "process_input_seqs_input.fa.intein_finder.split_*")
+        }
+        expect(output).to eq expected
+      end
+
+      it "writes the name map" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read output[:name_map]
+        expected =
+          File.read expected_output_name_map
+
+        expect(actual).to eq expected
+      end
+      # include_examples "writes the file", :name_map, expected_output_name_map
+
+      it "writes the stats" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read output[:stats]
+        expected =
+          File.read expected_output_stats
+
+        expect(actual).to eq expected
+
+      end
+
+      it "writes the single file" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read output[:single_file]
+        expected =
+          File.read expected_output_single_file
+
+        expect(actual).to eq expected
+
+      end
+
+      it "writes split 0" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read(File.join(outdir,
+                              "splits",
+                              "process_input_seqs_input.fa.intein_finder.split_0"))
+        expected =
+          File.read expected_output_split_0
+
+        expect(actual).to eq expected
+      end
+
+      it "writes split 1" do
+        output = nil
+        expect {
+          output = runners.process_input_seqs! process_input_seqs_exe,
+                                               input,
+                                               outdir,
+                                               annotation,
+                                               num_splits,
+                                               min_len
+        }.not_to raise_error
+
+        actual =
+          File.read(File.join(outdir,
+                              "splits",
+                              "process_input_seqs_input.fa.intein_finder.split_1"))
+        expected =
+          File.read expected_output_split_1
+
+        expect(actual).to eq expected
+      end
+    end
+
     describe "simple_headers!" do
 
       let(:annotation) { "apple" }

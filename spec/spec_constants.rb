@@ -9,7 +9,11 @@ BIN_DIR = File.join ROOT_DIR, "bin"
 module SpecHelper
   def self.try_rm *files
     files.each do |fname|
-      FileUtils.rm fname if File.exist? fname
+      if File.exist?(fname) && File.directory?(fname)
+        FileUtils.rm_r fname
+      elsif File.exist?(fname)
+        FileUtils.rm fname
+      end
     end
   end
 end

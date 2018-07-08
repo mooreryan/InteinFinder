@@ -1,10 +1,3 @@
-/*
-   TODO:
-
-   - It will have empty files if you have more splits than the number
-     of input sequences.
-*/
-
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>

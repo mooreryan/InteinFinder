@@ -33,7 +33,7 @@ endif
 
 all: split_seqs
 
-test: split_seqs simple_headers
+test: split_seqs simple_headers process_input_seqs
 	rm -r $(TEST_OUTDIR); ./intein_finder --mmseqs $(MMSEQS) --use-length-in-refinement --queries test_files/rnr.faa --outdir $(TEST_OUTDIR) --split-queries --cpus-alignment $(THREADS_ALIGNMENT) --cpus-search $(THREADS_SEARCH) && tree $(TEST_OUTDIR) && diff TEST_OUTPUT/results/intein_regions_refined_condensed.txt test_files/test_expected.txt
 
 test_small: split_seqs
@@ -63,3 +63,9 @@ test_simple_headers: simple_headers
 # START HERE: fix the options to use the named ones
 test_homology_search: simple_headers split_seqs
 	rm test_files/snazzy_proteins.simple_headers.faa.split_*; rm -r QWFP/; time ruby bin/homology_search.rb --inteins-db assets/intein_sequences/all_derep.faa --seqs test_files/snazzy_proteins.faa --outdir QWFP --mmseqs-threads 8 --mmseqs-iterations 1 --rpsblast-instances 8 --num-splits 2 && tree QWFP
+
+process_input_seqs: $(OBJS)
+	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
+
+test_process_input_seqs: process_input_seqs
+	rm -r $(TEST_FILES)/PROCESS_INPUT_SEQS_TEST_OUTDIR; valgrind --leak-check=full $(BIN)/process_input_seqs spec/test_files/input/process_input_seqs_input.fa $(TEST_FILES)/PROCESS_INPUT_SEQS_TEST_OUTDIR snazzy_lala 2 8

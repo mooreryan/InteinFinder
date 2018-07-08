@@ -147,8 +147,6 @@ queries_with_hits =
   File.join sequences_dir,
             "#{seqs_infile_base}.seqs_with_hits.faa"
 
-
-
 # keys: seqs, name_map
 simple_headers_out = Runners.simple_headers! simple_headers_exe,
                                              "user_query",

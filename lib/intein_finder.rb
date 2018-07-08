@@ -246,6 +246,36 @@ module InteinFinder
       { output: output }
     end
 
+    def process_input_seqs! exe,
+                            seqs,
+                            outdir,
+                            annotation,
+                            num_splits,
+                            min_len
+
+      cmd = "#{exe} " \
+            "#{seqs} " \
+            "#{outdir} " \
+            "#{annotation} " \
+            "#{num_splits} " \
+            "#{min_len}"
+
+      InteinFinder::Utils.run_and_time_it! "Processing input seqs", cmd
+
+      ext = File.extname seqs
+      base = File.basename seqs, ext
+      dir = File.dirname seqs
+
+
+      {
+        name_map: File.join(outdir, "#{base}#{ext}.intein_finder.name_map"),
+        stats: File.join(outdir, "#{base}#{ext}.intein_finder.stats"),
+        single_file: File.join(outdir, "#{base}#{ext}.intein_finder"),
+        splits_dir: File.join(outdir, "splits"),
+        splits: File.join(outdir, "splits", "#{base}#{ext}.intein_finder.split_*")
+      }
+    end
+
 
     def simple_headers! exe, annotation, seqs
       cmd = "#{File.absolute_path exe} #{annotation} #{seqs}"

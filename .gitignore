@@ -40,3 +40,9 @@ test_files.fold*
 QWFP
 
 bin/pre_filter.rb
+
+test_files/PROCESS_INPUT_SEQS_TEST_OUTDIR
+
+bin/process_input_seqs
+
+i_dont_exist*
