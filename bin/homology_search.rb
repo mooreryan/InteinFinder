@@ -22,6 +22,10 @@ opts = Trollop.options do
       "Out directory",
       default: "if_hs_output")
 
+  opt(:min_length,
+      "Minimum length to keep a sequence.",
+      default: 100)
+
   opt(:mmseqs_splits,
       "Number of splits for the query sequences for MMseqs2.  " \
       "The more of these, the less memory I will use.",
@@ -55,29 +59,26 @@ opts = Trollop.options do
   opt(:mmseqs,
       "Path to mmseqs binary",
       default: "mmseqs")
-  opt(:split_seqs,
-      "Path to split_seqs program",
+  opt(:process_input_seqs,
+      "Path to process_input_seqs program",
       default: File.join(InteinFinder::ROOT_DIR,
                          "bin",
-                         "split_seqs"))
-  opt(:simple_headers,
-      "Path to simple_headers program",
-      default: File.join(InteinFinder::ROOT_DIR,
-                         "bin",
-                         "simple_headers"))
+                         "process_input_seqs"))
 end
+
+min_len = opts[:min_length]
 
 inteins_db = opts[:inteins_db]
 seqs_infile = opts[:seqs]
 outdir = opts[:outdir]
 num_splits = opts[:num_splits]
 
-simple_headers_exe = opts[:simple_headers]
-split_seqs_exe = opts[:split_seqs]
+process_input_seqs_exe = opts[:process_input_seqs]
 mmseqs_exe = opts[:mmseqs]
 makeprofiledb_exe = opts[:makeprofiledb]
 rpsblast_exe = opts[:rpsblast]
 
+mmseqs_splits = opts[:mmseqs_splits]
 mmseqs_sensitivity = opts[:mmseqs_sensitivity]
 mmseqs_num_iterations = opts[:mmseqs_iterations]
 mmseqs_evalue = opts[:mmseqs_evalue]
@@ -90,8 +91,7 @@ rpsblast_threads = opts[:rpsblast_instances]
 # Needed executable files and external programs
 
 
-check_program simple_headers_exe
-check_program split_seqs_exe
+check_program process_input_seqs_exe
 check_program mmseqs_exe
 check_program makeprofiledb_exe
 check_program rpsblast_exe
@@ -146,20 +146,52 @@ queries_with_hits =
   File.join sequences_dir,
             "#{seqs_infile_base}.seqs_with_hits.faa"
 
+# keys: TODO
+process_input_seqs_out = Runners.process_input_seqs! process_input_seqs_exe,
+                                                     seqs_infile,
+                                                     outdir,
+                                                     InteinFinder::ANNOTATION,
+                                                     mmseqs_splits,
+                                                     rpsblast_threads,
+                                                     min_len
+
 # keys: seqs, name_map
-simple_headers_out = Runners.simple_headers! simple_headers_exe,
-                                             "user_query",
-                                             seqs_infile
+# simple_headers_out = Runners.simple_headers! simple_headers_exe,
+#                                              "user_query",
+#                                              seqs_infile
 
-# keys: splits
-split_seqs_out = Runners.split_seqs! split_seqs_exe,
-                                     num_splits,
-                                     simple_headers_out[:seqs]
+# # keys: splits
+# split_seqs_out = Runners.split_seqs! split_seqs_exe,
+#                                      num_splits,
+#                                      simple_headers_out[:seqs]
 
-split_fnames = Dir.glob(split_seqs_out[:splits]).sort
+# Read the stats file for the query seqs.
+total_seqs = 0
+long_seqs = 0
+short_seqs = 0
+File.open(process_input_seqs_out[:stats], "rt").each_line.with_index do |line, idx|
+  key, value = line.chomp.split "\t"
+
+  case idx
+  when 0
+    abort_unless key == "total_seqs", "First line of stats file should have key total_seqs.  Got #{key}."
+
+    total_seqs = value.to_i
+  when 1
+    abort_unless key == "long_seqs", "First line of stats file should have key total_seqs.  Got #{key}."
+
+    long_seqs = value.to_i
+  when 2
+    abort_unless key == "short_seqs", "First line of stats file should have key total_seqs.  Got #{key}."
+
+    short_seqs = value.to_i
+  else
+    abort_if true, "Too many lines in the #{process_input_seqs_out[:stats]} file"
+  end
+end
 
 name_map = {}
-File.open(simple_headers_out[:name_map], "rt").each_line do |line|
+File.open(process_input_seqs_out[:name_map], "rt").each_line do |line|
   new_name, old_name = line.chomp.split "\t"
 
   name_map[new_name] = old_name.split(" ").first
@@ -171,19 +203,14 @@ ParseFasta::SeqFile.open(inteins_db).each_record do |rec|
   num_inteins += 1
 end
 
-# And count the input seqs.  Just start with the first split.  To
-# avoid counting the whole flie (slow), only count up to the number of
-# intein seqs, since this should be lowish.
-num_input_seqs = 0
-ParseFasta::SeqFile.open(split_fnames[0]).each_record do |rec|
-  num_input_seqs += 1
-
-  break if num_input_seqs > num_inteins
-end
+# We only process the long seqs from here on.
+num_input_seqs = long_seqs
 
 # Run mmseqs on all the splits.
+mmseqs_split_fnames = Dir.glob(process_input_seqs_out[:mmseqs_splits]).sort
 
-split_fnames.each_with_index do |input_seq_fname, idx|
+# START_HERE.
+mmseqs_split_fnames.each_with_index do |input_seq_fname, idx|
   # Set the targets to the file with more sequences.  It will be way
   # faster if there is a big difference in size.
   if num_input_seqs > num_inteins
@@ -217,13 +244,6 @@ split_fnames.each_with_index do |input_seq_fname, idx|
 
 end
 
-if num_input_seqs > num_inteins
-  query_seq_column  = 1
-  target_seq_column = 0
-else
-  query_seq_column  = 0
-  target_seq_column = 1
-end
 
 seqs_with_hits = Set.new
 
@@ -269,19 +289,42 @@ File.open(mmseqs_final_outfile, "w") do |outf|
 
 
     File.open(fname, "rt").each_line do |line|
-      ary = line.chomp.split "\t"
+      br = InteinFinder::BlastRecord.new line
 
-      target_seq_name = ary[target_seq_column]
-      query_seq_name = ary[query_seq_column]
-      orig_query_name = name_map[query_seq_name]
+      if num_input_seqs > num_inteins
+        # Need to swap the columns as the inputs are the DB rather
+        # than the query.
 
+        # Swap query and subject
+        query = br.query
+        br.query = br.subject
+        br.subject = query
+
+        # Swap qstart and sstart
+        qstart = br.qstart
+        br.qstart = br.sstart
+        br.sstart = qstart
+
+        # Swap qend and ssend
+        qend = br.qend
+        br.qend = br.send
+        br.send = qend
+
+        # Swap qlen and slen
+        qlen = br.qlen
+        br.qlen = br.slen
+        br.slen = qlen
+      end
+
+      # We want the original names now and not the simple names.
+      orig_query_name = name_map[br.query]
       seqs_with_hits << orig_query_name
 
-      # Ensure the user seq is in 1st col, and DB seq is in 2nd col.
-      ary[0] = orig_query_name
-      ary[1] = target_seq_name
+      # Also we want to print the original name.
+      br.query = orig_query_name
 
-      outf.puts ary.join "\t"
+      # @todo Ideally we'd have some tests for this.
+      outf.puts br
     end
 
     # And remove the tmp file
@@ -294,12 +337,14 @@ end
 # rpsblast
 ##########
 
+rpsblast_split_fnames = Dir.glob(process_input_seqs_out[:rpsblast_splits]).sort
+
 # First we need to make the profile db to blast against.
 Runners.makeprofiledb! makeprofiledb_exe, PSSM_PATHS, profile_db
 
 # Then we actually run the blast.
 Runners.parallel_rpsblast! exe: rpsblast_exe,
-                           query_files: split_fnames,
+                           query_files: rpsblast_split_fnames,
                            target_db: profile_db,
                            output: rpsblast_outfile,
                            evalue: rpsblast_evalue,
@@ -307,27 +352,19 @@ Runners.parallel_rpsblast! exe: rpsblast_exe,
 
 # And map back the simple headers to the original ones.
 File.open(rpsblast_final_outfile, 'w') do |outf|
-  # map_names rpsblast_outfile,
-  #           outf,
-  #           name_map,
-  #           query_seq_column,
-  #           target_seq_column,
-  #           seqs_with_hits
-
   # Unlike above, rpsblast always has the actual query in the 1st
   # column.
   File.open(rpsblast_outfile, "rt").each_line do |line|
-    ary = line.chomp.split "\t"
+    br = InteinFinder::BlastRecord.new line
 
-    query_seq_name = ary[0]
-    orig_query_name = name_map[query_seq_name]
+    orig_query_name = name_map[br.query]
 
     seqs_with_hits << orig_query_name
 
-    # And map the name to the original.
-    ary[0] = orig_query_name
+    # And we want to print the original query name.
+    br.query = orig_query_name
 
-    outf.puts ary.join "\t"
+    outf.puts br
   end
 
   FileUtils.rm rpsblast_outfile

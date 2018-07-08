@@ -60,9 +60,8 @@ simple_headers: $(OBJS)
 test_simple_headers: simple_headers
 	rm $(TEST_FILES)/*.simple_headers.*; valgrind --leak-check=full $(BIN)/simple_headers APPLE $(TEST_FILES)/simple_headers_in.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.fa $(TEST_FILES)/simple_headers_expected.fa && diff $(TEST_FILES)/simple_headers_in.simple_headers.name_map.txt $(TEST_FILES)/simple_headers_name_map_expected.txt
 
-# START HERE: fix the options to use the named ones
-test_homology_search: simple_headers split_seqs
-	rm test_files/snazzy_proteins.simple_headers.faa.split_*; rm -r QWFP/; time ruby bin/homology_search.rb --inteins-db assets/intein_sequences/all_derep.faa --seqs test_files/snazzy_proteins.faa --outdir QWFP --mmseqs-threads 8 --mmseqs-iterations 1 --rpsblast-instances 8 --num-splits 2 && tree QWFP
+test_homology_search: process_input_seqs
+	rm test_files/snazzy_proteins.simple_headers.faa.split_*; rm -r QWFP/; time ruby bin/homology_search.rb --inteins-db assets/intein_sequences/all_derep.faa --seqs test_files/snazzy_proteins.faa --outdir QWFP --mmseqs-threads 8 --mmseqs-iterations 1 --rpsblast-instances 8 --mmseqs-splits 2 --min-length 0 && tree QWFP
 
 process_input_seqs: $(OBJS)
 	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)

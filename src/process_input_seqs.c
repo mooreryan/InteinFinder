@@ -76,15 +76,18 @@ int main(int argc, char *argv[])
   PANIC_MEM(stderr, rstr);
 
   ret_val = rfile_exist(rstr);
-  if (ret_val == RTRUE) {
-    rstring_free(rstr);
-    kseq_destroy(seq);
-    gzclose(fp);
+  if (ret_val == RFALSE) {
+    /* Make the outdir.  read/write/search permissions for owner and
+       group.  read/search permissions for others. */
+    errno = 0;
+    ret_val = mkdir(arg_outdir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    PANIC_UNLESS(stderr,
+                 ret_val == 0,
+                 errno,
+                 "Could not make directory '%s': %s",
+                 arg_outdir,
+                 strerror(errno));
 
-    fprintf(stderr,
-            "Error: '%s' already exists.  Pick a new directory.",
-            arg_outdir);
-    exit(1);
   } else if (ret_val == RERROR) {
     rstring_free(rstr);
     kseq_destroy(seq);
@@ -97,16 +100,6 @@ int main(int argc, char *argv[])
   }
   rstring_free(rstr);
 
-  /* Make the outdir.  read/write/search permissions for owner and
-     group.  read/search permissions for others. */
-  errno = 0;
-  ret_val = mkdir(arg_outdir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  PANIC_UNLESS(stderr,
-               ret_val == 0,
-               errno,
-               "Could not make directory '%s': %s",
-               arg_outdir,
-               strerror(errno));
 
   /* Make the mmseqs_splits dir.  Same permissions as above. */
   mmseqs_splits_dir = rstring_format("%s/mmseqs_splits", arg_outdir);
