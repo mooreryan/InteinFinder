@@ -136,6 +136,11 @@ opts = Trollop.options do
       "The more of these, the less memory I will use.",
       default: 1)
 
+  opt(:mmseqs_splits,
+      "Number of splits for the query sequences for MMseqs2.  " \
+      "The more of these, the less memory I will use but the " \
+      "slower I will go.",
+      default: 1)
 
   opt(:split_queries,
       "Split queries for rpsblast if there are enough sequences",
@@ -425,7 +430,7 @@ cmd = "ruby #{opts[:homology_search]} " \
       "--inteins-db #{opts[:inteins]} " \
       "--seqs #{opts[:queries]} " \
       "--outdir #{opts[:outdir]} " \
-      "--mmseqs-splits #{opts[:num_splits]} " \
+      "--mmseqs-splits #{opts[:mmseqs_splits]} " \
       "--mmseqs-threads #{opts[:cpus_search]} " \
       "--mmseqs-sensitivity #{opts[:mmseqs_sensitivity]} " \
       "--mmseqs-iterations #{opts[:mmseqs_iterations]} " \
