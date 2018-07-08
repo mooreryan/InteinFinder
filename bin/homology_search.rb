@@ -22,11 +22,10 @@ opts = Trollop.options do
       "Out directory",
       default: "if_hs_output")
 
-  opt(:num_splits,
-      "Number of splits for the query sequences.  " \
+  opt(:mmseqs_splits,
+      "Number of splits for the query sequences for MMseqs2.  " \
       "The more of these, the less memory I will use.",
       default: 1)
-
   opt(:mmseqs_threads,
       "Number of threads for MMseqs2 to use.",
       default: 1)

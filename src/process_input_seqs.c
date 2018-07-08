@@ -19,10 +19,11 @@
 
 int main(int argc, char *argv[])
 {
-  if (argc != 6) {
+  if (argc != 7) {
     fprintf(stderr,
-            "Usage: %s <input seqs> <outdir> <annotation> <num_splits> "
-            "<min_len>\n", argv[0]);
+            "Usage: %s <input_seqs> <outdir> <annotation> <num_mmseqs_splits> "
+            "<num_rpsblast_splits> <min_len>\n",
+            argv[0]);
 
     exit(1);
   }
@@ -31,14 +32,16 @@ int main(int argc, char *argv[])
   char* arg_input_seqs = argv[1];
   char* arg_outdir = argv[2];
   char* arg_annotation = argv[3];
-  char* arg_num_splits = argv[4];
-  char* arg_min_len = argv[5];
+  char* arg_num_mmseqs_splits = argv[4];
+  char* arg_num_rpsblast_splits = argv[5];
+  char* arg_min_len = argv[6];
 
   char* tmp = NULL;
 
   rstring* input_seqs_basename = NULL;
 
-  rstring* splits_dir = NULL;
+  rstring* mmseqs_splits_dir = NULL;
+  rstring* rpsblast_splits_dir = NULL;
   rstring* output_single_file = NULL;
   rstring* output_stats = NULL;
   rstring* output_name_map = NULL;
@@ -50,14 +53,16 @@ int main(int argc, char *argv[])
   FILE* output_stats_f = NULL;
   FILE* output_name_map_f = NULL;
 
-  FILE** splits = NULL;
+  FILE** mmseqs_splits = NULL;
+  FILE** rpsblast_splits = NULL;
 
   int ret_val = 0;
   int i = 0;
 
   long l = 0;
   long min_len = 0;
-  long num_splits = 0;
+  long num_mmseqs_splits = 0;
+  long num_rpsblast_splits = 0;
   long total_seqs = 0;
   long long_seqs = 0;
 
@@ -103,19 +108,34 @@ int main(int argc, char *argv[])
                arg_outdir,
                strerror(errno));
 
-  /* Make the splits dir.  Same permissions as above. */
-  splits_dir = rstring_format("%s/splits", arg_outdir);
-  PANIC_MEM(stderr, splits_dir);
+  /* Make the mmseqs_splits dir.  Same permissions as above. */
+  mmseqs_splits_dir = rstring_format("%s/mmseqs_splits", arg_outdir);
+  PANIC_MEM(stderr, mmseqs_splits_dir);
   errno = 0;
   /* Do this tmp thing to avoid this warning: 'null argument where
      non-null required' */
-  tmp = rstring_data(splits_dir);
+  tmp = rstring_data(mmseqs_splits_dir);
   ret_val = mkdir(tmp, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   PANIC_UNLESS(stderr,
                ret_val == 0,
                errno,
                "Could not make directory '%s': %s",
-               rstring_data(splits_dir),
+               rstring_data(mmseqs_splits_dir),
+               strerror(errno));
+
+  /* Make the rpsblast_splits dir.  Same permissions as above. */
+  rpsblast_splits_dir = rstring_format("%s/rpsblast_splits", arg_outdir);
+  PANIC_MEM(stderr, rpsblast_splits_dir);
+  errno = 0;
+  /* Do this tmp thing to avoid this warning: 'null argument where
+     non-null required' */
+  tmp = rstring_data(rpsblast_splits_dir);
+  ret_val = mkdir(tmp, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+  PANIC_UNLESS(stderr,
+               ret_val == 0,
+               errno,
+               "Could not make directory '%s': %s",
+               rstring_data(rpsblast_splits_dir),
                strerror(errno));
 
   /* Check the input file for errors. */
@@ -183,22 +203,40 @@ int main(int argc, char *argv[])
 
 
 
-  /* Check num splits */
+  /* Check num mmseqs_splits */
   errno = 0;
-  num_splits = strtol(arg_num_splits, NULL, 10);
+  num_mmseqs_splits = strtol(arg_num_mmseqs_splits, NULL, 10);
   PANIC_IF(stderr,
            errno == ERANGE,
            errno,
-           "Problem parsing num_splits: %s",
+           "Problem parsing num_mmseqs_splits: %s",
            strerror(errno));
   PANIC_IF(stderr,
-           num_splits < 1,
+           num_mmseqs_splits < 1,
            OPT_ERR,
            "Need at least 1 split.");
   PANIC_IF(stderr,
-           num_splits > TOO_BIG,
+           num_mmseqs_splits > TOO_BIG,
            OPT_ERR,
-           "Too many splits!  Use less than %d",
+           "Too many mmseqs_splits!  Use less than %d",
+           TOO_BIG);
+
+  /* Check num rpsblast_splits */
+  errno = 0;
+  num_rpsblast_splits = strtol(arg_num_rpsblast_splits, NULL, 10);
+  PANIC_IF(stderr,
+           errno == ERANGE,
+           errno,
+           "Problem parsing num_rpsblast_splits: %s",
+           strerror(errno));
+  PANIC_IF(stderr,
+           num_rpsblast_splits < 1,
+           OPT_ERR,
+           "Need at least 1 split.");
+  PANIC_IF(stderr,
+           num_rpsblast_splits > TOO_BIG,
+           OPT_ERR,
+           "Too many rpsblast_splits!  Use less than %d",
            TOO_BIG);
 
   /* Check min length */
@@ -210,20 +248,42 @@ int main(int argc, char *argv[])
            "Problem parsing min_len: %s",
            strerror(errno));
 
-  /* Make the outfile handle array. */
-  splits = malloc(sizeof(FILE*) * num_splits);
-  PANIC_MEM(stderr, splits);
+  /* Make the mmseqs splits outfiles */
+  mmseqs_splits = malloc(sizeof(FILE*) * num_mmseqs_splits);
+  PANIC_MEM(stderr, mmseqs_splits);
 
-  for (i = 0; i < num_splits; ++i) {
+  for (i = 0; i < num_mmseqs_splits; ++i) {
     rstr = rstring_format("%s/%s.intein_finder.split_%d",
-                          rstring_data(splits_dir),
+                          rstring_data(mmseqs_splits_dir),
                           rstring_data(input_seqs_basename),
                           i);
     PANIC_MEM(stderr, rstr);
 
-    splits[i] = fopen(rstring_data(rstr), "w");
+    mmseqs_splits[i] = fopen(rstring_data(rstr), "w");
     PANIC_IF(stderr,
-             splits[i] == NULL,
+             mmseqs_splits[i] == NULL,
+             errno,
+             "Couldn't open %s for writing: (%s)",
+             rstring_data(rstr),
+             strerror(errno));
+
+    rstring_free(rstr);
+  }
+
+  /* Make the rpsblast splits outfiles */
+  rpsblast_splits = malloc(sizeof(FILE*) * num_rpsblast_splits);
+  PANIC_MEM(stderr, rpsblast_splits);
+
+  for (i = 0; i < num_rpsblast_splits; ++i) {
+    rstr = rstring_format("%s/%s.intein_finder.split_%d",
+                          rstring_data(rpsblast_splits_dir),
+                          rstring_data(input_seqs_basename),
+                          i);
+    PANIC_MEM(stderr, rstr);
+
+    rpsblast_splits[i] = fopen(rstring_data(rstr), "w");
+    PANIC_IF(stderr,
+             rpsblast_splits[i] == NULL,
              errno,
              "Couldn't open %s for writing: (%s)",
              rstring_data(rstr),
@@ -266,8 +326,14 @@ int main(int argc, char *argv[])
               rstring_data(new_header),
               seq->seq.s);
 
-      /* Write seqs to splits. */
-      fprintf(splits[long_seqs % num_splits],
+      /* Write seqs to mmseqs_splits. */
+      fprintf(mmseqs_splits[long_seqs % num_mmseqs_splits],
+              ">%s\n%s\n",
+              rstring_data(new_header),
+              seq->seq.s);
+
+      /* Write seqs to rpsblast_splits. */
+      fprintf(rpsblast_splits[long_seqs % num_rpsblast_splits],
               ">%s\n%s\n",
               rstring_data(new_header),
               seq->seq.s);
@@ -296,7 +362,8 @@ int main(int argc, char *argv[])
 
   rstring_free(input_seqs_basename);
 
-  rstring_free(splits_dir);
+  rstring_free(mmseqs_splits_dir);
+  rstring_free(rpsblast_splits_dir);
 
   rstring_free(output_single_file);
   rstring_free(output_stats);
@@ -306,9 +373,14 @@ int main(int argc, char *argv[])
   fclose(output_stats_f);
   fclose(output_name_map_f);
 
-  for (i = 0; i < num_splits; ++i) {
-    fclose(splits[i]);
+  for (i = 0; i < num_mmseqs_splits; ++i) {
+    fclose(mmseqs_splits[i]);
   }
-  free(splits);
+  free(mmseqs_splits);
+
+  for (i = 0; i < num_rpsblast_splits; ++i) {
+    fclose(rpsblast_splits[i]);
+  }
+  free(rpsblast_splits);
 
 }

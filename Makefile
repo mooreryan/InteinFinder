@@ -68,4 +68,4 @@ process_input_seqs: $(OBJS)
 	$(CC) $(CFLAGS) -I$(SRC_RLIB) -o $(BIN)/$@ -O$(OPTIMIZE) $(SRC)/$@.c $^ $(LDFLAGS)
 
 test_process_input_seqs: process_input_seqs
-	rm -r $(TEST_FILES)/PROCESS_INPUT_SEQS_TEST_OUTDIR; valgrind --leak-check=full $(BIN)/process_input_seqs spec/test_files/input/process_input_seqs_input.fa $(TEST_FILES)/PROCESS_INPUT_SEQS_TEST_OUTDIR snazzy_lala 2 8
+	rm -r $(TEST_FILES)/PROCESS_INPUT_SEQS_TEST_OUTDIR; valgrind --leak-check=full $(BIN)/process_input_seqs spec/test_files/input/process_input_seqs_input.fa $(TEST_FILES)/PROCESS_INPUT_SEQS_TEST_OUTDIR snazzy_lala 2 3 8

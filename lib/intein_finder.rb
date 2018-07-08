@@ -250,14 +250,16 @@ module InteinFinder
                             seqs,
                             outdir,
                             annotation,
-                            num_splits,
+                            num_mmseqs_splits,
+                            num_rpsblast_splits,
                             min_len
 
       cmd = "#{exe} " \
             "#{seqs} " \
             "#{outdir} " \
             "#{annotation} " \
-            "#{num_splits} " \
+            "#{num_mmseqs_splits} " \
+            "#{num_rpsblast_splits} " \
             "#{min_len}"
 
       InteinFinder::Utils.run_and_time_it! "Processing input seqs", cmd
@@ -271,8 +273,11 @@ module InteinFinder
         name_map: File.join(outdir, "#{base}#{ext}.intein_finder.name_map"),
         stats: File.join(outdir, "#{base}#{ext}.intein_finder.stats"),
         single_file: File.join(outdir, "#{base}#{ext}.intein_finder"),
-        splits_dir: File.join(outdir, "splits"),
-        splits: File.join(outdir, "splits", "#{base}#{ext}.intein_finder.split_*")
+        mmseqs_splits_dir: File.join(outdir, "mmseqs_splits"),
+        mmseqs_splits: File.join(outdir, "mmseqs_splits", "#{base}#{ext}.intein_finder.split_*"),
+        rpsblast_splits_dir: File.join(outdir, "rpsblast_splits"),
+        rpsblast_splits: File.join(outdir, "rpsblast_splits", "#{base}#{ext}.intein_finder.split_*")
+
       }
     end
 

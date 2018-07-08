@@ -201,7 +201,8 @@ RSpec.describe InteinFinder do
 
     describe "process_input_seqs!" do
       let(:annotation) { "snazzy_lala" }
-      let(:num_splits) { 2 }
+      let(:num_mmseqs_splits) { 2 }
+      let(:num_rpsblast_splits) { 3 }
       let(:min_len) { 8 }
       let(:process_input_seqs_exe) do
         File.join BIN_DIR, "process_input_seqs"
@@ -231,22 +232,48 @@ RSpec.describe InteinFinder do
                   "process_input_seqs_output",
                   "process_input_seqs_input.fa.intein_finder"
       end
-      let(:expected_output_splits_dir) do
+      let(:expected_output_mmseqs_splits_dir) do
         File.join TEST_FILE_OUTPUT_DIR,
                   "process_input_seqs_output",
-                  "splits"
+                  "mmseqs_splits"
       end
-      let(:expected_output_split_0) do
+      let(:expected_output_mmseqs_split_0) do
         File.join TEST_FILE_OUTPUT_DIR,
                   "process_input_seqs_output",
-                  "splits",
+                  "mmseqs_splits",
                   "process_input_seqs_input.fa.intein_finder.split_0"
       end
-      let(:expected_output_split_1) do
+      let(:expected_output_mmseqs_split_1) do
         File.join TEST_FILE_OUTPUT_DIR,
                   "process_input_seqs_output",
-                  "splits",
+                  "mmseqs_splits",
                   "process_input_seqs_input.fa.intein_finder.split_1"
+      end
+
+
+      # START HERE: make the test files for these.
+      let(:expected_output_rpsblast_splits_dir) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "rpsblast_splits"
+      end
+      let(:expected_output_rpsblast_split_0) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "rpsblast_splits",
+                  "process_input_seqs_input.fa.intein_finder.split_0"
+      end
+      let(:expected_output_rpsblast_split_1) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "rpsblast_splits",
+                  "process_input_seqs_input.fa.intein_finder.split_1"
+      end
+      let(:expected_output_rpsblast_split_2) do
+        File.join TEST_FILE_OUTPUT_DIR,
+                  "process_input_seqs_output",
+                  "rpsblast_splits",
+                  "process_input_seqs_input.fa.intein_finder.split_2"
       end
 
       before :each do
@@ -266,7 +293,7 @@ RSpec.describe InteinFinder do
       #                                            input,
       #                                            outdir,
       #                                            annotation,
-      #                                            num_splits,
+      #                                            num_mmseqs_splits,
       #                                            min_len
       #     }.not_to raise_error
 
@@ -288,7 +315,8 @@ RSpec.describe InteinFinder do
                                                input,
                                                outdir,
                                                annotation,
-                                               num_splits,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
                                                min_len
         }.not_to raise_error
 
@@ -296,8 +324,10 @@ RSpec.describe InteinFinder do
           name_map: File.join(outdir, File.basename(expected_output_name_map)),
           stats: File.join(outdir, File.basename(expected_output_stats)),
           single_file: File.join(outdir, File.basename(expected_output_single_file)),
-          splits_dir: File.join(outdir, File.basename(expected_output_splits_dir)),
-          splits: File.join(outdir, "splits", "process_input_seqs_input.fa.intein_finder.split_*")
+          mmseqs_splits_dir: File.join(outdir, File.basename(expected_output_mmseqs_splits_dir)),
+          mmseqs_splits: File.join(outdir, "mmseqs_splits", "process_input_seqs_input.fa.intein_finder.split_*"),
+          rpsblast_splits_dir: File.join(outdir, File.basename(expected_output_rpsblast_splits_dir)),
+          rpsblast_splits: File.join(outdir, "rpsblast_splits", "process_input_seqs_input.fa.intein_finder.split_*"),
         }
         expect(output).to eq expected
       end
@@ -309,7 +339,8 @@ RSpec.describe InteinFinder do
                                                input,
                                                outdir,
                                                annotation,
-                                               num_splits,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
                                                min_len
         }.not_to raise_error
 
@@ -329,7 +360,8 @@ RSpec.describe InteinFinder do
                                                input,
                                                outdir,
                                                annotation,
-                                               num_splits,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
                                                min_len
         }.not_to raise_error
 
@@ -349,7 +381,8 @@ RSpec.describe InteinFinder do
                                                input,
                                                outdir,
                                                annotation,
-                                               num_splits,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
                                                min_len
         }.not_to raise_error
 
@@ -362,44 +395,46 @@ RSpec.describe InteinFinder do
 
       end
 
-      it "writes split 0" do
+      it "writes mmseqs split 0" do
         output = nil
         expect {
           output = runners.process_input_seqs! process_input_seqs_exe,
                                                input,
                                                outdir,
                                                annotation,
-                                               num_splits,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
                                                min_len
         }.not_to raise_error
 
         actual =
           File.read(File.join(outdir,
-                              "splits",
+                              "mmseqs_splits",
                               "process_input_seqs_input.fa.intein_finder.split_0"))
         expected =
-          File.read expected_output_split_0
+          File.read expected_output_mmseqs_split_0
 
         expect(actual).to eq expected
       end
 
-      it "writes split 1" do
+      it "writes mmseqs split 1" do
         output = nil
         expect {
           output = runners.process_input_seqs! process_input_seqs_exe,
                                                input,
                                                outdir,
                                                annotation,
-                                               num_splits,
+                                               num_mmseqs_splits,
+                                               num_rpsblast_splits,
                                                min_len
         }.not_to raise_error
 
         actual =
           File.read(File.join(outdir,
-                              "splits",
+                              "mmseqs_splits",
                               "process_input_seqs_input.fa.intein_finder.split_1"))
         expected =
-          File.read expected_output_split_1
+          File.read expected_output_mmseqs_split_1
 
         expect(actual).to eq expected
       end
