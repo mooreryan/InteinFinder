@@ -48,3 +48,5 @@ bin/process_input_seqs
 i_dont_exist*
 
 spec/test_files/output/mmseqs_log.txt
+
+.ruby-*
