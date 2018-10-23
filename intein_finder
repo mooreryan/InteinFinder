@@ -10,7 +10,7 @@ require "pasv_lib"
 require "parallel"
 require "ruby-progressbar"
 require "set"
-require "trollop"
+require "optimist"
 
 require_relative "lib/const"
 require_relative "lib/intein_finder"
@@ -23,7 +23,7 @@ end
 include AbortIf
 include AbortIf::Assert
 
-opts = Trollop.options do
+opts = Optimist.options do
   version VERSION_BANNER
   banner <<-EOS
 

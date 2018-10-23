@@ -4,14 +4,14 @@ Signal.trap("PIPE", "EXIT")
 require "aai"
 require "abort_if"
 require "fileutils"
-require "trollop"
+require "optimist"
 
 include AbortIf
 
 Time.extend Aai::CoreExtensions::Time
 Process.extend Aai::CoreExtensions::Process
 
-opts = Trollop.options do
+opts = Optimist.options do
   banner <<-EOS
 
   Run blast, but first split up the query seqs into multiple files.

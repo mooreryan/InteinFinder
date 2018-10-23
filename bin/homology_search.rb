@@ -1,7 +1,7 @@
 require "abort_if"
 require "parse_fasta"
 require "set"
-require "trollop"
+require "optimist"
 
 require_relative "../lib/const"
 require_relative "../lib/intein_finder"
@@ -11,7 +11,7 @@ include AbortIf
 
 Runners = Class.new { extend InteinFinder::Runners }
 
-opts = Trollop.options do
+opts = Optimist.options do
   opt(:inteins_db,
       "Inteins DB",
       type: :string)
