@@ -64,6 +64,11 @@ jobs:
           cache-prefix: v1-${{ matrix.os }}
           opam-local-packages: intein_finder.opam
 
+      - name: Pin bio_io 0.6.0
+      - run: |
+          opam pin add bio_io \
+          https://github.com/mooreryan/bio_io/archive/refs/tags/0.6.0.tar.gz
+
       - run: opam install ./intein_finder.opam --deps-only --with-doc --with-test
 
       - name: Check release profile
