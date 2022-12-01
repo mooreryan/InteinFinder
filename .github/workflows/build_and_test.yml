@@ -62,8 +62,8 @@ jobs:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           dune-cache: true
           cache-prefix: v1-${{ matrix.os }}
-          opam-local-packages: intein_finder.opam
 
+      # This must run before installing the deps.
       - name: Pin bio_io 0.6.0
         run: |
           opam pin add bio_io \
