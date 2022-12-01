@@ -1,0 +1,5 @@
+# Ignore all dirs starting with _
+_*
+
+# Un-ignore a couple of them
+!_assets
