@@ -1,0 +1,63 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - "main"
+      - "staging"
+      - "dev"
+
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        ocaml-compiler:
+          - 4.14.0
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          dune-cache: true
+          cache-prefix: v1-${{ matrix.os }}
+          opam-local-packages: intein_finder.opam
+
+      - run: opam install ./intein_finder.opam --deps-only --with-doc --with-test
+
+      - name: Check release profile
+        run: |
+          opam exec -- make clean
+          opam exec -- make build_release
+          opam exec -- make test_release
+          opam exec -- make install_release
+        if: matrix.ocaml-compiler == '4.14.0'
+
+      - name: Check dev profile
+        run: |
+          opam exec -- make clean
+          opam exec -- make build_dev
+          opam exec -- make test_dev
+          opam exec -- make install_dev
+        if: matrix.ocaml-compiler == '4.14.0'
+
+      # Send the coverage.
+      - name: Send coverage
+        run: |
+          opam install bisect_ppx
+          opam exec -- make send_coverage
+        if: matrix.ocaml-compiler == '4.14.0'
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
