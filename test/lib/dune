@@ -1,0 +1,6 @@
+(library
+ (name test_lib)
+ (libraries lib core expect_test_helpers_core.expect_test_helpers_base)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))

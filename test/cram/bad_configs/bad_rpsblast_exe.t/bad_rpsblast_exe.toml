@@ -1,0 +1,9 @@
+inteins = "../../assets/one_intein.faa"
+queries = "../../assets/one_query.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "info"
+
+[rpsblast]
+exe = "qdrwqdrwqdrwqdrw"
+

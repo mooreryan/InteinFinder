@@ -1,0 +1,22 @@
+(library
+ (name lib)
+ (inline_tests)
+ (instrumentation
+  (backend bisect_ppx))
+ (libraries
+  bio_io
+  async
+  async_unix
+  core
+  core_unix
+  core_unix.sys_unix
+  core_unix.filename_unix
+  core_unix.time_unix
+  logs
+  logs.fmt
+  fmt.tty
+  otoml
+  re
+  shexp.process)
+ (preprocess
+  (pps ppx_getenv ppx_const ppx_jane)))

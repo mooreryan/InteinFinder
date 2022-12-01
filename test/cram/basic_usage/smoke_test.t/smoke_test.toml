@@ -1,0 +1,42 @@
+# NOTE: all paths are relative to the directory in which you run
+#       the program.
+inteins = "../../assets/all_derep.faa"
+queries = "../../assets/rnr_5.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "INFO"
+min_query_length = 100
+min_region_length = 50
+remove_aln_files = false
+
+[start_residue]
+pass = ["C", "S", "A", "Q", "P", "T"]
+maybe = ["V", "G", "L", "M", "N", "F"]
+
+[end_residues]
+pass = ["HN", "SN", "GN", "GQ", "LD", "FN"]
+maybe = [
+  "KN", "DY", "SQ", "HQ", "NS",
+  "AN", "SD", "TH", "RD", "PY",
+  "YN", "VH", "KQ", "PP", "NT",
+  "CN", "LH"
+]
+
+[end_plus_one_residue]
+pass = ["S", "T", "C"]
+
+[mmseqs]
+exe = "mmseqs"
+evalue = 1e-3
+num_iterations = 2
+sensitivity = 5.7
+threads = 1
+
+[rpsblast]
+exe = "rpsblast+"
+evalue = 1e-3
+num_splits = 2
+
+[mafft]
+exe = "mafft"
+max_concurrent_jobs = 2

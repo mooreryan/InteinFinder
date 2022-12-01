@@ -1,0 +1,17 @@
+inteins = "../../assets/all_derep.faa"
+queries = "../../assets/rnr_5.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "info"
+
+[start_residue]
+pass = ["A", "B"]
+maybe = ["a", "c"]
+
+[end_residues]
+pass = ["AA", "BB"]
+maybe = ["aa", "cc"]
+
+[end_plus_one_residue]
+pass = ["A", "B", "C"]
+maybe = ["a", "b", "d"]

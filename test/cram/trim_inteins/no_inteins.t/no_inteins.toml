@@ -1,0 +1,6 @@
+inteins = "../../assets/all_derep.faa"
+queries = "../../assets/no_trimmable.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "info"
+remove_aln_files = false

@@ -1,0 +1,5 @@
+version = 0.24.1
+profile = ocamlformat
+parse-docstrings = true
+wrap-comments = true
+wrap-fun-args = false

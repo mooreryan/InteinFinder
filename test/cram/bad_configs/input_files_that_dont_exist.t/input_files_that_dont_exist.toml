@@ -1,0 +1,5 @@
+inteins = "fake_inteins"
+queries = "fake_queries"
+smp_dir = "fake_smp_dir"
+out_dir = "if_out"
+log_level = "info"

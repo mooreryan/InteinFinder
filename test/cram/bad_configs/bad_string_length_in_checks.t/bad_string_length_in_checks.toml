@@ -1,0 +1,17 @@
+inteins = "../../assets/all_derep.faa"
+queries = "../../assets/rnr_5.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "info"
+
+[start_residue]
+pass = ["apple"]
+maybe = ["pie"]
+
+[end_residues]
+pass = ["hi"]
+maybe = ["ryan"]
+
+[end_plus_one_residue]
+pass = ["ice cream"]
+maybe = ["magic"]  

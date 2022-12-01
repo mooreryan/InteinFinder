@@ -1,0 +1,18 @@
+(executables
+ (names main)
+ (public_names intein_finder)
+ (instrumentation
+  (backend bisect_ppx))
+ (libraries
+  lib
+  bio_io
+  core
+  core_unix
+  core_unix.sys_unix
+  core_unix.time_unix
+  logs
+  logs.fmt
+  fmt.tty
+  otoml)
+ (preprocess
+  (pps ppx_jane)))

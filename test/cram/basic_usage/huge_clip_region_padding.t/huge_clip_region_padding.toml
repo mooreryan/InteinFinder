@@ -1,0 +1,8 @@
+inteins = "../../assets/all_derep.faa"
+queries = "../../assets/rnr_5.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "INFO"
+remove_aln_files = false
+
+clip_region_padding = 99999

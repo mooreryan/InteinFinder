@@ -1,0 +1,2 @@
+_assets -linguist-detectable
+test/cram/*/*/run.t -linguist-detectable

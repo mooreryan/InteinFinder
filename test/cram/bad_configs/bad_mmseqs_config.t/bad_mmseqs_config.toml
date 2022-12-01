@@ -1,0 +1,12 @@
+inteins = "../../assets/all_derep.faa"
+queries = "../../assets/rnr_5.faa"
+smp_dir = "../../assets/smp"
+out_dir = "if_out"
+log_level = "info"
+
+[mmseqs]
+exe = "what"
+evalue = -32.8
+num_iterations = 0
+sensitivity = 0.5
+threads = 0
