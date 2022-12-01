@@ -17,8 +17,16 @@ Use `[@coverage off]` around impossible cases.  Use it with `impossible` or `inv
 ```ocaml
 let x = 1
 
-if x > 0 then 
-  x 
-else 
+if x > 0 then
+  x
+else
   Utils.impossible "x can't be negative here" [@coverage off]
 ```
+
+## GitHub Actions
+
+### External software versions
+
+The versions of mafft and ncbi blast are the same as on my local machine.  MMseqs is the same version, but with sse2 instead.
+
+Keep them this way unless you change them locally, or you change the tests to not be so coupled to their specific output.
