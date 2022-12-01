@@ -1,3 +1,0 @@
-[submodule "vendor/ruby_like_c"]
-	path = vendor/ruby_like_c
-	url = https://github.com/mooreryan/ruby_like_c

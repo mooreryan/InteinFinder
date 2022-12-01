@@ -1,6 +1,0 @@
-seq	region.id	start	end	len	trimmable
-tara___seq_4	0	298	735	438	Yes
-tara___seq_4	1	885	1291	407	Yes
-tara___seq_4	2	1562	1960	399	Yes
-tara___seq_21	0	442	820	379	No
-tara___seq_16	0	380	538	159	Yes
