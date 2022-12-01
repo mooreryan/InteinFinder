@@ -65,7 +65,7 @@ jobs:
           opam-local-packages: intein_finder.opam
 
       - name: Pin bio_io 0.6.0
-      - run: |
+        run: |
           opam pin add bio_io \
           https://github.com/mooreryan/bio_io/archive/refs/tags/0.6.0.tar.gz
 
