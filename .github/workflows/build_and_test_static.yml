@@ -15,7 +15,7 @@ jobs:
   build_and_test_static:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/mooreryan/intein_finder_build_and_test_alpine:414a9c7
+      image: ghcr.io/mooreryan/intein_finder_build_and_test_alpine:db7de90
 
     steps:
       - name: Checkout code
@@ -30,31 +30,8 @@ jobs:
           mkdir -p "$LOCAL_PATH"
           echo "$LOCAL_PATH" >> $GITHUB_PATH
 
-      - name: Download MAFFT
-        run: |
-          \curl -L \
-          https://mafft.cbrc.jp/alignment/software/mafft-7.490-without-extensions-src.tgz \
-          | tar xz \
-          && cd mafft-*/core/ && make clean && make && sudo make install
-
-      - name: Download & Install MMseqs2
-        run: |
-          \curl -L \
-          https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-linux-sse2.tar.gz \
-          | tar xz \
-          && mv mmseqs/bin/mmseqs "$LOCAL_PATH"
-
-      - name: Download & Install NCBI BLAST+
-        run: |
-          \curl -L \
-          https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.12.0/ncbi-blast-2.12.0+-x64-linux.tar.gz \
-          | tar xz \
-          && mv ncbi-blast-2.12.0+/bin/rpsblast "${LOCAL_PATH}/rpsblast+" \
-          && mv ncbi-blast-2.12.0+/bin/makeprofiledb "${LOCAL_PATH}/makeprofiledb"
-
-      - name: Install dune
-        run: opam install dune
-
+      # Should be quick as deps are installed in the Docker.
+      # Do it here to be sure they're up to date.
       - name: Install deps
         run: opam install --locked . --deps-only --with-doc --with-test
 
