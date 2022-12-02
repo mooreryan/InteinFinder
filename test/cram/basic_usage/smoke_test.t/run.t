@@ -120,14 +120,15 @@ Show the name map
 
 Show search results.  They should be renamed.
 
-  $ cut -f1 if_out/search/rpsblast_search_out.tsv | sort | uniq -c
-        7 the_1_first_sequence
-       15 the_2_second_sequence
-       10 the_3_third_sequence
-       29 the_4_fourth_sequence
-        9 the_5_fifth_sequence
-        2 z3_start_of___kelley_2016___seq_9
-        2 z4_start_of___kelley_2016___seq_9___maybe_start
+  $ cut -f1 if_out/search/rpsblast_search_out.tsv | sort | uniq -c | sed -E 's/^ +//;s/ +/ /g'
+  7 the_1_first_sequence
+  15 the_2_second_sequence
+  10 the_3_third_sequence
+  29 the_4_fourth_sequence
+  9 the_5_fifth_sequence
+  2 z3_start_of___kelley_2016___seq_9
+  2 z4_start_of___kelley_2016___seq_9___maybe_start
+
   $ sort if_out/search/rpsblast_search_out.tsv | head | column -t -s "$(printf '\t')" 
   the_1_first_sequence   CDD:197641  37.5    40   24   1   531   569   3   42   7.85e-08  39.8
   the_1_first_sequence   CDD:197642  26.214  103  66   4   176   272   2   100  8.79e-14  58.4
