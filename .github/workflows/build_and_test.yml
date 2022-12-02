@@ -11,12 +11,16 @@ on:
     branches:
       - "*"
 
+env:
+  PROGRAM_NAME: intein_finder
+
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
         os:
+          - macos-latest
           - ubuntu-latest
         ocaml-compiler:
           - 4.14.0
@@ -41,20 +45,39 @@ jobs:
           | tar xz \
           && cd mafft-*/core/ && make clean && make && sudo make install
 
-      - name: Download & Install MMseqs2
+      - name: Download & Install MMseqs2 (ubuntu)
         run: |
           \curl -L \
           https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-linux-sse2.tar.gz \
           | tar xz \
           && mv mmseqs/bin/mmseqs "$LOCAL_PATH"
+        if: matrix.os == 'ubuntu-latest'
 
-      - name: Download & Install NCBI BLAST+
+      - name: Download & Install MMseqs2 (macOS)
+        run: |
+          \curl -L \
+          https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-osx-universal.tar.gz \
+          | tar xz \
+          && mv mmseqs/bin/mmseqs "$LOCAL_PATH"
+        if: matrix.os == 'macos-latest'
+
+      - name: Download & Install NCBI BLAST+ (ubuntu)
         run: |
           \curl -L \
           https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.12.0/ncbi-blast-2.12.0+-x64-linux.tar.gz \
           | tar xz \
           && mv ncbi-blast-2.12.0+/bin/rpsblast "${LOCAL_PATH}/rpsblast+" \
           && mv ncbi-blast-2.12.0+/bin/makeprofiledb "${LOCAL_PATH}/makeprofiledb"
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Download & Install NCBI BLAST+ (macOS)
+        run: |
+          \curl -L \
+          https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.12.0/ncbi-blast-2.12.0+-x64-macosx.tar.gz \
+          | tar xz \
+          && mv ncbi-blast-2.12.0+/bin/rpsblast "${LOCAL_PATH}/rpsblast+" \
+          && mv ncbi-blast-2.12.0+/bin/makeprofiledb "${LOCAL_PATH}/makeprofiledb"
+        if: matrix.os == 'macos-latest'
 
       - name: Use OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v2
@@ -66,14 +89,6 @@ jobs:
           opam-depext: false
 
       - run: opam install --locked . --deps-only --with-doc --with-test
-
-      - name: Check release profile
-        run: |
-          opam exec -- make clean
-          opam exec -- make build_release
-          opam exec -- make test_release
-          opam exec -- make install_release
-        if: matrix.ocaml-compiler == '4.14.0'
 
       - name: Check dev profile
         run: |
@@ -88,6 +103,21 @@ jobs:
         run: |
           opam install bisect_ppx
           opam exec -- make send_coverage
-        if: matrix.ocaml-compiler == '4.14.0'
+        if: matrix.ocaml-compiler == '4.14.0' && matrix.os == 'ubuntu-latest'
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check release profile
+        run: |
+          opam exec -- make clean
+          opam exec -- make build_release
+          opam exec -- make test_release
+          opam exec -- make install_release
+        if: matrix.ocaml-compiler == '4.14.0'
+
+      - name: Upload the build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PROGRAM_NAME }}-${{ matrix.os }}
+          path: _build/install/default/bin/${{ env.PROGRAM_NAME }}
+        if: matrix.ocaml-compiler == '4.14.0'
