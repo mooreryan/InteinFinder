@@ -11,7 +11,7 @@ Bad mmseqs config
   generate
   config:
   (("config error: mmseqs -> exe"
-    "expected 'what' to be executable, but it was not")
+    "expected 'mmseqs_S8i3cWd93aGj31V' to be executable, but it was not")
    ("config error: mmseqs -> evalue"
     "expected E-value >= 0.0, but got -32.800000")
    ("config error: mmseqs -> num_iterations" "num_iterations >= 1, but got 0")

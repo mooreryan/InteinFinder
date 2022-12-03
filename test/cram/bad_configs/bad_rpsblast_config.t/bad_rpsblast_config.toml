@@ -5,7 +5,7 @@ out_dir = "if_out"
 log_level = "info"
 
 [rpsblast]
-exe = "teehee"
+exe = "rpsblast_dfVRzbebY1aa6sl"
 evalue = -3
 num_splits = 0
   

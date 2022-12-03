@@ -11,6 +11,6 @@ Bad mafft config
   generate
   config:
   (("config error: mafft -> exe"
-    "expected 'what' to be executable, but it was not")
+    "expected 'mafft_6736XE7robbOW5i' to be executable, but it was not")
    ("config error: mafft -> max_concurrent_jobs"
     "expected threads >= 1, but got 0"))

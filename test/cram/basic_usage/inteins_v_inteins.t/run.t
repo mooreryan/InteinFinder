@@ -21,7 +21,7 @@ Inteins vs inteins
 
 Show output directory
 
-  $ tree --nolinks if_out | ../../scripts/redact_date - | ../../scripts/redact_version - 
+  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin | ../../scripts/redact_version /dev/stdin
   if_out
   |-- _done_intein_finder_version_VERSION
   |-- logs

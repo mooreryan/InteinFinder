@@ -11,7 +11,7 @@ Bad rpsblast config
   generate
   config:
   (("config error: rpsblast -> exe"
-    "expected 'teehee' to be executable, but it was not")
+    "expected 'rpsblast_dfVRzbebY1aa6sl' to be executable, but it was not")
    ("config error: rpsblast -> evalue"
     "expected E-value >= 0.0, but got -3.000000")
    ("config error: rpsblast -> num_splits"

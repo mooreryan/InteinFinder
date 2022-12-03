@@ -21,7 +21,7 @@ Smoke test
 
 Show output directory. 
 
-  $ tree --nolinks if_out | ../../scripts/redact_date - | ../../scripts/redact_version - 
+  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin | ../../scripts/redact_version /dev/stdin
   if_out
   |-- _done_intein_finder_version_VERSION
   |-- alignments
@@ -58,9 +58,9 @@ Show output directory.
 
 You should have the correct number of trimmed inteins
 
-  $ awk 'BEGIN {FS="\t"} $16 ~ /Pass/' if_out/results/2_intein_hit_checks.tsv | wc -l
+  $ awk 'BEGIN {FS="\t"} $16 ~ /Pass/' if_out/results/2_intein_hit_checks.tsv | wc -l | sed -E 's/^ +//'
   3
-  $ grep -c '^>' if_out/results/3_trimmed_inteins.faa
+  $ grep -c '^>' if_out/results/3_trimmed_inteins.faa | sed -E 's/^ +//'
   3
 
 Show the putative intein regions

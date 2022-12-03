@@ -5,5 +5,5 @@ out_dir = "if_out"
 log_level = "info"
 
 [mafft]
-exe = "what"
+exe = "mafft_6736XE7robbOW5i"
 max_concurrent_jobs = 0
