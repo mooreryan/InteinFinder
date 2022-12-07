@@ -98,12 +98,13 @@ let write_done_file config version =
        ( config.Config.out_dir
        ^/ [%string "_done_intein_finder_version_%{version}"] )
 
-let run : Config.t -> unit =
- fun config ->
+let run : Config.t -> string -> unit =
+ fun config config_file ->
   Logging.set_log_level config.log_level ;
   (* Set up stuff. *)
   let dir = Dir.v config.out_dir |> Dir.mkdirs in
-  Config.write_config config dir.logs ;
+  Config.write_pipeline_info config dir.logs ;
+  Config.write_config_file ~config_file ~dir:dir.logs ;
   let log_base = dir.logs ^/ "if_log" in
   let renamed_queries : Filter_and_rename_queries.t =
     Logs.info (fun m -> m "Renaming queries") ;

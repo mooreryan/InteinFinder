@@ -8,8 +8,8 @@ let main : unit -> unit =
      config parsing. *)
   Logging.set_up_logging "debug" ;
   match Config.parse_argv () with
-  | `Run config ->
-      Run.run config
+  | `Run (config, config_file) ->
+      Run.run config config_file
   | `Exit code ->
       exit code
 

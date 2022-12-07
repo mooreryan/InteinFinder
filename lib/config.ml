@@ -726,7 +726,7 @@ let parse_argv () =
   let toml = Otoml.Parser.from_file config_file in
   match find toml with
   | Ok config ->
-      `Run config
+      `Run (config, config_file)
   | Error e ->
       Logs.err (fun m ->
           m "could not generate config: %s" @@ Error.to_string_mach e ) ;
@@ -769,10 +769,14 @@ module Version = struct
     |> String.concat ~sep:"\n"
 end
 
-let write_config t dir =
-  let out_file = dir ^/ "config.txt" in
+(** [write_pipeline_info t dir] writes the versions of all used programs and the
+    pipeline config opts as understood by the pipeline to
+    [dir/1_pipeline_info.txt]. *)
+let write_pipeline_info t dir =
+  let out_file = dir ^/ "1_pipeline_info.txt" in
   let versions = Version.program_version_info t in
   let config = Sexp.to_string_hum @@ sexp_of_t t in
+  let working_dir = Sys_unix.getcwd () in
   Out_channel.write_all
     out_file
     ~data:
@@ -780,6 +784,13 @@ let write_config t dir =
         "Program Versions\n\
          ================\n\
          %{versions}\n\n\
+         Working Directory\n\
+         =================\n\
+         %{working_dir}\n\n\
          Config\n\
          ======\n\
-         %{config}"]
+         %{config}\n"]
+
+let write_config_file ~config_file ~dir =
+  let out_file = dir ^/ "0_config.toml" in
+  Sh.eval @@ Sh.run "cp" [config_file; out_file]

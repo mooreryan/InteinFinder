@@ -41,7 +41,8 @@ Show output directory.
   |   |-- mafft_out___seq_9___kelley_2016___seq_1___0___2.fa
   |   `-- mafft_out___seq_9___kelley_2016___seq_9___0___0.fa
   |-- logs
-  |   |-- config.txt
+  |   |-- 0_config.toml
+  |   |-- 1_pipeline_info.txt
   |   `-- if_log.DATE.mmseqs_search.txt
   |-- results
   |   |-- 0_putative_intein_regions.tsv
@@ -54,7 +55,17 @@ Show output directory.
       |-- rpsblast_search_out.tsv
       `-- rpsblast_search_summary.tsv
   
-  4 directories, 26 files
+  4 directories, 27 files
+
+Show config
+
+  $ diff smoke_test.toml if_out/logs/0_config.toml
+  $ grep 'Program Versions' if_out/logs/1_pipeline_info.txt
+  Program Versions
+  $ grep 'Working Directory' if_out/logs/1_pipeline_info.txt
+  Working Directory
+  $ grep 'Config' if_out/logs/1_pipeline_info.txt
+  Config
 
 You should have the correct number of trimmed inteins
 

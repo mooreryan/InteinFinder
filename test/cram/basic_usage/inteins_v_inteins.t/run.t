@@ -25,7 +25,8 @@ Show output directory
   if_out
   |-- _done_intein_finder_version_VERSION
   |-- logs
-  |   |-- config.txt
+  |   |-- 0_config.toml
+  |   |-- 1_pipeline_info.txt
   |   `-- if_log.DATE.mmseqs_search.txt
   |-- results
   |   |-- 0_putative_intein_regions.tsv
@@ -38,7 +39,7 @@ Show output directory
       |-- rpsblast_search_out.tsv
       `-- rpsblast_search_summary.tsv
   
-  3 directories, 11 files
+  3 directories, 12 files
 
 Show the putative intein regions
 
