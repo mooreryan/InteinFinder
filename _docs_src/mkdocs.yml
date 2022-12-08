@@ -18,6 +18,7 @@ nav:
     - Installing From Source: installing-from-source.md
   - Usage:
     - Command Line Interface: cli.md
+    - Config files: config-files.md
     - Output: intein-finder-output.md
   - Examples:
     - Tons of Examples: tons-of-examples.md
