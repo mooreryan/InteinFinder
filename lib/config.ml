@@ -752,8 +752,14 @@ module Version = struct
   let intein_finder_version =
     (* git describe --always --dirty --abbrev=7 *)
     let base = "1.0.0-SNAPSHOT" in
-    let git_hash = [%getenv "INTEIN_FINDER_GIT_COMMIT_HASH"] in
-    [%string "%{base} [%{git_hash}]"]
+    let git_hash =
+      match%const [%getenv "INTEIN_FINDER_GIT_COMMIT_HASH"] with
+      | "" ->
+          ""
+      | git_hash ->
+          [%string " [%{git_hash}]"]
+    in
+    [%string "%{base}%{git_hash}"]
 
   let get_version exe arg =
     let sh = Sh.run exe [arg] |> Sh.capture_unit Sh.Std_io.[Stdout; Stderr] in
