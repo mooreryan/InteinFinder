@@ -12,7 +12,7 @@ on:
       - "*"
 
 env:
-  PROGRAM_NAME: intein_finder
+  PROGRAM_NAME: InteinFinder
 
 jobs:
   build:
