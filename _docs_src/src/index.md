@@ -4,13 +4,9 @@ main: true
 
 # InteinFinder
 
-<!-- [![Build and Test](https://github.com/mooreryan/intein_finder/actions/workflows/build_and_test.yml/badge.svg?branch=main)](https://github.com/mooreryan/intein_finder/actions/workflows/build_and_test.yml) [![Build and Test Static](https://github.com/mooreryan/intein_finder/actions/workflows/build_and_test_static.yml/badge.svg?branch=main)](https://github.com/mooreryan/intein_finder/actions/workflows/build_and_test_static.yml) [![Generate Docs](https://github.com/mooreryan/intein_finder/actions/workflows/generate_docs.yml/badge.svg?branch=main)](https://github.com/mooreryan/intein_finder/actions/workflows/generate_docs.yml) -->
+[![Build and Test](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml) [![Build and Test Static](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test_static.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test_static.yml) [![Generate Docs](https://github.com/mooreryan/InteinFinder/actions/workflows/generate_docs.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/generate_docs.yml)
 
-[![code on GitHub](https://img.shields.io/badge/code-GitHub-blue)](https://github.com/mooreryan/intein_finder)
-
-<!-- [![GitHub issues](https://img.shields.io/github/issues/mooreryan/intein_finder)](https://github.com/mooreryan/intein_finder/issues)  -->
-
-<!-- [![Coverage Status](https://coveralls.io/repos/github/mooreryan/intein_finder/badge.svg?branch=main)](https://coveralls.io/github/mooreryan/intein_finder?branch=main) -->
+[![code on GitHub](https://img.shields.io/badge/code-GitHub-blue)](https://github.com/mooreryan/InteinFinder) [![GitHub issues](https://img.shields.io/github/issues/mooreryan/InteinFinder)](https://github.com/mooreryan/InteinFinder/issues) [![Coverage Status](https://coveralls.io/repos/github/mooreryan/InteinFinder/badge.svg?branch=main)](https://coveralls.io/github/mooreryan/InteinFinder?branch=main)
 
 InteinFinder: automated intein detection from large protein datasets
 

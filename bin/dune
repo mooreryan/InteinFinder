@@ -1,11 +1,12 @@
 (executables
  (names main)
- (public_names intein_finder)
+ (public_names InteinFinder)
  (instrumentation
   (backend bisect_ppx))
  (libraries
   lib
   bio_io
+  cmdliner
   core
   core_unix
   core_unix.sys_unix

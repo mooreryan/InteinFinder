@@ -1,6 +1,6 @@
 BROWSER = firefox
-TEST_COV_D = /tmp/intein_finder
-COV_FILE = intein_finder
+TEST_COV_D = /tmp/InteinFinder
+COV_FILE = InteinFinder
 
 .PHONY: build_dev
 build_dev:

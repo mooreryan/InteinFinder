@@ -1,8 +1,8 @@
 Bad general opts
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder bad_general_opts.toml 2> err
-  [1]
+  $ InteinFinder bad_general_opts.toml 2> err
+  [2]
   $ ../../scripts/redact_log_timestamp err | sexp print
   ERROR
   [DATETIME]

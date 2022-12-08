@@ -1,8 +1,8 @@
 Wrong number string length in checks
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder bad_string_length_in_checks.toml 2> err
-  [1]
+  $ InteinFinder bad_string_length_in_checks.toml 2> err
+  [2]
   $ ../../scripts/redact_log_timestamp err | sexp print
   ERROR
   [DATETIME]

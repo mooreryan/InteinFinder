@@ -1,8 +1,8 @@
 Input files that don't exist.
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder input_files_that_dont_exist.toml 2> err
-  [1]
+  $ InteinFinder input_files_that_dont_exist.toml 2> err
+  [2]
   $ ../../scripts/redact_log_timestamp err | sexp print
   ERROR
   [DATETIME]

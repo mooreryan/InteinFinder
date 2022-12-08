@@ -1,8 +1,8 @@
 Repeated checks
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder repeated_checks.toml 2> err
-  [1]
+  $ InteinFinder repeated_checks.toml 2> err
+  [2]
   $ ../../scripts/redact_log_timestamp err | sexp print
   ERROR
   [DATETIME]

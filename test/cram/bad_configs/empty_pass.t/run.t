@@ -1,8 +1,8 @@
 Empty pass spec in checks
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder empty_pass.toml 2> err
-  [1]
+  $ InteinFinder empty_pass.toml 2> err
+  [2]
   $ ../../scripts/redact_log_timestamp err | sexp print
   ERROR
   [DATETIME]

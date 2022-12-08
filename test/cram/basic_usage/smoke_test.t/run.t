@@ -1,6 +1,6 @@
 Smoke test
 
-  $ intein_finder smoke_test.toml 2> err
+  $ InteinFinder smoke_test.toml 2> err
   $ ../../scripts/redact_log_timestamp err
   INFO [DATETIME] Renaming queries
   INFO [DATETIME] Splitting queries
@@ -21,9 +21,9 @@ Smoke test
 
 Show output directory. 
 
-  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin | ../../scripts/redact_version /dev/stdin
+  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin
   if_out
-  |-- _done_intein_finder_version_VERSION
+  |-- _done
   |-- alignments
   |   |-- 0_name_map.tsv
   |   |-- mafft_out___seq_10___green_2018___seq_11___0___3.fa

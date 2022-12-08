@@ -91,12 +91,9 @@ let write_name_map ~dir ~renamed_queries =
         renamed_queries.Filter_and_rename_queries.name_map
         ~f:(fun ~key ~data -> print [%string "%{key}\t%{data}\n"]) )
 
-let write_done_file config version =
+let write_done_file config =
   (* If you make it here everything should be good *)
-  ignore
-  @@ Utils.touch
-       ( config.Config.out_dir
-       ^/ [%string "_done_intein_finder_version_%{version}"] )
+  ignore @@ Utils.touch (config.Config.out_dir ^/ "_done")
 
 let run : Config.t -> string -> unit =
  fun config config_file ->
@@ -210,6 +207,6 @@ let run : Config.t -> string -> unit =
     ~aln_dir:dir.aln
     ~should_remove_aln_files:config.remove_aln_files
     ~trimmed_inteins_file_name:(Out_file_name.trimmed_inteins dir.results) ;
-  write_done_file config Config.Version.intein_finder_version ;
+  write_done_file config ;
   Logs.info (fun m -> m "Done!") ;
   ()

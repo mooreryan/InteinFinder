@@ -1,6 +1,6 @@
 site_name: InteinFinder
-site_url: https://mooreryan.github.io/intein_finder/
-repo_url: https://github.com/mooreryan/intein_finder
+site_url: https://mooreryan.github.io/InteinFinder/
+repo_url: https://github.com/mooreryan/InteinFinder
 edit_uri: edit/main/_docs_src/src
 site_description: Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.
 site_author: Ryan M. Moore

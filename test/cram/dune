@@ -1,6 +1,6 @@
 (cram
  (applies_to :whole_subtree)
  (deps
-  %{bin:intein_finder}
+  %{bin:InteinFinder}
   (glob_files_rec ./assets/*)
   (glob_files_rec ./scripts/*)))

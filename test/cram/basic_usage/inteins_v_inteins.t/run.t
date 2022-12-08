@@ -1,6 +1,6 @@
 Inteins vs inteins
 
-  $ intein_finder inteins_v_inteins.toml 2> err
+  $ InteinFinder inteins_v_inteins.toml 2> err
   $ ../../scripts/redact_log_timestamp err
   INFO [DATETIME] Renaming queries
   INFO [DATETIME] Splitting queries
@@ -21,9 +21,9 @@ Inteins vs inteins
 
 Show output directory
 
-  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin | ../../scripts/redact_version /dev/stdin
+  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin
   if_out
-  |-- _done_intein_finder_version_VERSION
+  |-- _done
   |-- logs
   |   |-- 0_config.toml
   |   |-- 1_pipeline_info.txt

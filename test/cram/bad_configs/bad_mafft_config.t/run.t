@@ -1,8 +1,8 @@
 Bad mafft config
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder bad_mafft_config.toml 2> err
-  [1]
+  $ InteinFinder bad_mafft_config.toml 2> err
+  [2]
   $ ../../scripts/redact_log_timestamp err | sexp print
   ERROR
   [DATETIME]

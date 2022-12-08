@@ -21,7 +21,7 @@ Other versions will likely work too, but they may give slightly different output
 
 Occasionally, the command line interface of the external dependencies will change (e.g., `mmseqs` has changed a bit in the past).  So, if you discover an error due to that, please [submit a bug report](https://github.com/mooreryan/InteinFinder/issues) (GitHub account required).
 
-For reference, `intein_finder` pipeline assumes that the command line interface of its external dependencies work something like this:
+For reference, `InteinFinder` pipeline assumes that the command line interface of its external dependencies work something like this:
 
 ```
 # MAFFT

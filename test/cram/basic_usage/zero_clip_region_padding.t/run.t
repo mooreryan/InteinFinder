@@ -1,7 +1,7 @@
 Zero clip region padding
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder zero_clip_region_padding.toml 2> err
+  $ InteinFinder zero_clip_region_padding.toml 2> err
   $ ../../scripts/redact_log_timestamp err | grep Done
   INFO [DATETIME] Done!
   $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | cut -f1,16 | column -t -s "$(printf '\t')" 

@@ -1,6 +1,6 @@
 No trimmed inteins
 
-  $ intein_finder no_inteins.toml 2> err
+  $ InteinFinder no_inteins.toml 2> err
   $ ../../scripts/redact_log_timestamp err
   INFO [DATETIME] Renaming queries
   INFO [DATETIME] Splitting queries

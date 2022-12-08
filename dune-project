@@ -2,7 +2,7 @@
 
 (generate_opam_files true)
 
-(name intein_finder)
+(name InteinFinder)
 
 (version 1.0.0-SNAPSHOT)
 
@@ -20,7 +20,7 @@
 (bug_reports "https://github.com/mooreryan/InteinFinder/issues")
 
 (package
- (name intein_finder)
+ (name InteinFinder)
  (synopsis "TODO")
  (depends
   (ocaml
@@ -37,6 +37,10 @@
    (and
     (>= "0.6.0")
     (< "0.7.0")))
+  (cmdliner
+   (and
+    (>= "1.1.0")
+    (< "1.2.0")))
   (core
    (and
     (>= "v0.15.0")

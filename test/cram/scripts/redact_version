@@ -1,3 +1,0 @@
-#!/bin/bash
-
-sed -E 's/(_done_intein_finder_version_).*/\1VERSION/' "${1}"

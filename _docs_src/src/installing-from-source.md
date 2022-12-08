@@ -15,15 +15,15 @@ Instructions to set up an OCaml development environment can be found [here](http
 Use git to clone the git repository.
 
 ```
-$ git clone https://github.com/mooreryan/intein_finder.git
+$ git clone https://github.com/mooreryan/InteinFinder.git
 ```
 
-or download a release from [here](https://github.com/mooreryan/intein_finder/releases).
+or download a release from [here](https://github.com/mooreryan/InteinFinder/releases).
 
 ## Install OCaml dependencies
 
 ```
-cd intein_finder
+cd InteinFinder
 opam install . --deps-only --with-doc --with-test
 ```
 
@@ -43,8 +43,8 @@ Note that if you have different versions of the [external dependencies](TODO), t
 
 ## Sanity check
 
-If all went well, this should give you the path to the `intein_finder` executable file.
+If all went well, this should give you the path to the `InteinFinder` executable file.
 
 ```
-$ which intein_finder
+$ which InteinFinder
 ```

@@ -1,7 +1,7 @@
 Length filter is too high and filters out all the sequences.
 
   $ if [ -d if_out ]; then rm -r if_out; fi
-  $ intein_finder bad_length_filter.toml 2> err
+  $ InteinFinder bad_length_filter.toml 2> err
   [2]
   $ ../../scripts/redact_log_timestamp err | grep -A1 Failure
     (Failure

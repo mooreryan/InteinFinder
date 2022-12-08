@@ -721,7 +721,7 @@ let find toml =
   ; min_region_length
   ; remove_aln_files }
 
-let parse_argv () =
+let __parse_argv () =
   let config_file = Caml.Sys.argv.(1) in
   let toml = Otoml.Parser.from_file config_file in
   match find toml with
@@ -731,6 +731,16 @@ let parse_argv () =
       Logs.err (fun m ->
           m "could not generate config: %s" @@ Error.to_string_mach e ) ;
       `Exit 1
+
+let read_config config_file =
+  let toml = Otoml.Parser.from_file config_file in
+  match find toml with
+  | Ok config ->
+      Ok config
+  | Error e ->
+      Logs.err (fun m ->
+          m "could not generate config: %s" @@ Error.to_string_mach e ) ;
+      Error 2
 
 module Version = struct
   module Sh = Shexp_process
@@ -742,11 +752,8 @@ module Version = struct
   let intein_finder_version =
     (* git describe --always --dirty --abbrev=7 *)
     let base = "1.0.0-SNAPSHOT" in
-    match%const [%getenv "INTEIN_FINDER_GIT_COMMIT_HASH"] with
-    | "" ->
-        base
-    | git_hash ->
-        [%string "%{base} (%{git_hash})"]
+    let git_hash = [%getenv "INTEIN_FINDER_GIT_COMMIT_HASH"] in
+    [%string "%{base} [%{git_hash}]"]
 
   let get_version exe arg =
     let sh = Sh.run exe [arg] |> Sh.capture_unit Sh.Std_io.[Stdout; Stderr] in

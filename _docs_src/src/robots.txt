@@ -1,1 +1,1 @@
-Sitemap: https://mooreryan.github.io/intein_finder/sitemap.xml
+Sitemap: https://mooreryan.github.io/InteinFinder/sitemap.xml

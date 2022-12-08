@@ -1,6 +1,6 @@
 Run the pipeline
 
-  $ intein_finder config.toml 2> err
+  $ InteinFinder config.toml 2> err
   $ ../../scripts/redact_log_timestamp err
   INFO [DATETIME] Renaming queries
   INFO [DATETIME] Splitting queries

@@ -1,6 +1,6 @@
 # Installing Precompiled Binaries
 
-The simplest way to use the `intein_finder` program is to download one of the precompiled binaries available on the [releases](https://github.com/mooreryan/intein_finder/releases) page.
+The simplest way to use the `InteinFinder` program is to download one of the precompiled binaries available on the [releases](https://github.com/mooreryan/InteinFinder/releases) page.
 
 A couple different "flavors" are available:
 
@@ -14,22 +14,22 @@ A couple different "flavors" are available:
   - This _should_ work on most Linux systems.
   - It is statically linked, so it should _Just Work_ :)
 
-You can find them all on the [releases](https://github.com/mooreryan/intein_finder/releases) page.
+You can find them all on the [releases](https://github.com/mooreryan/InteinFinder/releases) page.
 
 Don't forget that after downloading one of the binaries, you will need to adjust the permissions to make it executable.
 
-Additionally, you will need to install the [external dependencies](./installing-external-dependencies.md) that `intein_finder` relies on.
+Additionally, you will need to install the [external dependencies](./installing-external-dependencies.md) that `InteinFinder` relies on.
 
 ## Example
 
-Here is an example of getting one of the `intein_finder` binaries working:
+Here is an example of getting one of the `InteinFinder` binaries working:
 
 ```
-$ \curl -L https://github.com/mooreryan/InteinFinder/releases/download/1.0.0-alpha/intein_finder-linux.tar.gz \
+$ \curl -L https://github.com/mooreryan/InteinFinder/releases/download/1.0.0-alpha/InteinFinder-linux.tar.gz \
   \ tar xz
-$ cd intein_finder-linux
-$ chmod 755 intein_finder
-$ ./intein_finder --help
+$ cd InteinFinder-linux
+$ chmod 755 InteinFinder
+$ ./InteinFinder --help
 ```
 
-Note that it is for `intein_finder` version TODO and using the `alpine-static` version. You can find other versions on the release page.
+Note that it is for `InteinFinder` version TODO and using the `alpine-static` version. You can find other versions on the release page.
