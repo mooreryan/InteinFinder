@@ -3,7 +3,11 @@ open Cmdliner
 
 let prog_name = "InteinFinder"
 
+[@@@coverage off]
+
 type opts = {config_file: string} [@@deriving sexp_of]
+
+[@@@coverage on]
 
 let make_opts config_file = {config_file}
 
