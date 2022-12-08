@@ -1,6 +1,7 @@
 --help doesn't fail
 
   $ InteinFinder --help 1>/dev/null
+
 Prints version
 
   $ InteinFinder --version
