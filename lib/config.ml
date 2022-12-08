@@ -721,17 +721,6 @@ let find toml =
   ; min_region_length
   ; remove_aln_files }
 
-let __parse_argv () =
-  let config_file = Caml.Sys.argv.(1) in
-  let toml = Otoml.Parser.from_file config_file in
-  match find toml with
-  | Ok config ->
-      `Run (config, config_file)
-  | Error e ->
-      Logs.err (fun m ->
-          m "could not generate config: %s" @@ Error.to_string_mach e ) ;
-      `Exit 1
-
 let read_config config_file =
   let toml = Otoml.Parser.from_file config_file in
   match find toml with
