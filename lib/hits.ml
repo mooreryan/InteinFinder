@@ -304,7 +304,6 @@ module Intein_hits = struct
                   Alignment.run_alignment_and_write_checks
                     ~aln_dir
                     ~query_name
-                    ~intein_name
                     ~query_seq:(find_query_seq query_name)
                     ~intein_seq:(find_intein_seq intein_name)
                     ~region_index
