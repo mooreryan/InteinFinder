@@ -1194,7 +1194,7 @@ let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
     ~clip_region_padding ~region ~query_new_name_to_old_name
     ~intein_checks_writer ~trimmed_inteins_writer ~should_remove_aln_files
     ~config =
-  let intein_name = Record.id intein_seq' in
+  let intein_name intein_seq' = Record.id intein_seq' in
   let query_len = Record.seq_length query_seq' in
   (* Function to actually run the alignment. *)
   let run_alignment () =
@@ -1206,7 +1206,7 @@ let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
       aln_io_file_names
         ~aln_dir
         ~query_name
-        ~intein_name
+        ~intein_name:(intein_name intein_seq')
         ~region_index
         ~hit_index
     in
@@ -1240,7 +1240,7 @@ let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
       ~raw_query_length:query_len
       ~query_new_name_to_old_name
       ~query_name
-      ~intein_name
+      ~intein_name:(intein_name intein_seq')
       ~region_index
       ~intein_checks_writer
       ~should_remove_aln_files
