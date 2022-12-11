@@ -212,7 +212,7 @@ module Intein_hits = struct
         -> jobs:int
         -> f:
              (   query:string
-              -> region:int
+              -> region_index:int
               -> hits:Hit.t list
               -> unit Async.Deferred.t )
         -> unit Async.Deferred.t =
@@ -225,7 +225,8 @@ module Intein_hits = struct
           Deferred.Map.iteri
             region_hits
             ~how:`Sequential
-            ~f:(fun ~key:region ~data:hits -> f ~query ~region ~hits) )
+            ~f:(fun ~key:region_index ~data:hits ->
+              f ~query ~region_index ~hits ) )
 
     let iter_hits :
         t -> f:(query:string -> region:int -> hit:Hit.t -> unit) -> unit =
@@ -281,7 +282,7 @@ module Intein_hits = struct
           iter_regions
             query_region_hits
             ~jobs
-            ~f:(fun ~query:query_name ~region:region_index ~hits ->
+            ~f:(fun ~query:query_name ~region_index ~hits ->
               let region_is_too_short region min_region_length =
                 Region.length region < min_region_length
               in
