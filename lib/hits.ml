@@ -298,8 +298,6 @@ module Intein_hits = struct
               let hits_iter_f (hit_index : int)
                   ({hit= intein_hit; region} : Hit.t) : unit Async.Deferred.t =
                 let intein_name = intein_name intein_hit in
-                let query_seq = find_query_seq query_name in
-                let intein_seq = find_intein_seq intein_name in
                 if region_is_too_short region min_region_length then
                   Async.Deferred.return ()
                 else
@@ -307,8 +305,8 @@ module Intein_hits = struct
                     ~aln_dir
                     ~query_name
                     ~intein_name
-                    ~query_seq
-                    ~intein_seq
+                    ~query_seq:(find_query_seq query_name)
+                    ~intein_seq:(find_intein_seq intein_name)
                     ~region_index
                     ~hit_index
                     ~log_base
