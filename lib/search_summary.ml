@@ -141,10 +141,10 @@ let summarize_searches ~dir ~mmseqs_search_out ~rpsblast_search_out =
   Logs.info (fun m -> m "Summarizing intein DB search") ;
   summarize_and_print
     ~dir
-    ~out:"mmseqs_search_summary.tsv"
+    ~out:"1_mmseqs_search_summary.tsv"
     ~btab:(Mmseqs_search.Out.out mmseqs_search_out) ;
   Logs.info (fun m -> m "Summarizing conserved domain DB search") ;
   summarize_and_print
     ~dir
-    ~out:"rpsblast_search_summary.tsv"
+    ~out:"1_rpsblast_search_summary.tsv"
     ~btab:(Rpsblast.Search.Out.out rpsblast_search_out)

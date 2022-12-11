@@ -34,10 +34,10 @@ Show output directory
   |   |-- 2_intein_hit_checks.tsv
   |   `-- 3_trimmed_inteins.faa
   `-- search
-      |-- mmseqs_search_out.tsv
-      |-- mmseqs_search_summary.tsv
-      |-- rpsblast_search_out.tsv
-      `-- rpsblast_search_summary.tsv
+      |-- 0_mmseqs_search_out.tsv
+      |-- 0_rpsblast_search_out.tsv
+      |-- 1_mmseqs_search_summary.tsv
+      `-- 1_rpsblast_search_summary.tsv
   
   3 directories, 12 files
 
