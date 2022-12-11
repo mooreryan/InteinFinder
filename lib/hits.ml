@@ -270,58 +270,65 @@ module Intein_hits = struct
         results_dir ^/ "2_intein_hit_checks.tsv"
       in
       let f () =
+        let write_header writer =
+          let open Async in
+          let flush () = Writer.flushed writer in
+          let header = Alignment.uber_header () in
+          Writer.write_line writer header ;
+          flush ()
+        in
+        let process_regions ~intein_checks_writer ~trimmed_inteins_writer =
+          iter_regions
+            query_region_hits
+            ~jobs
+            ~f:(fun ~query:query_name ~region:region_index ~hits ->
+              let region_is_too_short region min_region_length =
+                Region.length region < min_region_length
+              in
+              let find_query_seq query_name =
+                Map.find_exn queries_with_hits query_name
+              in
+              let find_intein_seq intein_name =
+                Map.find_exn intein_db_seqs intein_name
+              in
+              let hits_iter_f (hit_index : int) ({hit; region} : Hit.t) :
+                  unit Async.Deferred.t =
+                let intein_name = Btab_record.target hit in
+                let query_seq = find_query_seq query_name in
+                let intein_seq = find_intein_seq intein_name in
+                if region_is_too_short region min_region_length then
+                  Async.Deferred.return ()
+                else
+                  Alignment.run_alignment_and_write_checks
+                    ~aln_dir
+                    ~query_name
+                    ~intein_name
+                    ~query_seq
+                    ~intein_seq
+                    ~region_index
+                    ~hit_index
+                    ~log_base
+                    ~clip_region_padding
+                    ~region
+                    ~query_new_name_to_old_name
+                    ~intein_checks_writer
+                    ~trimmed_inteins_writer
+                    ~should_remove_aln_files
+                    ~config
+              in
+              Utils.iter_and_swallow_error (fun () ->
+                  Async.Deferred.List.iteri hits ~how:`Sequential ~f:hits_iter_f ) )
+        in
         Async.Writer.with_file
           trimmed_inteins_file_name
           ~f:(fun trimmed_inteins_writer ->
             Async.Writer.with_file
               query_intein_hit_checks_file_name
               ~f:(fun intein_checks_writer ->
-                (* Write the header *)
-                Async.Writer.write_line
-                  intein_checks_writer
-                  (Alignment.uber_header ()) ;
                 let%bind.Async.Deferred () =
-                  Async.Writer.flushed intein_checks_writer
+                  write_header intein_checks_writer
                 in
-                (* Each region needs to get sent to the thread pool. *)
-                iter_regions
-                  query_region_hits
-                  ~jobs
-                  ~f:(fun ~query:query_name ~region:region_index ~hits ->
-                    let hits_iter_f (hit_index : int) ({hit; region} : Hit.t) :
-                        unit Async.Deferred.t =
-                      let intein_name = Btab_record.target hit in
-                      let query_seq =
-                        Map.find_exn queries_with_hits query_name
-                      in
-                      let intein_seq =
-                        Map.find_exn intein_db_seqs intein_name
-                      in
-                      if Region.length region < min_region_length then
-                        Async.Deferred.return ()
-                      else
-                        Alignment.run_alignment_and_write_checks
-                          ~aln_dir
-                          ~query_name
-                          ~intein_name
-                          ~query_seq
-                          ~intein_seq
-                          ~region_index
-                          ~hit_index
-                          ~log_base
-                          ~clip_region_padding
-                          ~region
-                          ~query_new_name_to_old_name
-                          ~intein_checks_writer
-                          ~trimmed_inteins_writer
-                          ~should_remove_aln_files
-                          ~config
-                    in
-                    Utils.iter_and_swallow_error (fun () ->
-                        Async.Deferred.List.iteri
-                          hits
-                          ~how:`Sequential
-                          ~f:hits_iter_f ) ) ) )
+                process_regions ~intein_checks_writer ~trimmed_inteins_writer ) )
       in
       Async.Thread_safe.block_on_async_exn f
   end
