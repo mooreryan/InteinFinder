@@ -295,7 +295,7 @@ module Intein_hits = struct
                 find_sequence_by_name intein_db_seqs intein_name
               in
               let intein_name intein_hit = Btab_record.target intein_hit in
-              let hits_iter_f (hit_index : int)
+              let process_hit (hit_index : int)
                   ({hit= intein_hit; region} : Hit.t) : unit Async.Deferred.t =
                 let intein_name = intein_name intein_hit in
                 if region_is_too_short region min_region_length then
@@ -319,7 +319,7 @@ module Intein_hits = struct
                     ~config
               in
               Utils.iter_and_swallow_error (fun () ->
-                  Async.Deferred.List.iteri hits ~how:`Sequential ~f:hits_iter_f ) )
+                  Async.Deferred.List.iteri hits ~how:`Sequential ~f:process_hit ) )
         in
         Async.Writer.with_file
           trimmed_inteins_file_name
