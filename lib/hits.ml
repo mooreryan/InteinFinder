@@ -285,15 +285,19 @@ module Intein_hits = struct
               let region_is_too_short region min_region_length =
                 Region.length region < min_region_length
               in
+              let find_sequence_by_name sequences name =
+                Map.find_exn sequences name
+              in
               let find_query_seq query_name =
-                Map.find_exn queries_with_hits query_name
+                find_sequence_by_name queries_with_hits query_name
               in
               let find_intein_seq intein_name =
-                Map.find_exn intein_db_seqs intein_name
+                find_sequence_by_name intein_db_seqs intein_name
               in
+              let intein_name intein_hit = Btab_record.target intein_hit in
               let hits_iter_f (hit_index : int)
                   ({hit= intein_hit; region} : Hit.t) : unit Async.Deferred.t =
-                let intein_name = Btab_record.target intein_hit in
+                let intein_name = intein_name intein_hit in
                 let query_seq = find_query_seq query_name in
                 let intein_seq = find_intein_seq intein_name in
                 if region_is_too_short region min_region_length then
