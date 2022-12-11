@@ -297,7 +297,6 @@ module Intein_hits = struct
               let intein_name intein_hit = Btab_record.target intein_hit in
               let process_hit (hit_index : int)
                   ({hit= intein_hit; region} : Hit.t) : unit Async.Deferred.t =
-                let intein_name = intein_name intein_hit in
                 if region_is_too_short region min_region_length then
                   Async.Deferred.return ()
                 else
@@ -305,7 +304,7 @@ module Intein_hits = struct
                     ~aln_dir
                     ~query_name
                     ~query_seq:(find_query_seq query_name)
-                    ~intein_seq:(find_intein_seq intein_name)
+                    ~intein_seq:(find_intein_seq @@ intein_name intein_hit)
                     ~region_index
                     ~hit_index
                     ~log_base
