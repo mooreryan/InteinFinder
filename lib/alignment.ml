@@ -1190,7 +1190,7 @@ let write_aln_checks aln_out_file ~hit_region ~raw_query_length ~raw_query
    known from the call site. Clean up at some point. *)
 let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
     ~query_seq:(Record.Query_raw query_seq' as query_seq)
-    ~intein_seq:(Record.Intein_raw intein_seq' as intein_seq) ~log_base
+    ~intein_seq:(Record.Intein_raw intein_record as intein_seq) ~log_base
     ~clip_region_padding ~region ~query_new_name_to_old_name
     ~intein_checks_writer ~trimmed_inteins_writer ~should_remove_aln_files
     ~config =
@@ -1206,7 +1206,7 @@ let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
       aln_io_file_names
         ~aln_dir
         ~query_name
-        ~intein_name:(intein_name intein_seq')
+        ~intein_name:(intein_name intein_record)
         ~region_index
         ~hit_index
     in
@@ -1240,7 +1240,7 @@ let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
       ~raw_query_length:query_len
       ~query_new_name_to_old_name
       ~query_name
-      ~intein_name:(intein_name intein_seq')
+      ~intein_name:(intein_name intein_record)
       ~region_index
       ~intein_checks_writer
       ~should_remove_aln_files
