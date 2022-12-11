@@ -26,7 +26,6 @@ min_query_length = 100
 min_region_length = 100
 remove_aln_files = true
 
-
 [start_residue]
 pass  = ["C", "S", "A", "Q", "P", "T"]
 maybe = ["V", "G", "L", "M", "N", "F"]
