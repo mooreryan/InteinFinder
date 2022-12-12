@@ -2,7 +2,9 @@ open! Core
 
 (* Write query_intein_hit_info_file_name, intein_hit_info *)
 let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries ~dir =
-  let query_intein_hit_info_file_name = Out_file_name.intein_hit_info dir in
+  let query_intein_hit_info_file_name =
+    Out_file_name.intein_db_search_with_regions dir
+  in
   Out_channel.with_file query_intein_hit_info_file_name ~f:(fun oc ->
       let header' =
         [ "query"
