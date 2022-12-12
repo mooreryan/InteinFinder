@@ -134,7 +134,7 @@ let run : Config.t -> string -> unit =
       ~exe:config.rpsblast.exe
       ~query_files:renamed_split_queries.file_names
       ~target_db:makeprofiledb_out.db
-      ~out_dir:dir.search
+      ~out_dir:dir.cdm_db_search
       ~evalue:config.rpsblast.evalue
       ~log_base
   in
@@ -144,7 +144,7 @@ let run : Config.t -> string -> unit =
       ~config:config.mmseqs
       ~queries:renamed_queries.file_name
       ~targets:config.inteins_file
-      ~out_dir:dir.search
+      ~out_dir:dir.intein_db_search
       ~log_base
       ~threads:config.threads
   in
@@ -198,10 +198,7 @@ let run : Config.t -> string -> unit =
   in
   (* Run the summaries on the renamed query outfiles. Better for user to read
      them. *)
-  Search_summary.summarize_searches
-    ~dir:dir.search
-    ~mmseqs_search_out
-    ~rpsblast_search_out ;
+  Search_summary.summarize_searches ~dir ~mmseqs_search_out ~rpsblast_search_out ;
   Clean_up.clean_up
     ~query_splits_dir:dir.query_splits
     ~logs_dir:dir.logs

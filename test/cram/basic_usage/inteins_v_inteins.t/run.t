@@ -34,12 +34,14 @@ Show output directory
   |   |-- 3_intein_hit_checks.tsv
   |   `-- 4_trimmed_inteins.faa
   `-- search
-      |-- 1_cdm_db_search_out.tsv
-      |-- 1_intein_db_search_out.tsv
-      |-- 2_cdm_db_search_summary.tsv
-      `-- 2_intein_db_search_summary.tsv
+      |-- cdm_db
+      |   |-- 1_cdm_db_search_out.tsv
+      |   `-- 2_cdm_db_search_summary.tsv
+      `-- intein_db
+          |-- 1_intein_db_search_out.tsv
+          `-- 2_intein_db_search_summary.tsv
   
-  3 directories, 12 files
+  5 directories, 12 files
 
 Show the putative intein regions
 

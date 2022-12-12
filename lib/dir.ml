@@ -8,7 +8,8 @@ type t =
   ; results: string
   ; query_splits: string
   ; logs: string
-  ; search: string }
+  ; cdm_db_search: string
+  ; intein_db_search: string }
 [@@deriving fields]
 
 [@@@coverage on]
@@ -19,7 +20,8 @@ let v out_dir =
   ; results= out_dir ^/ "results"
   ; query_splits= out_dir ^/ "query_splits"
   ; logs= out_dir ^/ "logs"
-  ; search= out_dir ^/ "search" }
+  ; intein_db_search= out_dir ^/ "search" ^/ "intein_db"
+  ; cdm_db_search= out_dir ^/ "search" ^/ "cdm_db" }
 
 let mkdirs t =
   let mkdir_p _ _ dir_name = Core_unix.mkdir_p dir_name in
@@ -30,5 +32,6 @@ let mkdirs t =
     ~results:mkdir_p
     ~query_splits:mkdir_p
     ~logs:mkdir_p
-    ~search:mkdir_p ;
+    ~cdm_db_search:mkdir_p
+    ~intein_db_search:mkdir_p ;
   t
