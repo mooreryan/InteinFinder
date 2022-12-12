@@ -4,7 +4,7 @@ Zero clip region padding
   $ InteinFinder zero_clip_region_padding.toml 2> err
   $ ../../scripts/redact_log_timestamp err | grep Done
   INFO [DATETIME] Done!
-  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/3_intein_hit_checks.tsv | cut -f1,16 | column -t -s "$(printf '\t')" 
+  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | cut -f1,16 | column -t -s "$(printf '\t')" 
   query                                            overall_check
   the_2_second_sequence                            Pass
   the_3_third_sequence                             Pass (Strict)

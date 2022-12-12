@@ -46,16 +46,16 @@ Show output directory.
   |   `-- if_log.DATE.mmseqs_search.txt
   |-- results
   |   |-- 1_putative_intein_regions.tsv
-  |   |-- 3_intein_hit_checks.tsv
-  |   `-- 4_trimmed_inteins.faa
+  |   |-- 2_intein_hit_checks.tsv
+  |   `-- 3_trimmed_inteins.faa
   `-- search
       |-- cdm_db
       |   |-- 1_cdm_db_search_out.tsv
       |   `-- 2_cdm_db_search_summary.tsv
       `-- intein_db
           |-- 1_intein_db_search_out.tsv
-          |-- 2_intein_db_search_summary.tsv
-          `-- 2_intein_hit_info.tsv
+          |-- 2_intein_db_search_with_regions.tsv
+          `-- 3_intein_db_search_summary.tsv
   
   6 directories, 27 files
 
@@ -71,9 +71,9 @@ Show config
 
 You should have the correct number of trimmed inteins
 
-  $ awk 'BEGIN {FS="\t"} $16 ~ /Pass/' if_out/results/3_intein_hit_checks.tsv | wc -l | sed -E 's/^ +//'
+  $ awk 'BEGIN {FS="\t"} $16 ~ /Pass/' if_out/results/2_intein_hit_checks.tsv | wc -l | sed -E 's/^ +//'
   3
-  $ grep -c '^>' if_out/results/4_trimmed_inteins.faa | sed -E 's/^ +//'
+  $ grep -c '^>' if_out/results/3_trimmed_inteins.faa | sed -E 's/^ +//'
   3
 
 Show the putative intein regions
@@ -99,7 +99,7 @@ Show the intein hit checks.  Note this looks weird in that
 for the start region.  But that is actually correct as it's hit region
 starts at 2 and not at 1.
 
-  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/3_intein_hit_checks.tsv | column -t -s "$(printf '\t')"
+  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | column -t -s "$(printf '\t')"
   query                                            region  intein_target        intein_start_minus_one  intein_start  intein_penultimate  intein_end  intein_end_plus_one  intein_length  start_residue_check  end_residues_check  end_plus_one_residue_check  start_position_check  end_position_check  region_check  overall_check
   the_2_second_sequence                            2       inbase___seq_440     P                       C             A                   N           C                    412            Pass (C)             Maybe (AN)          Pass (C)                    Pass (At 751)         Pass (At 1162)      Pass          Pass
   the_3_third_sequence                             1       inbase___seq_219     P                       C             H                   N           C                    367            Pass (C)             Pass (HN)           Pass (C)                    Pass (At 483)         Pass (At 849)       Pass          Pass (Strict)
@@ -183,7 +183,7 @@ Show search results.  They should be renamed.
   z4_start_of___kelley_2016___seq_9___maybe_start  kelley_2016___seq_1  0.473  131  63   4   2     129   2    129  2.02e-32  111.  133   331
   z4_start_of___kelley_2016___seq_9___maybe_start  green_2018___seq_11  0.411  17   10   0   19    35    20   36   0.000186  30.   133   153
 
-  $ column -t -s "$(printf '\t')" if_out/search/intein_db/2_intein_db_search_summary.tsv
+  $ column -t -s "$(printf '\t')" if_out/search/intein_db/3_intein_db_search_summary.tsv
   query                                            total_hits  best_pident  pident_target        best_bits  bits_target          best_alnlen  alnlen_target     best_alnperc          alnperc_target
   long_enough_but_short_region                     1           1.           inbase___seq_524     86.        inbase___seq_524     40           inbase___seq_524  0.075187969924812026  inbase___seq_524
   the_2_second_sequence                            2           0.416        inbase___seq_524     80.        inbase___seq_440     275          inbase___seq_440  0.60439560439560436   inbase___seq_440
