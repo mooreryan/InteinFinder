@@ -3,6 +3,5 @@ queries = "../../assets/one_query.faa"
 smp_dir = "../../assets/smp"
 out_dir = "if_out"
 log_level = "info"
+threads = 2
 
-[rpsblast]
-num_splits = 2

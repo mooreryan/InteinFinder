@@ -343,33 +343,11 @@ module Rpsblast = struct
     let path = path
   end)
 
-  module Num_splits = struct
-    [@@@coverage off]
-
-    type t = int [@@deriving sexp_of]
-
-    [@@@coverage on]
-
-    let toml_path = path "num_splits"
-
-    let default = 1
-
-    let parse n =
-      if n >= 1 then Or_error.return n
-      else Or_error.errorf "expected num_split >= 1, but got %d" n
-
-    let find toml =
-      find_int_with_default_and_parse toml ~toml_path ~default ~parse
-  end
-
-  type t = {exe: Exe.t; evalue: Evalue.t; num_splits: Num_splits.t}
-  [@@deriving sexp_of]
+  type t = {exe: Exe.t; evalue: Evalue.t} [@@deriving sexp_of]
 
   let find toml =
-    let%map exe = Exe.find toml
-    and evalue = Evalue.find toml
-    and num_splits = Num_splits.find toml in
-    {exe; evalue; num_splits}
+    let%map exe = Exe.find toml and evalue = Evalue.find toml in
+    {exe; evalue}
 end
 
 module Mafft = struct
@@ -389,32 +367,11 @@ module Mafft = struct
     let find toml = find_executable_file_with_default toml ~toml_path ~default
   end
 
-  module Max_concurrent_jobs = struct
-    [@@@coverage off]
-
-    type t = int [@@deriving sexp_of]
-
-    [@@@coverage on]
-
-    let toml_path = path "max_concurrent_jobs"
-
-    let default = 1
-
-    let parse n =
-      if n >= 1 then Or_error.return n
-      else Or_error.errorf "expected threads >= 1, but got %d" n
-
-    let find toml =
-      find_int_with_default_and_parse toml ~toml_path ~default ~parse
-  end
-
-  type t = {exe: Exe.t; max_concurrent_jobs: Max_concurrent_jobs.t}
-  [@@deriving sexp_of]
+  type t = {exe: Exe.t} [@@deriving sexp_of]
 
   let find toml =
-    let%map exe = Exe.find toml
-    and max_concurrent_jobs = Max_concurrent_jobs.find toml in
-    {exe; max_concurrent_jobs}
+    let%map exe = Exe.find toml in
+    {exe}
 end
 
 module Mmseqs = struct
@@ -478,40 +435,19 @@ module Mmseqs = struct
       |> config_error_tag ~toml_path
   end
 
-  module Threads = struct
-    [@@@coverage off]
-
-    type t = int [@@deriving sexp_of]
-
-    [@@@coverage on]
-
-    let toml_path = path "threads"
-
-    let default = 1
-
-    let parse n =
-      if n >= 1 then Or_error.return n
-      else Or_error.errorf "expected threads >= 1, but got %d" n
-
-    let find toml =
-      find_int_with_default_and_parse toml ~toml_path ~default ~parse
-  end
-
   type t =
     { exe: Exe.t
     ; evalue: Evalue.t
     ; num_iterations: Num_iterations.t
-    ; sensitivity: Sensitivity.t
-    ; threads: Threads.t }
+    ; sensitivity: Sensitivity.t }
   [@@deriving sexp_of]
 
   let find toml =
     let%map exe = Exe.find toml
     and evalue = Evalue.find toml
     and num_iterations = Num_iterations.find toml
-    and sensitivity = Sensitivity.find toml
-    and threads = Threads.find toml in
-    {exe; evalue; num_iterations; sensitivity; threads}
+    and sensitivity = Sensitivity.find toml in
+    {exe; evalue; num_iterations; sensitivity}
 end
 
 module Inteins_file = struct
@@ -675,6 +611,25 @@ module Remove_aln_files = struct
     Otoml.find_or ~default toml Otoml.get_boolean toml_path |> Or_error.return
 end
 
+module Threads = struct
+  [@@@coverage off]
+
+  type t = int [@@deriving sexp_of]
+
+  [@@@coverage on]
+
+  let toml_path = ["threads"]
+
+  let default = 1
+
+  let parse n =
+    if n >= 1 then Or_error.return n
+    else Or_error.errorf "expected threads >= 1, but got %d" n
+
+  let find toml =
+    find_int_with_default_and_parse toml ~toml_path ~default ~parse
+end
+
 type t =
   { (* Inputs *)
     inteins_file: Inteins_file.t
@@ -690,7 +645,8 @@ type t =
   ; clip_region_padding: Clip_region_padding.t
   ; min_query_length: Min_query_length.t
   ; min_region_length: Min_region_length.t
-  ; remove_aln_files: Remove_aln_files.t }
+  ; remove_aln_files: Remove_aln_files.t
+  ; threads: Threads.t }
 [@@deriving sexp_of]
 
 let find toml =
@@ -707,7 +663,8 @@ let find toml =
   and clip_region_padding = Clip_region_padding.find toml
   and min_query_length = Min_query_length.find toml
   and min_region_length = Min_region_length.find toml
-  and remove_aln_files = Remove_aln_files.find toml in
+  and remove_aln_files = Remove_aln_files.find toml
+  and threads = Threads.find toml in
   { inteins_file
   ; queries_file
   ; smp_dir
@@ -721,7 +678,8 @@ let find toml =
   ; clip_region_padding
   ; min_query_length
   ; min_region_length
-  ; remove_aln_files }
+  ; remove_aln_files
+  ; threads }
 
 let read_config config_file =
   let toml = Otoml.Parser.from_file config_file in

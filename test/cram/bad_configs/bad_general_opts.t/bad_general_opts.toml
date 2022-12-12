@@ -7,3 +7,5 @@ log_level = "info"
 clip_region_padding = -1
 min_query_length = -1
 min_region_length = -1
+
+threads = 0

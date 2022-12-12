@@ -114,7 +114,7 @@ let run : Config.t -> string -> unit =
     Logs.info (fun m -> m "Splitting queries") ;
     Split_seqs.split_seqs
       ~seq_file:renamed_queries.file_name
-      ~num_splits:config.rpsblast.num_splits
+      ~num_splits:config.threads
       ~out_dir:dir.query_splits
   in
   let smp_files = Smp_files.paths_exn config.smp_dir in
@@ -144,6 +144,7 @@ let run : Config.t -> string -> unit =
       ~targets:config.inteins_file
       ~out_dir:dir.search
       ~log_base
+      ~threads:config.threads
   in
   let btabs =
     [ Mmseqs_search.Out.out mmseqs_search_out
@@ -177,7 +178,7 @@ let run : Config.t -> string -> unit =
       ~query_new_name_to_old_name:renamed_queries.name_map
       ~aln_dir:dir.aln
       ~log_base
-      ~jobs:config.mafft.max_concurrent_jobs
+      ~jobs:config.threads
       ~results_dir:dir.results
       ~min_region_length:config.min_region_length
       ~should_remove_aln_files:config.remove_aln_files

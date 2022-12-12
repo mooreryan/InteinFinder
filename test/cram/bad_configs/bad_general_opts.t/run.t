@@ -15,4 +15,5 @@ Bad general opts
    ("config error: min_query_length"
     "expected min_query_length >= 0, but got -1")
    ("config error: min_region_length"
-    "expected min_region_length >= 0, but got -1"))
+    "expected min_region_length >= 0, but got -1")
+   ("config error: threads" "expected threads >= 1, but got 0"))

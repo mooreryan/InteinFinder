@@ -9,4 +9,3 @@ exe = "mmseqs_S8i3cWd93aGj31V"
 evalue = -32.8
 num_iterations = 0
 sensitivity = 0.5
-threads = 0

@@ -16,5 +16,4 @@ Bad mmseqs config
     "expected E-value >= 0.0, but got -32.800000")
    ("config error: mmseqs -> num_iterations" "num_iterations >= 1, but got 0")
    ("config error: mmseqs -> sensitivity"
-    "expected 1.0 <= sensitivity <= 7.5, but got 0.500000")
-   ("config error: mmseqs -> threads" "expected threads >= 1, but got 0"))
+    "expected 1.0 <= sensitivity <= 7.5, but got 0.500000"))

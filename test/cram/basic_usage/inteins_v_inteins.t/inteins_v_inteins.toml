@@ -6,19 +6,17 @@ smp_dir = "../../assets/smp"
 out_dir = "if_out"
 log_level = "info"
 min_query_length = 100
+threads = 1
 
 [mmseqs]
 exe = "mmseqs"
 evalue = 1e-3
 num_iterations = 2
 sensitivity = 5
-threads = 4
 
 [rpsblast]
 exe = "rpsblast+"
 evalue = 1e-3
-num_splits = 1
 
 [mafft]
 exe = "mafft"
-max_concurrent_jobs = 1

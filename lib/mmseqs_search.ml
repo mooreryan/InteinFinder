@@ -15,13 +15,14 @@ let prefix = "intein_finder__mmseqs"
 
 let suffix = "intein_finder__mmseqs"
 
-let run ~(config : Config.Mmseqs.t) ~queries ~targets ~out_dir ~log_base =
+let run ~(config : Config.Mmseqs.t) ~queries ~targets ~out_dir ~log_base
+    ~threads =
   let out = out_dir ^/ "0_mmseqs_search_out.tsv" in
   let log = Utils.log_name ~log_base ~desc:"mmseqs_search" in
   let sensitivity = Utils.float_to_string_hum config.sensitivity in
   let num_iterations = Int.to_string config.num_iterations in
   let evalue = Utils.float_to_string_hum config.evalue in
-  let threads = Int.to_string config.threads in
+  let threads = Int.to_string threads in
   Sh.eval
   @@ Sh.outputs_to ~append:() log
   @@ Sh.with_temp_dir ~prefix ~suffix (fun tmpdir ->

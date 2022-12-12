@@ -8,6 +8,7 @@ log_level = "INFO"
 min_query_length = 100
 min_region_length = 50
 remove_aln_files = false
+threads = 2
 
 [start_residue]
 pass = ["C", "S", "A", "Q", "P", "T"]
@@ -30,13 +31,10 @@ exe = "mmseqs"
 evalue = 1e-3
 num_iterations = 2
 sensitivity = 5.7
-threads = 1
 
 [rpsblast]
 exe = "rpsblast+"
 evalue = 1e-3
-num_splits = 2
 
 [mafft]
 exe = "mafft"
-max_concurrent_jobs = 2

@@ -6,4 +6,3 @@ log_level = "info"
 
 [mafft]
 exe = "mafft_6736XE7robbOW5i"
-max_concurrent_jobs = 0

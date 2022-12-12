@@ -7,5 +7,5 @@ log_level = "info"
 [rpsblast]
 exe = "rpsblast_dfVRzbebY1aa6sl"
 evalue = -3
-num_splits = 0
+
   
