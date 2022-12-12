@@ -25,7 +25,7 @@ Show output directory.
   if_out
   |-- _done
   |-- alignments
-  |   |-- 0_name_map.tsv
+  |   |-- 1_name_map.tsv
   |   |-- mafft_out___seq_10___green_2018___seq_11___1___3.fa
   |   |-- mafft_out___seq_10___inbase___seq_236___1___1.fa
   |   |-- mafft_out___seq_10___kelley_2016___seq_1___1___2.fa
@@ -41,42 +41,42 @@ Show output directory.
   |   |-- mafft_out___seq_8___inbase___seq_524___1___0.fa
   |   `-- mafft_out___seq_9___inbase___seq_524___1___0.fa
   |-- logs
-  |   |-- 0_config.toml
-  |   |-- 1_pipeline_info.txt
+  |   |-- 1_config.toml
+  |   |-- 2_pipeline_info.txt
   |   `-- if_log.DATE.mmseqs_search.txt
   |-- results
-  |   |-- 0_putative_intein_regions.tsv
-  |   |-- 1_intein_hit_info.tsv
-  |   |-- 2_intein_hit_checks.tsv
-  |   `-- 3_trimmed_inteins.faa
+  |   |-- 1_putative_intein_regions.tsv
+  |   |-- 2_intein_hit_info.tsv
+  |   |-- 3_intein_hit_checks.tsv
+  |   `-- 4_trimmed_inteins.faa
   `-- search
-      |-- 0_mmseqs_search_out.tsv
-      |-- 0_rpsblast_search_out.tsv
-      |-- 1_mmseqs_search_summary.tsv
-      `-- 1_rpsblast_search_summary.tsv
+      |-- 1_mmseqs_search_out.tsv
+      |-- 1_rpsblast_search_out.tsv
+      |-- 2_mmseqs_search_summary.tsv
+      `-- 2_rpsblast_search_summary.tsv
   
   4 directories, 27 files
 
 Show config
 
-  $ diff smoke_test.toml if_out/logs/0_config.toml
-  $ grep 'Program Versions' if_out/logs/1_pipeline_info.txt
+  $ diff smoke_test.toml if_out/logs/1_config.toml
+  $ grep 'Program Versions' if_out/logs/2_pipeline_info.txt
   Program Versions
-  $ grep 'Working Directory' if_out/logs/1_pipeline_info.txt
+  $ grep 'Working Directory' if_out/logs/2_pipeline_info.txt
   Working Directory
-  $ grep 'Config' if_out/logs/1_pipeline_info.txt
+  $ grep 'Config' if_out/logs/2_pipeline_info.txt
   Config
 
 You should have the correct number of trimmed inteins
 
-  $ awk 'BEGIN {FS="\t"} $16 ~ /Pass/' if_out/results/2_intein_hit_checks.tsv | wc -l | sed -E 's/^ +//'
+  $ awk 'BEGIN {FS="\t"} $16 ~ /Pass/' if_out/results/3_intein_hit_checks.tsv | wc -l | sed -E 's/^ +//'
   3
-  $ grep -c '^>' if_out/results/3_trimmed_inteins.faa | sed -E 's/^ +//'
+  $ grep -c '^>' if_out/results/4_trimmed_inteins.faa | sed -E 's/^ +//'
   3
 
 Show the putative intein regions
 
-  $ column -t -s "$(printf '\t')" if_out/results/0_putative_intein_regions.tsv
+  $ column -t -s "$(printf '\t')" if_out/results/1_putative_intein_regions.tsv
   query                                            region_index  start  end
   the_1_first_sequence                             1             176    569
   z3_start_of___kelley_2016___seq_9                1             1      133
@@ -97,7 +97,7 @@ Show the intein hit checks.  Note this looks weird in that
 for the start region.  But that is actually correct as it's hit region
 starts at 2 and not at 1.
 
-  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | column -t -s "$(printf '\t')"
+  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/3_intein_hit_checks.tsv | column -t -s "$(printf '\t')"
   query                                            region  intein_target        intein_start_minus_one  intein_start  intein_penultimate  intein_end  intein_end_plus_one  intein_length  start_residue_check  end_residues_check  end_plus_one_residue_check  start_position_check  end_position_check  region_check  overall_check
   the_2_second_sequence                            2       inbase___seq_440     P                       C             A                   N           C                    412            Pass (C)             Maybe (AN)          Pass (C)                    Pass (At 751)         Pass (At 1162)      Pass          Pass
   the_3_third_sequence                             1       inbase___seq_219     P                       C             H                   N           C                    367            Pass (C)             Pass (HN)           Pass (C)                    Pass (At 483)         Pass (At 849)       Pass          Pass (Strict)
@@ -116,7 +116,7 @@ starts at 2 and not at 1.
 
 Show the name map
 
-  $ column -t -s "$(printf '\t')" if_out/alignments/0_name_map.tsv
+  $ column -t -s "$(printf '\t')" if_out/alignments/1_name_map.tsv
   new_name  old_name
   seq_1     the_1_first_sequence
   seq_10    z3_start_of___kelley_2016___seq_9
@@ -131,7 +131,7 @@ Show the name map
 
 Show search results.  They should be renamed.
 
-  $ cut -f1 if_out/search/0_rpsblast_search_out.tsv | sort | uniq -c | sed -E 's/^ +//;s/ +/ /g'
+  $ cut -f1 if_out/search/1_rpsblast_search_out.tsv | sort | uniq -c | sed -E 's/^ +//;s/ +/ /g'
   7 the_1_first_sequence
   15 the_2_second_sequence
   10 the_3_third_sequence
@@ -140,7 +140,7 @@ Show search results.  They should be renamed.
   2 z3_start_of___kelley_2016___seq_9
   2 z4_start_of___kelley_2016___seq_9___maybe_start
 
-  $ sort if_out/search/0_rpsblast_search_out.tsv | head | column -t -s "$(printf '\t')" 
+  $ sort if_out/search/1_rpsblast_search_out.tsv | head | column -t -s "$(printf '\t')" 
   the_1_first_sequence   CDD:197641  37.5    40   24   1   531   569   3   42   7.85e-08  39.8
   the_1_first_sequence   CDD:197642  26.214  103  66   4   176   272   2   100  8.79e-14  58.4
   the_1_first_sequence   CDD:224291  16.667  420  249  12  205   567   45  420  1.79e-15  69.3
@@ -152,7 +152,7 @@ Show search results.  They should be renamed.
   the_2_second_sequence  CDD:197641  41.379  29   17   0   1137  1165  15  43   7.31e-08  40.2
   the_2_second_sequence  CDD:197642  24.272  103  68   4   155   251   2   100  2.68e-10  48.8
 
-  $ column -t -s "$(printf '\t')" if_out/search/1_rpsblast_search_summary.tsv
+  $ column -t -s "$(printf '\t')" if_out/search/2_rpsblast_search_summary.tsv
   query                                            total_hits  best_pident  pident_target  best_bits  bits_target  best_alnlen  alnlen_target  best_alnperc  alnperc_target
   the_1_first_sequence                             7           37.5         CDD:197641     79.4       CDD:317315   444          CDD:317315     None          None
   the_2_second_sequence                            15          55.          CDD:213622     85.5       CDD:317315   456          CDD:224291     None          None
@@ -162,7 +162,7 @@ Show search results.  They should be renamed.
   z3_start_of___kelley_2016___seq_9                2           25.676       CDD:197642     39.2       CDD:197642   79           CDD:238035     None          None
   z4_start_of___kelley_2016___seq_9___maybe_start  2           25.676       CDD:197642     39.2       CDD:197642   79           CDD:238035     None          None
 
-  $ column -t -s "$(printf '\t')" if_out/search/0_mmseqs_search_out.tsv
+  $ column -t -s "$(printf '\t')" if_out/search/1_mmseqs_search_out.tsv
   the_2_second_sequence                            inbase___seq_440     0.265  275  153  11  901   1162  217  455  3.83e-18  80.   1713  455
   the_2_second_sequence                            inbase___seq_524     0.416  60   32   1   991   1050  356  412  8.64e-07  42.   1713  532
   the_3_third_sequence                             inbase___seq_219     0.514  35   17   0   815   849   344  378  1.14e-09  52.   1671  378
@@ -181,7 +181,7 @@ Show search results.  They should be renamed.
   z4_start_of___kelley_2016___seq_9___maybe_start  kelley_2016___seq_1  0.473  131  63   4   2     129   2    129  2.02e-32  111.  133   331
   z4_start_of___kelley_2016___seq_9___maybe_start  green_2018___seq_11  0.411  17   10   0   19    35    20   36   0.000186  30.   133   153
 
-  $ column -t -s "$(printf '\t')" if_out/search/1_mmseqs_search_summary.tsv
+  $ column -t -s "$(printf '\t')" if_out/search/2_mmseqs_search_summary.tsv
   query                                            total_hits  best_pident  pident_target        best_bits  bits_target          best_alnlen  alnlen_target     best_alnperc          alnperc_target
   long_enough_but_short_region                     1           1.           inbase___seq_524     86.        inbase___seq_524     40           inbase___seq_524  0.075187969924812026  inbase___seq_524
   the_2_second_sequence                            2           0.416        inbase___seq_524     80.        inbase___seq_440     275          inbase___seq_440  0.60439560439560436   inbase___seq_440

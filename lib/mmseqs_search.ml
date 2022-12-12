@@ -17,7 +17,7 @@ let suffix = "intein_finder__mmseqs"
 
 let run ~(config : Config.Mmseqs.t) ~queries ~targets ~out_dir ~log_base
     ~threads =
-  let out = out_dir ^/ "0_mmseqs_search_out.tsv" in
+  let out = out_dir ^/ "1_mmseqs_search_out.tsv" in
   let log = Utils.log_name ~log_base ~desc:"mmseqs_search" in
   let sensitivity = Utils.float_to_string_hum config.sensitivity in
   let num_iterations = Int.to_string config.num_iterations in

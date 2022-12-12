@@ -21,7 +21,7 @@ Run the pipeline
 
 Check the trimmed inteins
 
-  $ cat if_out/results/3_trimmed_inteins.faa
+  $ cat if_out/results/4_trimmed_inteins.faa
   >s1_contains___green_2018___seq_11___region_1___start_51___end_213
   CLAKGTRLLRYDGSEVNVEDVXXXXXREGDELLGPDGTPRRAFNIVNXXXXXGQDRLYRIKIDSEIEDLVVTPNHILVLHRENETVEITAEEFAALEAAERSQYRAPRTFPEQWNQASGDIVAQAPSFFIKDISLEAETTEWAGFRVDKDQLYLRYDYLVLHN
   >s2_contains___green_2018___seq_250___region_1___start_51___end_202

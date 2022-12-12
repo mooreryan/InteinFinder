@@ -1,9 +1,9 @@
 open! Core
 
-(* Write query_intein_hit_info_file_name, 1_intein_hit_info.tsv *)
+(* Write query_intein_hit_info_file_name, 2_intein_hit_info.tsv *)
 let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries
     ~result_dir =
-  let query_intein_hit_info_file_name = result_dir ^/ "1_intein_hit_info.tsv" in
+  let query_intein_hit_info_file_name = result_dir ^/ "2_intein_hit_info.tsv" in
   Out_channel.with_file query_intein_hit_info_file_name ~f:(fun oc ->
       let header' =
         [ "query"
@@ -83,7 +83,7 @@ let read_intein_db_seqs config : Alignment.Record.intein_raw String.Map.t =
 
 (* This is so the user knows the names of the stuff in the alignments. *)
 let write_name_map ~dir ~renamed_queries =
-  let name_map_file_name = dir ^/ "0_name_map.tsv" in
+  let name_map_file_name = dir ^/ "1_name_map.tsv" in
   Out_channel.with_file name_map_file_name ~f:(fun oc ->
       let print = Out_channel.output_string oc in
       print "new_name\told_name\n" ;

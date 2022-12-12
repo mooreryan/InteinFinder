@@ -25,25 +25,25 @@ Show output directory
   if_out
   |-- _done
   |-- logs
-  |   |-- 0_config.toml
-  |   |-- 1_pipeline_info.txt
+  |   |-- 1_config.toml
+  |   |-- 2_pipeline_info.txt
   |   `-- if_log.DATE.mmseqs_search.txt
   |-- results
-  |   |-- 0_putative_intein_regions.tsv
-  |   |-- 1_intein_hit_info.tsv
-  |   |-- 2_intein_hit_checks.tsv
-  |   `-- 3_trimmed_inteins.faa
+  |   |-- 1_putative_intein_regions.tsv
+  |   |-- 2_intein_hit_info.tsv
+  |   |-- 3_intein_hit_checks.tsv
+  |   `-- 4_trimmed_inteins.faa
   `-- search
-      |-- 0_mmseqs_search_out.tsv
-      |-- 0_rpsblast_search_out.tsv
-      |-- 1_mmseqs_search_summary.tsv
-      `-- 1_rpsblast_search_summary.tsv
+      |-- 1_mmseqs_search_out.tsv
+      |-- 1_rpsblast_search_out.tsv
+      |-- 2_mmseqs_search_summary.tsv
+      `-- 2_rpsblast_search_summary.tsv
   
   3 directories, 12 files
 
 Show the putative intein regions
 
-  $ column -t -s "$(printf '\t')" if_out/results/0_putative_intein_regions.tsv
+  $ column -t -s "$(printf '\t')" if_out/results/1_putative_intein_regions.tsv
   query                  region_index  start  end
   green_2018___seq_11    1             1      153
   kelley_2016___seq_111  1             1      312
@@ -58,7 +58,7 @@ Show the putative intein regions
 
 Show some of the intein hit checks.
 
-  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | head | column -t -s "$(printf '\t')"
+  $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/3_intein_hit_checks.tsv | head | column -t -s "$(printf '\t')"
   green_2018___seq_11    1  green_2018___seq_11    None  C  H  N  None  153  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 153)  Pass  Pass (Strict)
   green_2018___seq_250   1  green_2018___seq_250   None  C  H  N  None  138  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 138)  Pass  Pass (Strict)
   green_2018___seq_359   1  green_2018___seq_359   None  S  R  D  None  307  Pass (S)  Maybe (RD)  NA  Pass (At 1)  Pass (At 307)  Pass  Pass
