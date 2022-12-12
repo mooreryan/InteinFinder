@@ -46,6 +46,7 @@ Show the putative intein regions
   $ column -t -s "$(printf '\t')" if_out/results/0_putative_intein_regions.tsv
   query                  region_index  start  end
   green_2018___seq_11    1             1      153
+  kelley_2016___seq_111  1             1      312
   green_2018___seq_250   1             1      138
   green_2018___seq_359   1             1      307
   inbase___seq_219       1             1      378
@@ -54,7 +55,6 @@ Show the putative intein regions
   inbase___seq_524       1             1      532
   kelley_2016___seq_1    1             1      331
   kelley_2016___seq_9    1             1      331
-  kelley_2016___seq_111  1             1      312
 
 Show some of the intein hit checks.
 

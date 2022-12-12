@@ -30,16 +30,16 @@ Show output directory.
   |   |-- mafft_out___seq_10___inbase___seq_236___1___1.fa
   |   |-- mafft_out___seq_10___kelley_2016___seq_1___1___2.fa
   |   |-- mafft_out___seq_10___kelley_2016___seq_9___1___0.fa
-  |   |-- mafft_out___seq_1___inbase___seq_440___2___0.fa
-  |   |-- mafft_out___seq_2___inbase___seq_219___1___0.fa
-  |   |-- mafft_out___seq_3___inbase___seq_440___2___0.fa
-  |   |-- mafft_out___seq_4___inbase___seq_524___1___0.fa
-  |   |-- mafft_out___seq_7___inbase___seq_524___1___0.fa
+  |   |-- mafft_out___seq_11___green_2018___seq_11___1___3.fa
+  |   |-- mafft_out___seq_11___inbase___seq_236___1___1.fa
+  |   |-- mafft_out___seq_11___kelley_2016___seq_1___1___2.fa
+  |   |-- mafft_out___seq_11___kelley_2016___seq_9___1___0.fa
+  |   |-- mafft_out___seq_2___inbase___seq_440___2___0.fa
+  |   |-- mafft_out___seq_3___inbase___seq_219___1___0.fa
+  |   |-- mafft_out___seq_4___inbase___seq_440___2___0.fa
+  |   |-- mafft_out___seq_5___inbase___seq_524___1___0.fa
   |   |-- mafft_out___seq_8___inbase___seq_524___1___0.fa
-  |   |-- mafft_out___seq_9___green_2018___seq_11___1___3.fa
-  |   |-- mafft_out___seq_9___inbase___seq_236___1___1.fa
-  |   |-- mafft_out___seq_9___kelley_2016___seq_1___1___2.fa
-  |   `-- mafft_out___seq_9___kelley_2016___seq_9___1___0.fa
+  |   `-- mafft_out___seq_9___inbase___seq_524___1___0.fa
   |-- logs
   |   |-- 0_config.toml
   |   |-- 1_pipeline_info.txt
@@ -79,9 +79,10 @@ Show the putative intein regions
   $ column -t -s "$(printf '\t')" if_out/results/0_putative_intein_regions.tsv
   query                                            region_index  start  end
   the_1_first_sequence                             1             176    569
+  z3_start_of___kelley_2016___seq_9                1             1      133
+  z4_start_of___kelley_2016___seq_9___maybe_start  1             2      133
   the_2_second_sequence                            1             155    545
   the_2_second_sequence                            2             750    1165
-  z4_start_of___kelley_2016___seq_9___maybe_start  1             2      133
   the_3_third_sequence                             1             481    852
   the_4_fourth_sequence                            1             297    736
   the_4_fourth_sequence                            2             884    1295
@@ -90,7 +91,6 @@ Show the putative intein regions
   long_enough_but_short_region                     1             101    140
   z1_little_piece_of___inbase___seq_524            1             3      129
   z2_little_piece_of___inbase___seq_524            1             1      120
-  z3_start_of___kelley_2016___seq_9                1             1      133
 
 Show the intein hit checks.  Note this looks weird in that
 '>z4_start_of___kelley_2016___seq_9___maybe_start' says Fail (At 1)
@@ -118,16 +118,16 @@ Show the name map
 
   $ column -t -s "$(printf '\t')" if_out/alignments/0_name_map.tsv
   new_name  old_name
-  seq_0     the_1_first_sequence
-  seq_1     the_2_second_sequence
-  seq_10    z4_start_of___kelley_2016___seq_9___maybe_start
-  seq_2     the_3_third_sequence
-  seq_3     the_4_fourth_sequence
-  seq_4     the_5_fifth_sequence
-  seq_6     long_enough_but_short_region
-  seq_7     z1_little_piece_of___inbase___seq_524
-  seq_8     z2_little_piece_of___inbase___seq_524
-  seq_9     z3_start_of___kelley_2016___seq_9
+  seq_1     the_1_first_sequence
+  seq_10    z3_start_of___kelley_2016___seq_9
+  seq_11    z4_start_of___kelley_2016___seq_9___maybe_start
+  seq_2     the_2_second_sequence
+  seq_3     the_3_third_sequence
+  seq_4     the_4_fourth_sequence
+  seq_5     the_5_fifth_sequence
+  seq_7     long_enough_but_short_region
+  seq_8     z1_little_piece_of___inbase___seq_524
+  seq_9     z2_little_piece_of___inbase___seq_524
 
 Show search results.  They should be renamed.
 

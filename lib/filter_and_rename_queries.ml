@@ -7,7 +7,9 @@ type t = {file_name: string; name_map: string Map.M(String).t}
 
 [@@@coverage on]
 
-let new_name i = [%string "seq_%{i#Int}"]
+let new_name i =
+  let i = Zero_indexed_int.to_one_indexed_string i in
+  [%string "seq_%{i}"]
 
 let old_name r = Bio_io.Fasta.Record.id r
 
@@ -36,6 +38,7 @@ let rename_seqs ~seq_file ~out_dir ~min_length =
       seq_file
       ~init:String.Map.empty
       ~f:(fun i name_map r ->
+        let i = Zero_indexed_int.of_zero_indexed_int i in
         if record_is_long_enough r then (
           at_least_one_record_was_long_enough := true ;
           write_and_update_name_map ~i ~r ~oc ~name_map )
