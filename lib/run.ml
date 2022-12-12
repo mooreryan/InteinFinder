@@ -160,7 +160,7 @@ let run : Config.t -> string -> unit =
     write_query_intein_hit_info_file
       ~query_region_hits
       ~renamed_queries
-      ~dir:dir.results
+      ~dir:dir.intein_db_search
   in
   (* Read the intein DB seqs into memory. *)
   let intein_db_seqs : Alignment.Record.intein_raw String.Map.t =

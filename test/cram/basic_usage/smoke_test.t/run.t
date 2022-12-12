@@ -46,7 +46,6 @@ Show output directory.
   |   `-- if_log.DATE.mmseqs_search.txt
   |-- results
   |   |-- 1_putative_intein_regions.tsv
-  |   |-- 2_intein_hit_info.tsv
   |   |-- 3_intein_hit_checks.tsv
   |   `-- 4_trimmed_inteins.faa
   `-- search
@@ -55,7 +54,8 @@ Show output directory.
       |   `-- 2_cdm_db_search_summary.tsv
       `-- intein_db
           |-- 1_intein_db_search_out.tsv
-          `-- 2_intein_db_search_summary.tsv
+          |-- 2_intein_db_search_summary.tsv
+          `-- 2_intein_hit_info.tsv
   
   6 directories, 27 files
 

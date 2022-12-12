@@ -24,5 +24,4 @@ Check
 
   $ ls if_out/results/
   1_putative_intein_regions.tsv
-  2_intein_hit_info.tsv
   3_intein_hit_checks.tsv
