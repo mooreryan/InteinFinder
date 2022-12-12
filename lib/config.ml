@@ -598,7 +598,9 @@ module Log_level = struct
 
   (* Note: will alwas return Ok *)
   let find toml =
-    Otoml.find_or ~default toml Otoml.get_string toml_path |> parse
+    Otoml.find_or ~default toml Otoml.get_string toml_path
+    |> parse
+    |> config_error_tag ~toml_path
 end
 
 module Clip_region_padding = struct
@@ -728,7 +730,7 @@ let read_config config_file =
       Ok config
   | Error e ->
       Logs.err (fun m ->
-          m "could not generate config: %s" @@ Error.to_string_mach e ) ;
+          m "could not generate config:\n%s" @@ Error.to_string_hum e ) ;
       Error 2
 
 module Version = struct

@@ -10,4 +10,5 @@ Bad log level
   not
   generate
   config:
-  "Log level must be one of 'error', 'warning', 'info', or 'debug'. Got 'infoo'"
+  ("config error: log_level"
+   "Log level must be one of 'error', 'warning', 'info', or 'debug'. Got 'infoo'")
