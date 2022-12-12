@@ -5,7 +5,7 @@
 Prints version
 
   $ InteinFinder --version | ../scripts/redact_git_hash -
-  1.0.0-SNAPSHOT [VERSION_HASH]
+  1.0.0-SNAPSHOT
 
 No args gives decent message
 
