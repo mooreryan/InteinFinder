@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sed -E 's/-dirty\]/]/;s/\[[a-zA-Z0-9]+\]/[VERSION_HASH]/' "${1}"
