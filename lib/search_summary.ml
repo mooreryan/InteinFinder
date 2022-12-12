@@ -131,20 +131,17 @@ let print_summary oc map =
   Out_channel.output_string oc (to_string_header () ^ "\n") ;
   Map.iter map ~f:(fun t -> Out_channel.output_string oc (to_string t ^ "\n"))
 
-let summarize_and_print ~dir ~out ~btab =
-  let file_name = dir ^/ out in
+let summarize_and_print ~out ~btab =
   let map = summarize btab in
-  Out_channel.with_file file_name ~f:(fun oc -> print_summary oc map)
+  Out_channel.with_file out ~f:(fun oc -> print_summary oc map)
 
 (** Wrapper for all the searches. Call it in the main [run] function. *)
 let summarize_searches ~dir ~mmseqs_search_out ~rpsblast_search_out =
   Logs.info (fun m -> m "Summarizing intein DB search") ;
   summarize_and_print
-    ~dir
-    ~out:Out_file_name.mmseqs_search_summary
+    ~out:(dir ^/ Out_file_name.mmseqs_search_summary)
     ~btab:(Mmseqs_search.Out.out mmseqs_search_out) ;
   Logs.info (fun m -> m "Summarizing conserved domain DB search") ;
   summarize_and_print
-    ~dir
-    ~out:Out_file_name.rpsblast_search_summary
+    ~out:(dir ^/ Out_file_name.rpsblast_search_summary)
     ~btab:(Rpsblast.Search.Out.out rpsblast_search_out)
