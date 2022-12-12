@@ -1,11 +1,8 @@
 open! Core
 
 (* Write query_intein_hit_info_file_name, intein_hit_info *)
-let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries
-    ~result_dir =
-  let query_intein_hit_info_file_name =
-    Out_file_name.intein_hit_info result_dir
-  in
+let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries ~dir =
+  let query_intein_hit_info_file_name = Out_file_name.intein_hit_info dir in
   Out_channel.with_file query_intein_hit_info_file_name ~f:(fun oc ->
       let header' =
         [ "query"
@@ -163,7 +160,7 @@ let run : Config.t -> string -> unit =
     write_query_intein_hit_info_file
       ~query_region_hits
       ~renamed_queries
-      ~result_dir:dir.results
+      ~dir:dir.results
   in
   (* Read the intein DB seqs into memory. *)
   let intein_db_seqs : Alignment.Record.intein_raw String.Map.t =
