@@ -80,10 +80,14 @@ module Intein_query_info = struct
     in
     l |> List.rev |> String.concat ~sep:"\t"
 
-  let to_string_with_info t ~query_name ~intein_name ~region_index =
+  let to_string_with_info t ~query_name ~intein_name
+      ~(region_index : Zero_indexed_int.t) =
     String.concat
       ~sep:"\t"
-      [query_name; Int.to_string region_index; intein_name; to_string t]
+      [ query_name
+      ; Zero_indexed_int.to_one_indexed_string region_index
+      ; intein_name
+      ; to_string t ]
 
   let to_string_with_info_header () =
     [ "query"
@@ -1068,15 +1072,15 @@ module Mafft = struct
             Deferred.Or_error.error_string (Error.to_string_hum e) )
 end
 
-let aln_io_file_names ~aln_dir ~query_name ~intein_name ~region_index ~hit_index
-    =
+let aln_io_file_names ~aln_dir ~query_name ~intein_name
+    ~(region_index : Zero_indexed_int.t) ~hit_index =
   let basename in_or_out =
     sprintf
       "mafft_%s___%s___%s___%d___%d.fa"
       in_or_out
       query_name
       intein_name
-      region_index
+      (Zero_indexed_int.to_one_indexed_int region_index)
       hit_index
   in
   let aln_in_file = aln_dir ^/ basename "in" in
@@ -1119,7 +1123,7 @@ module Trim_inteins = struct
          alignment_checks:Checks.t
       -> raw_query:Record.query_raw
       -> query_name:string
-      -> region_index:int
+      -> region_index:Zero_indexed_int.t
       -> writer:Async.Writer.t
       -> unit Async.Deferred.t =
    fun ~alignment_checks
@@ -1131,7 +1135,10 @@ module Trim_inteins = struct
     | None ->
         Async.Deferred.return ()
     | Some (intein, region) ->
-        let region_index = [%string "region_%{region_index#Int}"] in
+        let region_index =
+          Zero_indexed_int.to_one_indexed_string region_index
+        in
+        let region_index = [%string "region_%{region_index}"] in
         let id = [%string ">%{query_name}___%{region_index}___%{region}\n"] in
         let record = [%string "%{id}%{intein}"] in
         Async.Writer.write_line writer record ;
@@ -1140,9 +1147,9 @@ end
 
 (** Writes the alignment checks, and if necessary the trimmed intein. *)
 let write_aln_checks aln_out_file ~hit_region ~raw_query_length ~raw_query
-    ~query_new_name_to_old_name ~query_name ~intein_name ~region_index
-    ~intein_checks_writer ~should_remove_aln_files ~trimmed_inteins_writer
-    ~config =
+    ~query_new_name_to_old_name ~query_name ~intein_name
+    ~(region_index : Zero_indexed_int.t) ~intein_checks_writer
+    ~should_remove_aln_files ~trimmed_inteins_writer ~config =
   let aln_out = read_aln_out_file aln_out_file in
   let intein_query_info : Intein_query_info.t =
     parse_aln_out
@@ -1188,8 +1195,8 @@ let write_aln_checks aln_out_file ~hit_region ~raw_query_length ~raw_query
 
 (* Note: some of these values I can calulate from others, but they are also
    known from the call site. Clean up at some point. *)
-let run_alignment_and_write_checks ~aln_dir ~region_index ~hit_index ~query_name
-    ~query_seq:(Record.Query_raw query_seq' as query_seq)
+let run_alignment_and_write_checks ~aln_dir ~(region_index : Zero_indexed_int.t)
+    ~hit_index ~query_name ~query_seq:(Record.Query_raw query_seq' as query_seq)
     ~intein_seq:(Record.Intein_raw intein_record as intein_seq) ~log_base
     ~clip_region_padding ~region ~query_new_name_to_old_name
     ~intein_checks_writer ~trimmed_inteins_writer ~should_remove_aln_files

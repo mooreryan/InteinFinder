@@ -52,7 +52,9 @@ module Hit_regions = struct
   let add_indices : t -> t =
    fun region_list ->
     Map.map region_list ~f:(fun l ->
-        List.mapi l ~f:(fun index region -> Region.with_index region ~index) )
+        List.mapi l ~f:(fun index region ->
+            let index = Zero_indexed_int.of_zero_indexed_int index in
+            Region.with_index region ~index ) )
 
   let of_btabs : string list -> t =
    fun btabs ->
@@ -139,9 +141,9 @@ module Intein_hits = struct
 
   module Region_hits = struct
     (** Assumes that all hits are to the same query. *)
-    type t = Hit.t list Int.Map.t [@@deriving sexp_of]
+    type t = Hit.t list Zero_indexed_int.Map.t [@@deriving sexp_of]
 
-    let empty () : t = Int.Map.empty
+    let empty () : t = Zero_indexed_int.Map.empty
 
     (** Sort each region's hits by the descending bit score. *)
     let sort_hits (t : t) = Map.map t ~f:Hit.sort_list
@@ -212,7 +214,7 @@ module Intein_hits = struct
         -> jobs:int
         -> f:
              (   query:string
-              -> region_index:int
+              -> region_index:Zero_indexed_int.t
               -> hits:Hit.t list
               -> unit Async.Deferred.t )
         -> unit Async.Deferred.t =
@@ -229,11 +231,17 @@ module Intein_hits = struct
               f ~query ~region_index ~hits ) )
 
     let iter_hits :
-        t -> f:(query:string -> region:int -> hit:Hit.t -> unit) -> unit =
+           t
+        -> f:
+             (   query:string
+              -> region_index:Zero_indexed_int.t
+              -> hit:Hit.t
+              -> unit )
+        -> unit =
      fun t ~f ->
       Map.iteri t ~f:(fun ~key:query ~data:region_hits ->
-          Map.iteri region_hits ~f:(fun ~key:region ~data:hits ->
-              List.iter hits ~f:(fun hit -> f ~query ~region ~hit) ) )
+          Map.iteri region_hits ~f:(fun ~key:region_index ~data:hits ->
+              List.iter hits ~f:(fun hit -> f ~query ~region_index ~hit) ) )
 
     let process_query_region_hits :
            query_region_hits:t

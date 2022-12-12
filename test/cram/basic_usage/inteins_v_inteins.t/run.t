@@ -59,13 +59,13 @@ Show the putative intein regions
 Show some of the intein hit checks.
 
   $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | head | column -t -s "$(printf '\t')"
-  green_2018___seq_11    0  green_2018___seq_11    None  C  H  N  None  153  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 153)  Pass  Pass (Strict)
-  green_2018___seq_250   0  green_2018___seq_250   None  C  H  N  None  138  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 138)  Pass  Pass (Strict)
-  green_2018___seq_359   0  green_2018___seq_359   None  S  R  D  None  307  Pass (S)  Maybe (RD)  NA  Pass (At 1)  Pass (At 307)  Pass  Pass
-  inbase___seq_219       0  inbase___seq_219       None  C  H  N  None  378  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 378)  Pass  Pass (Strict)
-  inbase___seq_236       0  inbase___seq_236       None  A  H  N  None  322  Pass (A)  Pass (HN)   NA  Pass (At 1)  Pass (At 322)  Pass  Pass (Strict)
-  inbase___seq_440       0  inbase___seq_440       None  C  S  N  None  455  Pass (C)  Pass (SN)   NA  Pass (At 1)  Pass (At 455)  Pass  Pass (Strict)
-  inbase___seq_524       0  inbase___seq_524       None  S  H  N  None  532  Pass (S)  Pass (HN)   NA  Pass (At 1)  Pass (At 532)  Pass  Pass (Strict)
-  kelley_2016___seq_1    0  kelley_2016___seq_1    None  A  H  N  None  331  Pass (A)  Pass (HN)   NA  Pass (At 1)  Pass (At 331)  Pass  Pass (Strict)
-  kelley_2016___seq_111  0  kelley_2016___seq_111  None  C  G  N  None  312  Pass (C)  Pass (GN)   NA  Pass (At 1)  Pass (At 312)  Pass  Pass (Strict)
-  kelley_2016___seq_9    0  kelley_2016___seq_9    None  S  H  N  None  331  Pass (S)  Pass (HN)   NA  Pass (At 1)  Pass (At 331)  Pass  Pass (Strict)
+  green_2018___seq_11    1  green_2018___seq_11    None  C  H  N  None  153  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 153)  Pass  Pass (Strict)
+  green_2018___seq_250   1  green_2018___seq_250   None  C  H  N  None  138  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 138)  Pass  Pass (Strict)
+  green_2018___seq_359   1  green_2018___seq_359   None  S  R  D  None  307  Pass (S)  Maybe (RD)  NA  Pass (At 1)  Pass (At 307)  Pass  Pass
+  inbase___seq_219       1  inbase___seq_219       None  C  H  N  None  378  Pass (C)  Pass (HN)   NA  Pass (At 1)  Pass (At 378)  Pass  Pass (Strict)
+  inbase___seq_236       1  inbase___seq_236       None  A  H  N  None  322  Pass (A)  Pass (HN)   NA  Pass (At 1)  Pass (At 322)  Pass  Pass (Strict)
+  inbase___seq_440       1  inbase___seq_440       None  C  S  N  None  455  Pass (C)  Pass (SN)   NA  Pass (At 1)  Pass (At 455)  Pass  Pass (Strict)
+  inbase___seq_524       1  inbase___seq_524       None  S  H  N  None  532  Pass (S)  Pass (HN)   NA  Pass (At 1)  Pass (At 532)  Pass  Pass (Strict)
+  kelley_2016___seq_1    1  kelley_2016___seq_1    None  A  H  N  None  331  Pass (A)  Pass (HN)   NA  Pass (At 1)  Pass (At 331)  Pass  Pass (Strict)
+  kelley_2016___seq_111  1  kelley_2016___seq_111  None  C  G  N  None  312  Pass (C)  Pass (GN)   NA  Pass (At 1)  Pass (At 312)  Pass  Pass (Strict)
+  kelley_2016___seq_9    1  kelley_2016___seq_9    None  S  H  N  None  331  Pass (S)  Pass (HN)   NA  Pass (At 1)  Pass (At 331)  Pass  Pass (Strict)

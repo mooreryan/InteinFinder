@@ -29,7 +29,7 @@ let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries
       (* Print out the intein hits in the correct order *)
       Hits.Intein_hits.Query_region_hits.iter_hits
         query_region_hits
-        ~f:(fun ~query ~region:_ ~hit ->
+        ~f:(fun ~query ~region_index:_ ~hit ->
           let query =
             Map.find_exn
               renamed_queries.Filter_and_rename_queries.name_map
@@ -39,9 +39,9 @@ let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries
           let hit : Bio_io.Btab.Record.Parsed.t = hit.hit in
           let l =
             [ query
-            ; Int.to_string (region.index + 1)
-            ; (* NOTE: this isn't the region defined by the one intein, but the
-                 region defined by all the hits. *)
+            ; Zero_indexed_int.to_one_indexed_string region.index
+            ; (* NOTE: this isn't the region defined by the one single intein,
+                 but the region defined by all the hits. *)
               Coord.to_one_indexed_string region.start
             ; Coord.to_one_indexed_string region.end_
             ; hit.target

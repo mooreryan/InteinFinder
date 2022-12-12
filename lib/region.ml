@@ -7,8 +7,8 @@ module C = Coord
 
 [@@@coverage off]
 
-(* These are 1-indexed and inclusive. *)
-type t = {start: C.one_raw; end_: C.one_raw; index: int; query: string}
+type t =
+  {start: C.one_raw; end_: C.one_raw; index: Zero_indexed_int.t; query: string}
 [@@deriving fields, sexp_of]
 
 [@@@coverage on]
@@ -16,12 +16,13 @@ type t = {start: C.one_raw; end_: C.one_raw; index: int; query: string}
 let canonicalize t =
   if C.(t.start > t.end_) then {t with start= t.end_; end_= t.start} else t
 
+(* Displays the index as 1-indexed. *)
 let to_string' :
     t -> query_new_name_to_old_name:string Map.M(String).t -> string option =
  fun t ~query_new_name_to_old_name ->
   let start = C.to_one_indexed_string t.start in
   let end_ = C.to_one_indexed_string t.end_ in
-  let region_index = Int.to_string (t.index + 1) in
+  let region_index = Zero_indexed_int.to_one_indexed_string t.index in
   let%map.Option query = Map.find query_new_name_to_old_name t.query in
   String.concat ~sep:"\t" [query; region_index; start; end_]
 
@@ -32,12 +33,14 @@ let with_index t ~index = {t with index}
 
 (* Zero-based indices. *)
 
+(* TODO: move this in to the zero indexed int. *)
 let assert_index_good index =
-  if index < 0 then Or_error.errorf "Expected index >= 0, but got %d" index
+  let index' = Zero_indexed_int.to_zero_indexed_int index in
+  if index' < 0 then Or_error.errorf "Expected index >= 0, but got %d" index'
   else Or_error.return ()
 
 (** Fails if the caller provides a negative index. *)
-let v_exn ~start ~end_ ~query ?(index = 0) () =
+let v_exn ~start ~end_ ~query ?(index = Zero_indexed_int.zero ()) () =
   Or_error.ok_exn @@ assert_index_good index ;
   canonicalize {start; end_; index; query}
 

@@ -14,13 +14,13 @@ let regions =
       , [ Region.v_exn
             ~start:(Coord.one_raw_exn 5)
             ~end_:(Coord.one_raw_exn 30)
-            ~index:0
+            ~index:(Zero_indexed_int.of_zero_indexed_int 0)
             ~query:"q1"
             ()
         ; Region.v_exn
             ~start:(Coord.one_raw_exn 90)
             ~end_:(Coord.one_raw_exn 250)
-            ~index:1
+            ~index:(Zero_indexed_int.of_zero_indexed_int 1)
             ~query:"q1"
             () ] ) ]
 
