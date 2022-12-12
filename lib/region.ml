@@ -33,11 +33,7 @@ let with_index t ~index = {t with index}
 
 (* Zero-based indices. *)
 
-(* TODO: move this in to the zero indexed int. *)
-let assert_index_good index =
-  let index' = Zero_indexed_int.to_zero_indexed_int index in
-  if index' < 0 then Or_error.errorf "Expected index >= 0, but got %d" index'
-  else Or_error.return ()
+let assert_index_good index = Zero_indexed_int.assert_positive_or_zero index
 
 (** Fails if the caller provides a negative index. *)
 let v_exn ~start ~end_ ~query ?(index = Zero_indexed_int.zero ()) () =

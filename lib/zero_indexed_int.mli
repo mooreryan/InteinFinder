@@ -17,3 +17,5 @@ val to_one_indexed_string : t -> string
 val zero : unit -> t
 
 include Comparable.S_plain with type t := t
+
+val assert_positive_or_zero : t -> unit Or_error.t
