@@ -4,7 +4,7 @@
 
 Prints version
 
-  $ InteinFinder --version | ../scripts/redact_git_hash -
+  $ InteinFinder --version | ../scripts/redact_git_hash /dev/stdin
   1.0.0-SNAPSHOT
 
 No args gives decent message
