@@ -26,20 +26,20 @@ Show output directory.
   |-- _done
   |-- alignments
   |   |-- 1_name_map.tsv
-  |   |-- mafft_out___seq_10___green_2018___seq_11___1___3.fa
-  |   |-- mafft_out___seq_10___inbase___seq_236___1___1.fa
-  |   |-- mafft_out___seq_10___kelley_2016___seq_1___1___2.fa
-  |   |-- mafft_out___seq_10___kelley_2016___seq_9___1___0.fa
-  |   |-- mafft_out___seq_11___green_2018___seq_11___1___3.fa
-  |   |-- mafft_out___seq_11___inbase___seq_236___1___1.fa
-  |   |-- mafft_out___seq_11___kelley_2016___seq_1___1___2.fa
-  |   |-- mafft_out___seq_11___kelley_2016___seq_9___1___0.fa
-  |   |-- mafft_out___seq_2___inbase___seq_440___2___0.fa
-  |   |-- mafft_out___seq_3___inbase___seq_219___1___0.fa
-  |   |-- mafft_out___seq_4___inbase___seq_440___2___0.fa
-  |   |-- mafft_out___seq_5___inbase___seq_524___1___0.fa
-  |   |-- mafft_out___seq_8___inbase___seq_524___1___0.fa
-  |   `-- mafft_out___seq_9___inbase___seq_524___1___0.fa
+  |   |-- mafft_out___seq_10___green_2018___seq_11___1___4.fa
+  |   |-- mafft_out___seq_10___inbase___seq_236___1___2.fa
+  |   |-- mafft_out___seq_10___kelley_2016___seq_1___1___3.fa
+  |   |-- mafft_out___seq_10___kelley_2016___seq_9___1___1.fa
+  |   |-- mafft_out___seq_11___green_2018___seq_11___1___4.fa
+  |   |-- mafft_out___seq_11___inbase___seq_236___1___2.fa
+  |   |-- mafft_out___seq_11___kelley_2016___seq_1___1___3.fa
+  |   |-- mafft_out___seq_11___kelley_2016___seq_9___1___1.fa
+  |   |-- mafft_out___seq_2___inbase___seq_440___2___1.fa
+  |   |-- mafft_out___seq_3___inbase___seq_219___1___1.fa
+  |   |-- mafft_out___seq_4___inbase___seq_440___2___1.fa
+  |   |-- mafft_out___seq_5___inbase___seq_524___1___1.fa
+  |   |-- mafft_out___seq_8___inbase___seq_524___1___1.fa
+  |   `-- mafft_out___seq_9___inbase___seq_524___1___1.fa
   |-- logs
   |   |-- 1_config.toml
   |   |-- 2_pipeline_info.txt

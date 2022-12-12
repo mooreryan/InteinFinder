@@ -1081,7 +1081,8 @@ let aln_io_file_names ~aln_dir ~query_name ~intein_name
       query_name
       intein_name
       (Zero_indexed_int.to_one_indexed_int region_index)
-      hit_index
+      (* TODO: indexing *)
+      (hit_index + 1)
   in
   let aln_in_file = aln_dir ^/ basename "in" in
   let aln_out_file = aln_dir ^/ basename "out" in
