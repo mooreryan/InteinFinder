@@ -25,6 +25,7 @@ clip_region_padding = 10
 min_query_length = 100
 min_region_length = 100
 remove_aln_files = true
+threads = 1
 
 [start_residue]
 pass  = ["C", "S", "A", "Q", "P", "T"]
@@ -45,26 +46,23 @@ exe = "makeprofiledb"
 
 [mafft]
 exe = mafft
-max_concurrent_jobs = 1
 
 [mmseqs]
 exe = mmseqs
 evalue = 1e-3
 num_iterations = 2
 sensitivity = 5.7
-threads = 1
 
 [rpsblast]
 exe = "rpsblast+"
 evalue = 1e-3
-num_splits = 1
 ```
 
 ## Details
 
 Let's go into detail on each set of options.
 
-*Note: I will try to keep this in sync with the code, but if you notice it is not, then please [file an issue](TODO)!*
+*Note: I will try to keep this in sync with the code, but if you notice it is not, then please [file an issue](https://github.com/mooreryan/InteinFinder/issues/new)!*
 
 ### A note about paths
 
@@ -127,6 +125,13 @@ These options are all optional.  That means if you leave them out of your config
 			- you found something weird and need to figure out what is going on
 			- you found a bug and submitted a bug report, but Ryan (aka me) asked you for the intermediate alignment files :)
     - default value: `true`
+- `threads`
+    - Number of threads/cores/CPUs to use for the parts of the pipeline that can run in parallel
+        - For MMseqs2, this is the `threads` option.
+		- For RPSBLAST, it is the number of concurrent search jobs that are run
+		- For running alignments, it controls how many alignment jobs are run concurrently.
+	- A reasonable value is the number of cores your machine has (or a few less than that if you need to do other work at the same time).
+    - default value: `1`
 
 ## Key intein residues
 
@@ -236,11 +241,6 @@ There is only one option for this table:
 	- Also, you could pass in a path to the program (TODO add a test for this)
     - default value: `mafft`
 	    - Note that this default value assumes that the program is on you [PATH](TODO)
-- `max_concurrent_jobs`
-    - Controls how many `mafft` jobs to run in parallel
-	- A reasonable value would be the number of cores/threads your machine has.
-	- Often it will match the threads for `mmseqs` and `num_splits` for `rpsblast`.
-	- default value: `1`
 
 ### MMseqs2
 
@@ -257,10 +257,6 @@ There is only one option for this table:
     - default value: `2`
 - `sensitivity`
     - default value: `5.7`
-- `threads`
-	- Often it will match the `num_splits` for `mmseqs` and `max_concurrent_jobs` for `mafft`.
-    - default value: `1`
-
 
 ### RPSBLAST
 
@@ -273,8 +269,3 @@ There is only one option for this table:
 		    - On my system, it's called `rpsblast+`, but I'm not sure which is more common.
 - `evalue`
     - default value: `1e-3`
-- `num_splits`
-    - This controls how many times to split the query file
-	- Set this value to however many cores/threads you want to use.
-	- Often it will match the `threads` for `mmseqs` and `max_concurrent_jobs` for `mafft`.
-    - default value: `1`
