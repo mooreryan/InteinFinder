@@ -733,9 +733,9 @@ end
 
 (** [write_pipeline_info t dir] writes the versions of all used programs and the
     pipeline config opts as understood by the pipeline to
-    [dir/2_pipeline_info.txt]. *)
+    [Out_file_name.pipeline_info dir]. *)
 let write_pipeline_info t dir =
-  let out_file = dir ^/ "2_pipeline_info.txt" in
+  let out_file = Out_file_name.pipeline_info dir in
   let versions = Version.program_version_info t in
   let config = Sexp.to_string_hum @@ sexp_of_t t in
   let working_dir = Sys_unix.getcwd () in
@@ -754,5 +754,5 @@ let write_pipeline_info t dir =
          %{config}\n"]
 
 let write_config_file ~config_file ~dir =
-  let out_file = dir ^/ "1_config.toml" in
+  let out_file = Out_file_name.config_file dir in
   Sh.eval @@ Sh.run "cp" [config_file; out_file]

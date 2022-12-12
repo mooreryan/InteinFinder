@@ -1,9 +1,11 @@
 open! Core
 
-(* Write query_intein_hit_info_file_name, 2_intein_hit_info.tsv *)
+(* Write query_intein_hit_info_file_name, intein_hit_info *)
 let write_query_intein_hit_info_file ~query_region_hits ~renamed_queries
     ~result_dir =
-  let query_intein_hit_info_file_name = result_dir ^/ "2_intein_hit_info.tsv" in
+  let query_intein_hit_info_file_name =
+    Out_file_name.intein_hit_info result_dir
+  in
   Out_channel.with_file query_intein_hit_info_file_name ~f:(fun oc ->
       let header' =
         [ "query"

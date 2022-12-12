@@ -276,7 +276,7 @@ module Intein_hits = struct
         Out_file_name.trimmed_inteins results_dir
       in
       let query_intein_hit_checks_file_name =
-        results_dir ^/ "3_intein_hit_checks.tsv"
+        Out_file_name.intein_hit_checks results_dir
       in
       let f () =
         let write_header writer =
@@ -354,7 +354,7 @@ let create ~btabs ~renamed_queries ~results_dir ~mmseqs_search_out =
     Logs.info (fun m -> m "Getting query regions") ;
     Hit_regions.of_btabs btabs
   in
-  let out_file = results_dir ^/ "1_putative_intein_regions.tsv" in
+  let out_file = Out_file_name.putative_intein_regions results_dir in
   let () =
     Logs.info (fun m -> m "Writing putative intein regions") ;
     Hit_regions.write_hit_regions_file
