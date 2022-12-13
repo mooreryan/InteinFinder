@@ -194,3 +194,20 @@ Show search results.  They should be renamed.
   z2_little_piece_of___inbase___seq_524            1           1.           inbase___seq_524     254.       inbase___seq_524     120          inbase___seq_524  0.22556390977443608   inbase___seq_524
   z3_start_of___kelley_2016___seq_9                4           1.           kelley_2016___seq_9  292.       kelley_2016___seq_9  141          inbase___seq_236  0.43788819875776397   inbase___seq_236
   z4_start_of___kelley_2016___seq_9___maybe_start  4           1.           kelley_2016___seq_9  291.       kelley_2016___seq_9  140          inbase___seq_236  0.43478260869565216   inbase___seq_236
+
+Show a few of the hits with regions
+
+  $ head -n6 if_out/search/intein_db/2_intein_db_search_with_regions.tsv | column -t -s "$(printf '\t')" 
+  query                                            region  region_start  region_end  target               pident  alnlen  mismatch  gapopen  qstart  qend  tstart  tend  evalue    bits  qlen  tlen
+  z3_start_of___kelley_2016___seq_9                1       1             133         kelley_2016___seq_9  1.      133     0         0        1       133   1       133   2.23e-95  292.  133   331
+  z3_start_of___kelley_2016___seq_9                1       1             133         inbase___seq_236     0.411   141     75        3        1       133   1       141   5.71e-33  113.  133   322
+  z3_start_of___kelley_2016___seq_9                1       1             133         kelley_2016___seq_1  0.469   132     64        4        1       129   1       129   2.02e-32  111.  133   331
+  z3_start_of___kelley_2016___seq_9                1       1             133         green_2018___seq_11  0.411   17      10        0        19      35    20      36    0.000251  29.   133   153
+  z4_start_of___kelley_2016___seq_9___maybe_start  1       2             133         kelley_2016___seq_9  1.      132     0         0        2       133   2       133   5.76e-95  291.  133   331
+
+The data should match what's in the search
+
+  $ grep -v query if_out/search/intein_db/2_intein_db_search_with_regions.tsv | cut -f1,5- | sort > a
+  $ sort if_out/search/intein_db/1_intein_db_search_out.tsv > b
+  $ diff a b
+  $ rm a b
