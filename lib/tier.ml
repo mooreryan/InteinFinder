@@ -118,6 +118,26 @@ module Map = struct
     { passes= String.Set.of_list @@ t1_keys t
     ; maybies= String.Set.of_list @@ non_t1_keys t }
 
+  let of_passes_maybies_c : passes_maybies_c -> t =
+    let add_to_tier_map tier_map aa ~tier =
+      Core.Map.add_exn tier_map ~key:(String.of_char aa) ~data:tier
+    in
+    fun {passes; maybies} ->
+      let t = String.Map.empty in
+      let t = Core.Set.fold passes ~init:t ~f:(add_to_tier_map ~tier:t1) in
+      let t = Core.Set.fold maybies ~init:t ~f:(add_to_tier_map ~tier:t2) in
+      t
+
+  let of_passes_maybies_s : passes_maybies_s -> t =
+    let add_to_tier_map tier_map aa ~tier =
+      Core.Map.add_exn tier_map ~key:aa ~data:tier
+    in
+    fun {passes; maybies} ->
+      let t = String.Map.empty in
+      let t = Core.Set.fold passes ~init:t ~f:(add_to_tier_map ~tier:t1) in
+      let t = Core.Set.fold maybies ~init:t ~f:(add_to_tier_map ~tier:t2) in
+      t
+
   module Test = struct
     let key = "yo"
 

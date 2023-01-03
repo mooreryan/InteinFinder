@@ -30,6 +30,7 @@ module Tier_or_fail : sig
   val to_string : t -> string
 end
 
+(** A map from Amino Acids (one or more) to Tiers. *)
 module Map : sig
   type tier := t
 
@@ -50,7 +51,11 @@ module Map : sig
 
   val to_passes_maybies_c : t -> passes_maybies_c
 
+  val of_passes_maybies_c : passes_maybies_c -> t
+
   type passes_maybies_s = {passes: String.Set.t; maybies: String.Set.t}
 
   val to_passes_maybies_s : t -> passes_maybies_s
+
+  val of_passes_maybies_s : passes_maybies_s -> t
 end
