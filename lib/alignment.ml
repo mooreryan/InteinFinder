@@ -885,10 +885,21 @@ module Checks = struct
       C.Query_aln_to_raw.Value.length ~start ~end_
     in
     let start_residue =
-      Start_residue_check.check
-        intein_start
-        ~passes:config.checks.start_residue.pass
-        ~maybies:config.checks.start_residue.maybe
+      let ({passes; maybies} : Tier.Map.passes_maybies_c) =
+        Tier.Map.to_passes_maybies_c config.checks.start_residue
+      in
+      (* Start_residue_check.check *)
+      (*   intein_start *)
+      (*   ~passes:config.checks.start_residue.pass *)
+      (*   ~maybies:config.checks.start_residue.maybe *)
+      (* --- *)
+      (* Uncomment this when you're ready to switch to tiers. *)
+      (* let ({passes; maybies} : Tier.Map.passes_maybies_c) = *)
+      (*   config.checks.start_residue |> Tier.Map.to_passes_maybies_c *)
+      (* in *)
+      (* let passes = Char.Set.empty in *)
+      (* let maybies = Char.Set.empty in *)
+      Start_residue_check.check intein_start ~passes ~maybies
     in
     let end_residues =
       End_residues_check.check
@@ -898,11 +909,16 @@ module Checks = struct
         ~maybies:config.checks.end_residues.maybe
     in
     let end_plus_one_residue =
+      let ({passes; maybies} : Tier.Map.passes_maybies_c) =
+        Tier.Map.to_passes_maybies_c config.checks.start_residue
+      in
       let check intein_end_plus_one =
         End_plus_one_residue_check.check
           intein_end_plus_one
-          ~passes:config.checks.end_plus_one_residue.pass
-          ~maybies:config.checks.end_plus_one_residue.maybe
+          (* ~passes:config.checks.end_plus_one_residue.pass *)
+          (* ~maybies:config.checks.end_plus_one_residue.maybe *)
+          ~passes
+          ~maybies
       in
       match intein_end_index_raw with
       | Some C.Query_aln_to_raw.Value.After ->
