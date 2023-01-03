@@ -18,9 +18,8 @@ let good_tier =
 
 let%test_unit "good tiers are okay" =
   let f s =
-    let i = Or_error.ok_exn @@ Tier.create s in
-    let tier = [%string "T%{i#Tier}"] in
-    assert (String.(s = tier))
+    let actual = Tier.to_string @@ Tier.create_exn s in
+    assert (String.(s = actual))
   in
   let examples = ["T1"; "T101"] in
   Quickcheck.test good_tier ~sexp_of:String.sexp_of_t ~f ~examples
