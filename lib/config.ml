@@ -274,15 +274,17 @@ module Checks = struct
       let find toml = find' toml ~default ~toml_path ~parse:end_residues_list
     end
 
-    type t = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
+    type t' = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
 
-    let find toml =
+    type t = Tier.Map.t [@@deriving sexp_of]
+
+    let find toml : t Or_error.t =
       let result =
         let%bind pass = Pass.find toml and maybe = Maybe.find toml in
         let%map pass, maybe =
           disjoint pass maybe ~sexp_of:String.Set.sexp_of_t
         in
-        {pass; maybe}
+        Tier.Map.of_passes_maybies_s {passes= pass; maybies= maybe}
       in
       config_error_tag result ~toml_path:["end_residues"]
   end
