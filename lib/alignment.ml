@@ -910,7 +910,7 @@ module Checks = struct
     in
     let end_plus_one_residue =
       let ({passes; maybies} : Tier.Map.passes_maybies_c) =
-        Tier.Map.to_passes_maybies_c config.checks.start_residue
+        Tier.Map.to_passes_maybies_c config.checks.end_plus_one_residue
       in
       let check intein_end_plus_one =
         End_plus_one_residue_check.check
