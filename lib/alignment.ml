@@ -902,11 +902,16 @@ module Checks = struct
       Start_residue_check.check intein_start ~passes ~maybies
     in
     let end_residues =
+      let ({passes; maybies} : Tier.Map.passes_maybies_s) =
+        Tier.Map.to_passes_maybies_s config.checks.end_residues
+      in
       End_residues_check.check
         ~penultimate:intein_penultimate
         ~end_:intein_end
-        ~passes:config.checks.end_residues.pass
-        ~maybies:config.checks.end_residues.maybe
+          (* ~passes:config.checks.end_residues.pass *)
+          (* ~maybies:config.checks.end_residues.maybe *)
+        ~passes
+        ~maybies
     in
     let end_plus_one_residue =
       let ({passes; maybies} : Tier.Map.passes_maybies_c) =
