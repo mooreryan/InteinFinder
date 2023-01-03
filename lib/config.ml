@@ -174,13 +174,15 @@ module Single_residue_check = struct
         find' toml ~default ~toml_path ~parse:char_list_of_string_list
     end
 
-    type t = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
+    type t' = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
 
-    let find toml =
+    type t = Tier.Map.t [@@deriving sexp_of]
+
+    let find toml : t Or_error.t =
       let result =
         let%bind pass = Pass.find toml and maybe = Maybe.find toml in
         let%map pass, maybe = disjoint pass maybe ~sexp_of:Char.Set.sexp_of_t in
-        {pass; maybe}
+        Tier.Map.of_passes_maybies_c {passes= pass; maybies= maybe}
       in
       config_error_tag result ~toml_path:[M.top]
   end
