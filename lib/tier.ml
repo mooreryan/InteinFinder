@@ -31,6 +31,8 @@ let t1 = create_exn "T1"
 
 let t2 = create_exn "T2"
 
+let is_t1 t = t = 1
+
 let to_int t = t
 
 let to_string t = [%string "T%{t#Int}"]

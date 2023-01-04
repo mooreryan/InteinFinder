@@ -14,6 +14,8 @@ val t1 : t
 
 val t2 : t
 
+val is_t1 : t -> bool
+
 module Valid_list : sig
   type tier := t
 

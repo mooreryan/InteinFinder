@@ -719,7 +719,7 @@ module Checks = struct
           Fail
   end
 
-  module Start_residue_check = struct
+  module Start_residue_check_non_tier = struct
     [@@@coverage off]
 
     (* Used for start and extein. *)
@@ -728,10 +728,6 @@ module Checks = struct
 
     [@@@coverage on]
 
-    let strict_pass t = is_pass t
-
-    let pass t = is_pass t || is_maybe t
-
     let to_string = function
       | Pass v ->
           [%string "Pass (%{v#Char})"]
@@ -739,21 +735,49 @@ module Checks = struct
           [%string "Maybe (%{v#Char})"]
       | Fail v ->
           [%string "Fail (%{v#Char})"]
+  end
 
-    let check' : char -> passes:Char.Set.t -> maybies:Char.Set.t -> t =
-     fun c ~passes ~maybies ->
-      assert (not (Set.mem passes c && Set.mem maybies c)) ;
-      if Set.mem passes c then Pass c
-      else if Set.mem maybies c then Maybe c
-      else Fail c
+  (* TODO: add to hacking...should have t, should have check, should have pass,
+     to_string, etc etc. *)
+  module Start_residue_check = struct
+    type t = Pass of (Tier.t * char) | Fail of char
+    [@@deriving sexp_of, variants]
 
-    let check : El.t option -> passes:Char.Set.t -> maybies:Char.Set.t -> t =
-     fun el ~passes ~maybies ->
+    let pass t = is_pass t
+
+    let strict_pass = function Pass (tier, _) -> Tier.is_t1 tier | _ -> false
+
+    let to_string___switch_to_this_one_when_ready = function
+      | Pass (tier, residue) ->
+          [%string "Pass (%{tier#Tier} %{residue#Char})"]
+      | Fail v ->
+          [%string "Fail (%{v#Char})"]
+      [@@warning "-32"]
+
+    let of_tier_or_fail : char -> Tier.Tier_or_fail.t -> t =
+     fun c tof -> match tof with Tier t -> Pass (t, c) | Fail -> Fail c
+
+    let check' c tier_map =
+      of_tier_or_fail c @@ Tier.Map.find tier_map @@ String.of_char c
+
+    let check : El.t option -> tier_map:Tier.Map.t -> t =
+     fun el ~tier_map ->
       match el with
       | None | Some Gap ->
           Fail '-'
       | Some (Residue c) ->
-          check' c ~passes ~maybies
+          check' c tier_map
+
+    let to_start_residue_check_non_tier : t -> Start_residue_check_non_tier.t =
+      function
+      | Pass (tier, char) ->
+          if Tier.is_t1 tier then Pass char else Maybe char
+      | Fail char ->
+          Fail char
+
+    let to_string t =
+      to_start_residue_check_non_tier t
+      |> Start_residue_check_non_tier.to_string
   end
 
   module End_residues_check = struct
@@ -885,21 +909,9 @@ module Checks = struct
       C.Query_aln_to_raw.Value.length ~start ~end_
     in
     let start_residue =
-      let ({passes; maybies} : Tier.Map.passes_maybies_c) =
-        Tier.Map.to_passes_maybies_c config.checks.start_residue
-      in
-      (* Start_residue_check.check *)
-      (*   intein_start *)
-      (*   ~passes:config.checks.start_residue.pass *)
-      (*   ~maybies:config.checks.start_residue.maybe *)
-      (* --- *)
-      (* Uncomment this when you're ready to switch to tiers. *)
-      (* let ({passes; maybies} : Tier.Map.passes_maybies_c) = *)
-      (*   config.checks.start_residue |> Tier.Map.to_passes_maybies_c *)
-      (* in *)
-      (* let passes = Char.Set.empty in *)
-      (* let maybies = Char.Set.empty in *)
-      Start_residue_check.check intein_start ~passes ~maybies
+      Start_residue_check.check
+        intein_start
+        ~tier_map:config.checks.start_residue
     in
     let end_residues =
       let ({passes; maybies} : Tier.Map.passes_maybies_s) =
