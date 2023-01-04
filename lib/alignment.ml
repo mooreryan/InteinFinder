@@ -781,36 +781,17 @@ module Checks = struct
           [%string "Fail (%{v})"]
   end
 
-  module End_plus_one_residue_check_non_tier = struct
+  module End_plus_one_residue_check = struct
     [@@@coverage off]
 
     (** [Na] will happen if the end of the intein is at the end of the query
         alignment (or beyond the end). It will be NA in these cases because
         there is no C-terminal extein sequence that we can find, so there is no
         way to tell its first residue. *)
-    type t = Pass of char | Maybe of char | Fail of char | Na
+    type t = Pass of (Tier.t * char) | Fail of char | Na
     [@@deriving sexp_of, variants]
 
     [@@@coverage on]
-
-    let to_string = function
-      | Pass v ->
-          [%string "Pass (%{v#Char})"]
-      | Maybe v ->
-          [%string "Maybe (%{v#Char})"]
-      | Fail v ->
-          [%string "Fail (%{v#Char})"]
-      | Na ->
-          "NA"
-  end
-
-  module End_plus_one_residue_check = struct
-    (** [Na] will happen if the end of the intein is at the end of the query
-        alignment (or beyond the end). It will be NA in these cases because
-        there is no C-terminal extein sequence that we can find, so there is no
-        way to tell its first residue. *)
-    type t = Pass of (Tier.t * char) | Fail of char | Na
-    [@@deriving sexp_of, variants]
 
     (** Strict pass condition is [Pass] or [Na]. [Na] is no data so it should
         not trigger the fail condition. *)
@@ -841,27 +822,13 @@ module Checks = struct
       | Some (Residue c) ->
           check' c tier_map
 
-    let to_string___switch_to_this_one_when_ready = function
+    let to_string = function
       | Pass (tier, residue) ->
           [%string "Pass (%{tier#Tier} %{residue#Char})"]
       | Fail v ->
           [%string "Fail (%{v#Char})"]
       | Na ->
           "NA"
-      [@@warning "-32"]
-
-    let to_end_plus_one_residue_check_non_tier :
-        t -> End_plus_one_residue_check_non_tier.t = function
-      | Pass (tier, char) ->
-          if Tier.is_t1 tier then Pass char else Maybe char
-      | Fail char ->
-          Fail char
-      | Na ->
-          Na
-
-    let to_string t =
-      to_end_plus_one_residue_check_non_tier t
-      |> End_plus_one_residue_check_non_tier.to_string
   end
 
   [@@@coverage off]
