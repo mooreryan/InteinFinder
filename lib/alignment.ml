@@ -750,23 +750,6 @@ module Checks = struct
           [%string "Fail (%{v#Char})"]
   end
 
-  module End_residues_check_non_tier = struct
-    [@@@coverage off]
-
-    type t = Pass of string | Maybe of string | Fail of string
-    [@@deriving sexp_of, variants]
-
-    [@@@coverage on]
-
-    let to_string = function
-      | Pass v ->
-          [%string "Pass (%{v})"]
-      | Maybe v ->
-          [%string "Maybe (%{v})"]
-      | Fail v ->
-          [%string "Fail (%{v})"]
-  end
-
   module End_residues_check = struct
     [@@@coverage off]
 
@@ -778,13 +761,6 @@ module Checks = struct
     let pass t = is_pass t
 
     let strict_pass = function Pass (tier, _) -> Tier.is_t1 tier | _ -> false
-
-    let to_string___switch_to_this_one_when_ready = function
-      | Pass (tier, residues) ->
-          [%string "Pass (%{tier#Tier} %{residues})"]
-      | Fail v ->
-          [%string "Fail (%{v})"]
-      [@@warning "-32"]
 
     let of_tier_or_fail : string -> Tier.Tier_or_fail.t -> t =
      fun s tof -> match tof with Tier t -> Pass (t, s) | Fail -> Fail s
@@ -798,15 +774,11 @@ module Checks = struct
       let el = El.concat_none_is_gap penultimate end_ in
       check' el tier_map
 
-    let to_end_residues_check_non_tier : t -> End_residues_check_non_tier.t =
-      function
-      | Pass (tier, v) ->
-          if Tier.is_t1 tier then Pass v else Maybe v
+    let to_string = function
+      | Pass (tier, residues) ->
+          [%string "Pass (%{tier#Tier} %{residues})"]
       | Fail v ->
-          Fail v
-
-    let to_string t =
-      to_end_residues_check_non_tier t |> End_residues_check_non_tier.to_string
+          [%string "Fail (%{v})"]
   end
 
   module End_plus_one_residue_check_non_tier = struct
