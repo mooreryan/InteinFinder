@@ -719,24 +719,6 @@ module Checks = struct
           Fail
   end
 
-  module Start_residue_check_non_tier = struct
-    [@@@coverage off]
-
-    (* Used for start and extein. *)
-    type t = Pass of char | Maybe of char | Fail of char
-    [@@deriving sexp_of, variants]
-
-    [@@@coverage on]
-
-    let to_string = function
-      | Pass v ->
-          [%string "Pass (%{v#Char})"]
-      | Maybe v ->
-          [%string "Maybe (%{v#Char})"]
-      | Fail v ->
-          [%string "Fail (%{v#Char})"]
-  end
-
   (* TODO: add to hacking...should have t, should have check, should have pass,
      to_string, etc etc. *)
   module Start_residue_check = struct
@@ -746,13 +728,6 @@ module Checks = struct
     let pass t = is_pass t
 
     let strict_pass = function Pass (tier, _) -> Tier.is_t1 tier | _ -> false
-
-    let to_string___switch_to_this_one_when_ready = function
-      | Pass (tier, residue) ->
-          [%string "Pass (%{tier#Tier} %{residue#Char})"]
-      | Fail v ->
-          [%string "Fail (%{v#Char})"]
-      [@@warning "-32"]
 
     let of_tier_or_fail : char -> Tier.Tier_or_fail.t -> t =
      fun c tof -> match tof with Tier t -> Pass (t, c) | Fail -> Fail c
@@ -768,16 +743,11 @@ module Checks = struct
       | Some (Residue c) ->
           check' c tier_map
 
-    let to_start_residue_check_non_tier : t -> Start_residue_check_non_tier.t =
-      function
-      | Pass (tier, char) ->
-          if Tier.is_t1 tier then Pass char else Maybe char
-      | Fail char ->
-          Fail char
-
-    let to_string t =
-      to_start_residue_check_non_tier t
-      |> Start_residue_check_non_tier.to_string
+    let to_string = function
+      | Pass (tier, residue) ->
+          [%string "Pass (%{tier#Tier} %{residue#Char})"]
+      | Fail v ->
+          [%string "Fail (%{v#Char})"]
   end
 
   module End_residues_check_non_tier = struct
