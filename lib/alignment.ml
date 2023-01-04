@@ -780,17 +780,13 @@ module Checks = struct
       |> Start_residue_check_non_tier.to_string
   end
 
-  module End_residues_check = struct
+  module End_residues_check_non_tier = struct
     [@@@coverage off]
 
     type t = Pass of string | Maybe of string | Fail of string
     [@@deriving sexp_of, variants]
 
     [@@@coverage on]
-
-    let strict_pass t = is_pass t
-
-    let pass t = is_pass t || is_maybe t
 
     let to_string = function
       | Pass v ->
@@ -799,25 +795,51 @@ module Checks = struct
           [%string "Maybe (%{v})"]
       | Fail v ->
           [%string "Fail (%{v})"]
-
-    let check' : string -> passes:String.Set.t -> maybies:String.Set.t -> t =
-     fun s ~passes ~maybies ->
-      assert (not (Set.mem passes s && Set.mem maybies s)) ;
-      if Set.mem passes s then Pass s
-      else if Set.mem maybies s then Maybe s
-      else Fail s
-
-    let check :
-           penultimate:El.t option
-        -> end_:El.t option
-        -> passes:String.Set.t
-        -> maybies:String.Set.t
-        -> t =
-     fun ~penultimate ~end_ ~passes ~maybies ->
-      check' ~passes ~maybies @@ El.concat_none_is_gap penultimate end_
   end
 
-  module End_plus_one_residue_check = struct
+  module End_residues_check = struct
+    [@@@coverage off]
+
+    type t = Pass of (Tier.t * string) | Fail of string
+    [@@deriving sexp_of, variants]
+
+    [@@@coverage on]
+
+    let pass t = is_pass t
+
+    let strict_pass = function Pass (tier, _) -> Tier.is_t1 tier | _ -> false
+
+    let to_string___switch_to_this_one_when_ready = function
+      | Pass (tier, residues) ->
+          [%string "Pass (%{tier#Tier} %{residues})"]
+      | Fail v ->
+          [%string "Fail (%{v})"]
+      [@@warning "-32"]
+
+    let of_tier_or_fail : string -> Tier.Tier_or_fail.t -> t =
+     fun s tof -> match tof with Tier t -> Pass (t, s) | Fail -> Fail s
+
+    let check' s tier_map = of_tier_or_fail s @@ Tier.Map.find tier_map s
+
+    let check :
+        penultimate:El.t option -> end_:El.t option -> tier_map:Tier.Map.t -> t
+        =
+     fun ~penultimate ~end_ ~tier_map ->
+      let el = El.concat_none_is_gap penultimate end_ in
+      check' el tier_map
+
+    let to_end_residues_check_non_tier : t -> End_residues_check_non_tier.t =
+      function
+      | Pass (tier, v) ->
+          if Tier.is_t1 tier then Pass v else Maybe v
+      | Fail v ->
+          Fail v
+
+    let to_string t =
+      to_end_residues_check_non_tier t |> End_residues_check_non_tier.to_string
+  end
+
+  module End_plus_one_residue_check_non_tier = struct
     [@@@coverage off]
 
     (** [Na] will happen if the end of the intein is at the end of the query
@@ -829,12 +851,6 @@ module Checks = struct
 
     [@@@coverage on]
 
-    (** Strict pass condition is [Pass] or [Na]. [Na] is no data so it should
-        not trigger the fail condition. *)
-    let strict_pass = function Pass _ | Na -> true | Maybe _ | Fail _ -> false
-
-    let pass = function Pass _ | Maybe _ | Na -> true | Fail _ -> false
-
     let to_string = function
       | Pass v ->
           [%string "Pass (%{v#Char})"]
@@ -844,21 +860,66 @@ module Checks = struct
           [%string "Fail (%{v#Char})"]
       | Na ->
           "NA"
+  end
 
-    let check' : char -> passes:Char.Set.t -> maybies:Char.Set.t -> t =
-     fun c ~passes ~maybies ->
-      assert (not (Set.mem passes c && Set.mem maybies c)) ;
-      if Set.mem passes c then Pass c
-      else if Set.mem maybies c then Maybe c
-      else Fail c
+  module End_plus_one_residue_check = struct
+    (** [Na] will happen if the end of the intein is at the end of the query
+        alignment (or beyond the end). It will be NA in these cases because
+        there is no C-terminal extein sequence that we can find, so there is no
+        way to tell its first residue. *)
+    type t = Pass of (Tier.t * char) | Fail of char | Na
+    [@@deriving sexp_of, variants]
 
-    let check : El.t option -> passes:Char.Set.t -> maybies:Char.Set.t -> t =
-     fun el ~passes ~maybies ->
+    (** Strict pass condition is [Pass] or [Na]. [Na] is no data so it should
+        not trigger the fail condition. *)
+    let strict_pass = function
+      | Na ->
+          true
+      | Pass (tier, _) ->
+          Tier.is_t1 tier
+      | _ ->
+          false
+
+    let pass = function Pass _ | Na -> true | Fail _ -> false
+
+    let of_tier_or_fail : char -> Tier.Tier_or_fail.t -> t =
+     fun c tof -> match tof with Tier t -> Pass (t, c) | Fail -> Fail c
+
+    (* TODO: there is logic below to handle the NA condition...should it be
+       moved here? *)
+
+    let check' c tier_map =
+      of_tier_or_fail c @@ Tier.Map.find tier_map @@ String.of_char c
+
+    let check : El.t option -> tier_map:Tier.Map.t -> t =
+     fun el ~tier_map ->
       match el with
       | None | Some Gap ->
           Fail '-'
       | Some (Residue c) ->
-          check' c ~passes ~maybies
+          check' c tier_map
+
+    let to_string___switch_to_this_one_when_ready = function
+      | Pass (tier, residue) ->
+          [%string "Pass (%{tier#Tier} %{residue#Char})"]
+      | Fail v ->
+          [%string "Fail (%{v#Char})"]
+      | Na ->
+          "NA"
+      [@@warning "-32"]
+
+    let to_end_plus_one_residue_check_non_tier :
+        t -> End_plus_one_residue_check_non_tier.t = function
+      | Pass (tier, char) ->
+          if Tier.is_t1 tier then Pass char else Maybe char
+      | Fail char ->
+          Fail char
+      | Na ->
+          Na
+
+    let to_string t =
+      to_end_plus_one_residue_check_non_tier t
+      |> End_plus_one_residue_check_non_tier.to_string
   end
 
   [@@@coverage off]
@@ -914,28 +975,16 @@ module Checks = struct
         ~tier_map:config.checks.start_residue
     in
     let end_residues =
-      let ({passes; maybies} : Tier.Map.passes_maybies_s) =
-        Tier.Map.to_passes_maybies_s config.checks.end_residues
-      in
       End_residues_check.check
         ~penultimate:intein_penultimate
         ~end_:intein_end
-          (* ~passes:config.checks.end_residues.pass *)
-          (* ~maybies:config.checks.end_residues.maybe *)
-        ~passes
-        ~maybies
+        ~tier_map:config.checks.end_residues
     in
     let end_plus_one_residue =
-      let ({passes; maybies} : Tier.Map.passes_maybies_c) =
-        Tier.Map.to_passes_maybies_c config.checks.end_plus_one_residue
-      in
       let check intein_end_plus_one =
         End_plus_one_residue_check.check
           intein_end_plus_one
-          (* ~passes:config.checks.end_plus_one_residue.pass *)
-          (* ~maybies:config.checks.end_plus_one_residue.maybe *)
-          ~passes
-          ~maybies
+          ~tier_map:config.checks.end_plus_one_residue
       in
       match intein_end_index_raw with
       | Some C.Query_aln_to_raw.Value.After ->
