@@ -9,6 +9,8 @@ module type OPT = sig
   val find : Otoml.t -> t Or_error.t
 end
 
+let otoml_get_string_list = Otoml.get_array Otoml.get_string
+
 let existing s =
   if Sys_unix.file_exists_exn s then Or_error.return s
   else Or_error.errorf "expected file '%s' to exist, but it does not" s
@@ -41,21 +43,17 @@ let config_error_tag oe ~toml_path =
 let otoml_find_oe toml accessor path =
   Or_error.try_with (fun () -> Otoml.find_exn toml accessor path)
 
-(* Find existing file, no default. *)
-let find_existing_file toml ~toml_path =
-  let%bind file_name = otoml_find_oe toml Otoml.get_string toml_path in
-  existing file_name |> config_error_tag ~toml_path
+let existing_file_term ~toml_path =
+  let open Tiny_toml in
+  Value.find toml_path @@ Converter.v Accessor.string existing
 
-let find_executable_file_with_default toml ~toml_path ~default =
-  (* This is the toml config path. *)
-  Otoml.find_or ~default toml Otoml.get_string toml_path
-  |> executable
-  |> config_error_tag ~toml_path
+let non_existing_file_term ~toml_path =
+  let open Tiny_toml in
+  Value.find toml_path @@ Converter.v Accessor.string non_existing
 
-let find_int_with_default_and_parse toml ~toml_path ~default ~parse =
-  Otoml.find_or ~default toml Otoml.get_integer toml_path
-  |> parse
-  |> config_error_tag ~toml_path
+let executable_term ~default toml_path =
+  let open Tiny_toml in
+  Value.find_or ~default toml_path @@ Converter.v Accessor.string executable
 
 let disjoint s1 s2 ~sexp_of =
   let intersection = Set.inter s1 s2 in
@@ -77,18 +75,11 @@ module Make_evalue (M : PATH) = struct
 
   [@@@coverage on]
 
-  let toml_path = M.path "evalue"
+  let term =
+    let open Tiny_toml in
+    Value.find_or ~default:1e-3 (M.path "evalue") Converter.Float.non_negative
 
-  let default = 1e-3
-
-  let parse n =
-    if Float.(n >= 0.0) then Or_error.return n
-    else Or_error.errorf "expected E-value >= 0.0, but got %f" n
-
-  let find toml : t Or_error.t =
-    Otoml.find_or ~default toml Otoml.get_float toml_path
-    |> parse
-    |> config_error_tag ~toml_path
+  let find toml : t Or_error.t = Tiny_toml.Term.eval term ~config:toml
 end
 
 (* module Start_residue' = struct *)
@@ -158,7 +149,7 @@ module Single_residue_check = struct
        (Failure "Char.of_string: \"Okay\"")))) |}]
 
   let find' toml ~default ~toml_path ~parse =
-    Otoml.find_or ~default toml (Otoml.get_array Otoml.get_string) toml_path
+    Otoml.find_or ~default toml otoml_get_string_list toml_path
     |> parse
     |> Or_error.map ~f:(List.map ~f:Char.uppercase)
     |> Or_error.map ~f:Char.Set.of_list
@@ -178,8 +169,17 @@ module Single_residue_check = struct
 
       let default = M.pass_default
 
-      let find toml =
-        find' toml ~default ~toml_path ~parse:non_empty_char_list_of_string_list
+      let parser result =
+        result
+        |> non_empty_char_list_of_string_list
+        |> Or_error.map ~f:(List.map ~f:Char.uppercase)
+        |> Or_error.map ~f:Char.Set.of_list
+
+      let converter = Tiny_toml.Converter.v otoml_get_string_list parser
+
+      let term = Tiny_toml.Value.find_or ~default toml_path converter
+
+      let find config = Tiny_toml.Term.eval term ~config
     end
 
     module Maybe : OPT with type t = Char.Set.t = struct
@@ -193,8 +193,17 @@ module Single_residue_check = struct
 
       let default = M.maybe_default
 
-      let find toml =
-        find' toml ~default ~toml_path ~parse:char_list_of_string_list
+      let parser result =
+        result
+        |> char_list_of_string_list
+        |> Or_error.map ~f:(List.map ~f:Char.uppercase)
+        |> Or_error.map ~f:Char.Set.of_list
+
+      let converter = Tiny_toml.Converter.v otoml_get_string_list parser
+
+      let term = Tiny_toml.Value.find_or ~default toml_path converter
+
+      let find config = Tiny_toml.Term.eval term ~config
     end
 
     type t' = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
@@ -244,12 +253,11 @@ module Checks = struct
       | l ->
           end_residues_list l
 
-    let find' toml ~default ~toml_path ~parse =
-      Otoml.find_or ~default toml (Otoml.get_array Otoml.get_string) toml_path
-      |> parse
+    let parser f result =
+      result
+      |> f
       |> Or_error.map ~f:(List.map ~f:String.uppercase)
       |> Or_error.map ~f:String.Set.of_list
-      |> config_error_tag ~toml_path
 
     let path s = ["end_residues"; s]
 
@@ -264,8 +272,13 @@ module Checks = struct
 
       let default = ["HN"; "SN"; "GN"; "GQ"; "LD"; "FN"]
 
-      let find toml =
-        find' toml ~default ~toml_path ~parse:non_empty_end_residues_list
+      let term =
+        let open Tiny_toml in
+        Value.find_or ~default toml_path
+        @@ Converter.v otoml_get_string_list
+        @@ parser non_empty_end_residues_list
+
+      let find config = Tiny_toml.Term.eval term ~config
     end
 
     module Maybe : OPT with type t = String.Set.t = struct
@@ -296,7 +309,13 @@ module Checks = struct
         ; "CN"
         ; "LH" ]
 
-      let find toml = find' toml ~default ~toml_path ~parse:end_residues_list
+      let term =
+        let open Tiny_toml in
+        Value.find_or ~default toml_path
+        @@ Converter.v otoml_get_string_list
+        @@ parser end_residues_list
+
+      let find config = Tiny_toml.Term.eval term ~config
     end
 
     type t' = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
@@ -337,11 +356,10 @@ module Makeprofiledb = struct
 
     [@@@coverage on]
 
-    let toml_path = path "exe"
-
-    let default = "makeprofiledb"
-
-    let find toml = find_executable_file_with_default toml ~toml_path ~default
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ executable_term ~default:"makeprofiledb"
+      @@ path "exe"
   end
 
   type t = {exe: Exe.t} [@@deriving sexp_of]
@@ -361,11 +379,10 @@ module Rpsblast = struct
 
     [@@@coverage on]
 
-    let toml_path = path "exe"
-
-    let default = "rpsblast+"
-
-    let find toml = find_executable_file_with_default toml ~toml_path ~default
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ executable_term ~default:"rpsblast+"
+      @@ path "exe"
   end
 
   module Evalue = Make_evalue (struct
@@ -389,11 +406,10 @@ module Mafft = struct
 
     [@@@coverage on]
 
-    let toml_path = path "exe"
-
-    let default = "mafft"
-
-    let find toml = find_executable_file_with_default toml ~toml_path ~default
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ executable_term ~default:"mafft"
+      @@ path "exe"
   end
 
   type t = {exe: Exe.t} [@@deriving sexp_of]
@@ -413,11 +429,10 @@ module Mmseqs = struct
 
     [@@@coverage on]
 
-    let toml_path = path "exe"
-
-    let default = "mmseqs"
-
-    let find toml = find_executable_file_with_default toml ~toml_path ~default
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ executable_term ~default:"mmseqs"
+      @@ path "exe"
   end
 
   module Evalue = Make_evalue (struct
@@ -431,16 +446,11 @@ module Mmseqs = struct
 
     [@@@coverage on]
 
-    let toml_path = path "num_iterations"
-
-    let default = 2
-
-    let parse n =
-      if n >= 1 then Or_error.return n
-      else Or_error.errorf "num_iterations >= 1, but got %d" n
-
-    let find toml =
-      find_int_with_default_and_parse toml ~toml_path ~default ~parse
+    let find config =
+      let open Tiny_toml in
+      Term.eval ~config
+      @@ Value.find_or ~default:2 (path "num_iterations")
+      @@ Converter.Int.positive
   end
 
   module Sensitivity = struct
@@ -450,18 +460,15 @@ module Mmseqs = struct
 
     [@@@coverage on]
 
-    let toml_path = path "sensitivity"
-
-    let default = 5.7
-
-    let parse n =
+    let parser n =
       if Float.(n >= 1.0 && n <= 7.5) then Or_error.return n
       else Or_error.errorf "expected 1.0 <= sensitivity <= 7.5, but got %f" n
 
-    let find toml : t Or_error.t =
-      Otoml.find_or ~default toml Otoml.get_float toml_path
-      |> parse
-      |> config_error_tag ~toml_path
+    let find config =
+      let open Tiny_toml in
+      Term.eval ~config
+      @@ Value.find_or ~default:5.7 (path "sensitivity")
+      @@ Converter.v Accessor.float parser
   end
 
   type t =
@@ -488,7 +495,7 @@ module Inteins_file = struct
 
   let toml_path = ["inteins"]
 
-  let find toml = find_existing_file toml ~toml_path
+  let find config = Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path
 end
 
 module Queries_file = struct
@@ -500,7 +507,7 @@ module Queries_file = struct
 
   let toml_path = ["queries"]
 
-  let find toml = find_existing_file toml ~toml_path
+  let find config = Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path
 end
 
 module Smp_dir = struct
@@ -512,7 +519,7 @@ module Smp_dir = struct
 
   let toml_path = ["smp_dir"]
 
-  let find toml : t Or_error.t = find_existing_file toml ~toml_path
+  let find config = Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path
 end
 
 module Out_dir = struct
@@ -526,10 +533,8 @@ module Out_dir = struct
 
   let default = "intein_finder_out"
 
-  let find toml =
-    Otoml.find_or ~default toml Otoml.get_string toml_path
-    |> non_existing
-    |> config_error_tag ~toml_path
+  let find config =
+    Tiny_toml.Term.eval ~config @@ non_existing_file_term ~toml_path
 end
 
 module Log_level = struct
@@ -562,10 +567,11 @@ module Log_level = struct
           s
 
   (* Note: will alwas return Ok *)
-  let find toml =
-    Otoml.find_or ~default toml Otoml.get_string toml_path
-    |> parse
-    |> config_error_tag ~toml_path
+  let find config =
+    let open Tiny_toml in
+    Term.eval ~config
+    @@ Value.find_or ~default toml_path
+    @@ Converter.v Accessor.string parse
 end
 
 module Clip_region_padding = struct
@@ -575,16 +581,11 @@ module Clip_region_padding = struct
 
   [@@@coverage on]
 
-  let toml_path = ["clip_region_padding"]
+  let term =
+    let open Tiny_toml in
+    Value.find_or ~default:10 ["clip_region_padding"] Converter.Int.non_negative
 
-  let default = 10
-
-  let parse n =
-    if n >= 0 then Or_error.return n
-    else Or_error.errorf "expected clip_region_padding >= 0, but got %d" n
-
-  let find toml =
-    find_int_with_default_and_parse toml ~toml_path ~default ~parse
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Min_query_length = struct
@@ -594,16 +595,11 @@ module Min_query_length = struct
 
   [@@@coverage on]
 
-  let toml_path = ["min_query_length"]
+  let term =
+    let open Tiny_toml in
+    Value.find_or ~default:100 ["min_query_length"] Converter.Int.non_negative
 
-  let default = 100
-
-  let parse n =
-    if n >= 0 then Or_error.return n
-    else Or_error.errorf "expected min_query_length >= 0, but got %d" n
-
-  let find toml =
-    find_int_with_default_and_parse toml ~toml_path ~default ~parse
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Min_region_length = struct
@@ -613,16 +609,11 @@ module Min_region_length = struct
 
   [@@@coverage on]
 
-  let toml_path = ["min_region_length"]
+  let term =
+    let open Tiny_toml in
+    Value.find_or ~default:100 ["min_region_length"] Converter.Int.non_negative
 
-  let default = 100
-
-  let parse n =
-    if n >= 0 then Or_error.return n
-    else Or_error.errorf "expected min_region_length >= 0, but got %d" n
-
-  let find toml =
-    find_int_with_default_and_parse toml ~toml_path ~default ~parse
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Remove_aln_files = struct
@@ -632,12 +623,11 @@ module Remove_aln_files = struct
 
   [@@@coverage on]
 
-  let toml_path = ["remove_aln_files"]
+  let term =
+    let open Tiny_toml in
+    Value.find_or ~default:true ["remove_aln_files"] Converter.bool
 
-  let default = true
-
-  let find toml =
-    Otoml.find_or ~default toml Otoml.get_boolean toml_path |> Or_error.return
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Threads = struct
@@ -647,16 +637,11 @@ module Threads = struct
 
   [@@@coverage on]
 
-  let toml_path = ["threads"]
+  let term =
+    let open Tiny_toml in
+    Value.find_or ~default:1 ["threads"] Converter.Int.positive
 
-  let default = 1
-
-  let parse n =
-    if n >= 1 then Or_error.return n
-    else Or_error.errorf "expected threads >= 1, but got %d" n
-
-  let find toml =
-    find_int_with_default_and_parse toml ~toml_path ~default ~parse
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 type t =

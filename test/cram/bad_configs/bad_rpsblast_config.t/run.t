@@ -13,4 +13,4 @@ Bad rpsblast config
   (("config error: rpsblast -> exe"
     "expected 'rpsblast_dfVRzbebY1aa6sl' to be executable, but it was not")
    ("config error: rpsblast -> evalue"
-    "expected E-value >= 0.0, but got -3.000000"))
+    "expected a float >= 0.0, but got -3.000000"))

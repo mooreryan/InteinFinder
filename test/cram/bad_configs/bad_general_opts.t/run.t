@@ -10,10 +10,7 @@ Bad general opts
   not
   generate
   config:
-  (("config error: clip_region_padding"
-    "expected clip_region_padding >= 0, but got -1")
-   ("config error: min_query_length"
-    "expected min_query_length >= 0, but got -1")
-   ("config error: min_region_length"
-    "expected min_region_length >= 0, but got -1")
-   ("config error: threads" "expected threads >= 1, but got 0"))
+  (("config error: clip_region_padding" "expected an int >= 0, but got -1")
+   ("config error: min_query_length" "expected an int >= 0, but got -1")
+   ("config error: min_region_length" "expected an int >= 0, but got -1")
+   ("config error: threads" "expected an int > 0, but got 0"))

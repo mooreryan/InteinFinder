@@ -17,6 +17,7 @@
   fmt.tty
   otoml
   re
-  shexp.process)
+  shexp.process
+  tiny_toml)
  (preprocess
   (pps ppx_getenv ppx_const ppx_jane)))

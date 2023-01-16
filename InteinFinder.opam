@@ -27,6 +27,7 @@ depends: [
   "re" {>= "1.10" & < "1.11"}
   "sexp" {with-test & >= "v0.15.0" & < "v0.16.0"}
   "shexp" {>= "v0.15.0" & < "v0.16.0"}
+  "tiny_toml" {>= "0.0.1"}
   "odoc" {with-doc}
 ]
 build: [

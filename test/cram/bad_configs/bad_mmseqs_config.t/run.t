@@ -13,7 +13,7 @@ Bad mmseqs config
   (("config error: mmseqs -> exe"
     "expected 'mmseqs_S8i3cWd93aGj31V' to be executable, but it was not")
    ("config error: mmseqs -> evalue"
-    "expected E-value >= 0.0, but got -32.800000")
-   ("config error: mmseqs -> num_iterations" "num_iterations >= 1, but got 0")
+    "expected a float >= 0.0, but got -32.800000")
+   ("config error: mmseqs -> num_iterations" "expected an int > 0, but got 0")
    ("config error: mmseqs -> sensitivity"
     "expected 1.0 <= sensitivity <= 7.5, but got 0.500000"))
