@@ -27,12 +27,18 @@ let assert_positive_or_zero t =
   else Or_error.return ()
 
 let%expect_test "assert_positive_or_zero" =
-  print_s @@ [%sexp_of: unit Or_error.t] @@ assert_positive_or_zero
+  print_s
+  @@ [%sexp_of: unit Or_error.t]
+  @@ assert_positive_or_zero
   @@ of_zero_indexed_int (-1) ;
   [%expect {| (Error "Expected index >= 0, but got -1") |}] ;
-  print_s @@ [%sexp_of: unit Or_error.t] @@ assert_positive_or_zero
+  print_s
+  @@ [%sexp_of: unit Or_error.t]
+  @@ assert_positive_or_zero
   @@ of_zero_indexed_int 0 ;
   [%expect {| (Ok ()) |}] ;
-  print_s @@ [%sexp_of: unit Or_error.t] @@ assert_positive_or_zero
+  print_s
+  @@ [%sexp_of: unit Or_error.t]
+  @@ assert_positive_or_zero
   @@ of_zero_indexed_int 1 ;
   [%expect {| (Ok ()) |}]

@@ -57,7 +57,8 @@ let to_string t =
     ~alnlen_target:(conv Fn.id)
     ~alnperc:conv_float_opt
     ~alnperc_target:conv_string_opt
-  |> List.rev |> String.concat ~sep:"\t"
+  |> List.rev
+  |> String.concat ~sep:"\t"
 
 let update_pident current ~pident ~target =
   if Float.(pident > current.pident) then
@@ -87,7 +88,8 @@ let update_alnperc current ~alnperc ~target =
 let incr_total_hits current = {current with total_hits= current.total_hits + 1}
 
 let update_best current ~pident ~bits ~alnlen ~alnperc ~target =
-  current |> incr_total_hits
+  current
+  |> incr_total_hits
   |> update_pident ~pident ~target
   |> update_bits ~bits ~target
   |> update_alnlen ~alnlen ~target

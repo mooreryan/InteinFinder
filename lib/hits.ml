@@ -82,7 +82,8 @@ module Hit_regions = struct
           List.map regions ~f:region_to_string |> String.concat ~sep:"\n"
         in
         regions :: acc )
-    |> List.rev |> String.concat ~sep:"\n"
+    |> List.rev
+    |> String.concat ~sep:"\n"
 
   let to_string_header () = Region.to_string_header ()
 
@@ -121,7 +122,8 @@ end
 module Intein_hits = struct
   let hd_exn l ~msg =
     Or_error.try_with (fun () -> List.hd_exn l)
-    |> Or_error.tag ~tag:msg |> Or_error.ok_exn
+    |> Or_error.tag ~tag:msg
+    |> Or_error.ok_exn
 
   (* Convenience module. We are treating each btab record as a "hit". *)
   module Hit = struct

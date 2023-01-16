@@ -23,7 +23,8 @@ let btab_data_with_tlen =
 let%expect_test _ =
   Utils.with_temp_file (fun btab ->
       Out_channel.write_all btab ~data:btab_data_with_tlen ;
-      print_s @@ [%sexp_of: Search_summary.t String.Map.t]
+      print_s
+      @@ [%sexp_of: Search_summary.t String.Map.t]
       @@ Search_summary.summarize btab ) ;
   [%expect
     {|
@@ -70,7 +71,8 @@ let btab_data_no_tlen =
 let%expect_test _ =
   Utils.with_temp_file (fun btab ->
       Out_channel.write_all btab ~data:btab_data_no_tlen ;
-      print_s @@ [%sexp_of: Search_summary.t String.Map.t]
+      print_s
+      @@ [%sexp_of: Search_summary.t String.Map.t]
       @@ Search_summary.summarize btab ) ;
   [%expect
     {|

@@ -126,8 +126,10 @@ let%expect_test "basic region detection" =
     let b = List.hd_exn permuted in
     String.(sprintf "%s-%d" a.query a.qstart <> sprintf "%s-%d" b.query b.qstart) ) ;
   List.fold permuted ~init:String.Map.empty ~f:Hit_regions.process_parsed_record
-  |> Hit_regions.sort_hits_by_query |> Hit_regions.regions_of_sorted_hits
-  |> [%sexp_of: Hit_regions.t] |> print_s ;
+  |> Hit_regions.sort_hits_by_query
+  |> Hit_regions.regions_of_sorted_hits
+  |> [%sexp_of: Hit_regions.t]
+  |> print_s ;
   [%expect
     {|
     ((A
@@ -149,8 +151,10 @@ let%expect_test "edges" =
     ; {default_record with query= "A"; qend= 1; qstart= 10} ]
   in
   List.fold rs ~init:String.Map.empty ~f:Hit_regions.process_parsed_record
-  |> Hit_regions.sort_hits_by_query |> Hit_regions.regions_of_sorted_hits
-  |> [%sexp_of: Hit_regions.t] |> print_s ;
+  |> Hit_regions.sort_hits_by_query
+  |> Hit_regions.regions_of_sorted_hits
+  |> [%sexp_of: Hit_regions.t]
+  |> print_s ;
   [%expect
     {| ((A (((start (One_raw 1)) (end_ (One_raw 10)) (index 0) (query A))))) |}]
 
@@ -161,8 +165,10 @@ let%expect_test "edges" =
     ; {default_record with query= "A"; qend= 10; qstart= 1} ]
   in
   List.fold rs ~init:String.Map.empty ~f:Hit_regions.process_parsed_record
-  |> Hit_regions.sort_hits_by_query |> Hit_regions.regions_of_sorted_hits
-  |> [%sexp_of: Hit_regions.t] |> print_s ;
+  |> Hit_regions.sort_hits_by_query
+  |> Hit_regions.regions_of_sorted_hits
+  |> [%sexp_of: Hit_regions.t]
+  |> print_s ;
   [%expect
     {| ((A (((start (One_raw 1)) (end_ (One_raw 10)) (index 0) (query A))))) |}]
 
@@ -171,14 +177,17 @@ let%expect_test "regions canonicalize themselves upon creation" =
   [%expect {| ((start (One_raw 1)) (end_ (One_raw 10)) (index 0) (query "")) |}]
 
 let%expect_test "regions are strictly positive" =
-  print_s @@ [%sexp_of: Region.t Or_error.t]
+  print_s
+  @@ [%sexp_of: Region.t Or_error.t]
   @@ Or_error.try_with (fun () -> region_v ~start:(-1) ~end_:10 ~query:"" ()) ;
   [%expect {| (Error "Coord.one_raw_exn failed (-1)") |}] ;
-  print_s @@ [%sexp_of: Region.t Or_error.t]
+  print_s
+  @@ [%sexp_of: Region.t Or_error.t]
   @@ Or_error.try_with (fun () -> region_v ~start:1 ~end_:(-1) ~query:"" ()) ;
   [%expect {|
     (Error "Coord.one_raw_exn failed (-1)") |}] ;
-  print_s @@ [%sexp_of: Region.t Or_error.t]
+  print_s
+  @@ [%sexp_of: Region.t Or_error.t]
   @@ Or_error.try_with (fun () -> region_v ~start:(-1) ~end_:(-1) ~query:"" ()) ;
   [%expect {| (Error "Coord.one_raw_exn failed (-1)") |}]
 

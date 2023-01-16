@@ -16,7 +16,10 @@ let old_name r = Bio_io.Fasta.Record.id r
 let write_renamed oc orig new_name =
   let module R = Bio_io.Fasta.Record in
   let uppercase_seq = String.uppercase @@ R.seq orig in
-  orig |> R.with_seq uppercase_seq |> R.with_id new_name |> R.with_desc None
+  orig
+  |> R.with_seq uppercase_seq
+  |> R.with_id new_name
+  |> R.with_desc None
   |> R.to_string_nl
   |> Out_channel.output_string oc
 

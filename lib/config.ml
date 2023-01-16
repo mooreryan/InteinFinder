@@ -63,7 +63,8 @@ let disjoint s1 s2 ~sexp_of =
   else
     Or_error.errorf
       "expected nothing shared between pass and maybe, but found %s shared"
-    @@ Sexp.to_string_mach @@ sexp_of intersection
+    @@ Sexp.to_string_mach
+    @@ sexp_of intersection
 
 module type PATH = sig
   val path : string -> string list
@@ -89,6 +90,26 @@ module Make_evalue (M : PATH) = struct
     |> parse
     |> config_error_tag ~toml_path
 end
+
+(* module Start_residue' = struct *)
+(*   type t = Tier.Map.t [@@deriving sexp_of] *)
+
+(*   let default = *)
+(*     let make_default tier residues = *)
+(*       let tier = Otoml.string @@ Tier.to_string tier in *)
+(*       List.map residues ~f:(fun r -> (r, tier)) *)
+(*     in *)
+(*     let t1_default = make_default Tier.t1 ["C"; "S"; "A"; "Q"; "P"; "T"] in *)
+(*     let t2_default = make_default Tier.t2 ["V"; "G"; "L"; "M"; "N"; "F"] in *)
+(*     t1_default @ t2_default *)
+
+(* let toml_path = ["start_residue"] *)
+
+(*   let find : Otoml.t -> t Or_error.t = *)
+(*    fun toml -> *)
+(*     Tier.Map.of_toml toml ~path:toml_path ~default *)
+(*     |> config_error_tag ~toml_path *)
+(* end *)
 
 module Single_residue_check = struct
   module type MAKE = sig
@@ -118,13 +139,15 @@ module Single_residue_check = struct
     (* Works *)
     let toml = Otoml.Parser.from_string {|apple = ["a", "b"]|} in
     Otoml.find toml (Otoml.get_array Otoml.get_string) ["apple"]
-    |> non_empty_char_list_of_string_list |> [%sexp_of: char list Or_error.t]
+    |> non_empty_char_list_of_string_list
+    |> [%sexp_of: char list Or_error.t]
     |> print_s ;
     [%expect {| (Ok (a b)) |}] ;
     (* Fails *)
     let toml = Otoml.Parser.from_string {|apple = ["yeah", "b", "Okay"]|} in
     Otoml.find toml (Otoml.get_array Otoml.get_string) ["apple"]
-    |> non_empty_char_list_of_string_list |> [%sexp_of: char list Or_error.t]
+    |> non_empty_char_list_of_string_list
+    |> [%sexp_of: char list Or_error.t]
     |> print_s ;
     [%expect
       {|
@@ -196,6 +219,8 @@ module Checks = struct
 
     let maybe_default = ["V"; "G"; "L"; "M"; "N"; "F"]
   end)
+  (* Uncomment this when you're ready to switch to tiers. *)
+  (* module Start_residue = Start_residue' *)
 
   module End_plus_one_residue = Single_residue_check.Make (struct
     let top = "end_plus_one_residue"
@@ -760,3 +785,35 @@ let write_pipeline_info t dir =
 let write_config_file ~config_file ~dir =
   let out_file = Out_file_name.config_file dir in
   Sh.eval @@ Sh.run "cp" [config_file; out_file]
+
+module X = struct
+  let s = {|
+[magic]
+T1 = ["S", "T", "C"]
+T2 = ["X"]
+|}
+
+  let f s = Otoml.Parser.from_string_result s
+
+  let%expect_test _ =
+    let toml = f s in
+    ( match toml with
+    | Error s ->
+        print_endline s
+    | Ok toml ->
+        Otoml.list_table_keys toml |> [%sexp_of: string list] |> print_s ) ;
+    [%expect {| (magic) |}]
+
+  let%expect_test _ =
+    let toml = f s in
+    ( match toml with
+    | Error s ->
+        print_endline s
+    | Ok toml ->
+        let x = Otoml.find_exn toml Otoml.get_table ["magic"] in
+        List.iter x ~f:(fun (k, v) ->
+            print_endline [%string "%{k} => %{Otoml.Printer.to_string v}"] ) ) ;
+    [%expect {|
+      T1 => ["S", "T", "C"]
+      T2 => ["X"] |}]
+end

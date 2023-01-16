@@ -3,3 +3,4 @@ profile = ocamlformat
 parse-docstrings = true
 wrap-comments = true
 wrap-fun-args = false
+break-infix = fit-or-vertical

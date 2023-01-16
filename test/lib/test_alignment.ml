@@ -183,7 +183,9 @@ module Test_map = struct
   open Expect_test_helpers_base
 
   let print_map_for s =
-    print_s @@ [%sexp_of: C.Query_aln_to_raw.t] @@ Alignment.aln_to_raw
+    print_s
+    @@ [%sexp_of: C.Query_aln_to_raw.t]
+    @@ Alignment.aln_to_raw
     @@ query_aln s
 
   let%expect_test "all gaps raise" =
@@ -280,7 +282,8 @@ let%expect_test "read_aln_out_file (all bad seqs)" =
   Utils.with_temp_file (fun file_name ->
       Out_channel.write_all file_name ~data:">s1\nAAAA\n>s2\nBBBB\n>s3\nCCCC" ;
       Or_error.try_with (fun () -> read_aln_out_file file_name)
-      |> [%sexp_of: aln_out Or_error.t] |> print_s ) ;
+      |> [%sexp_of: aln_out Or_error.t]
+      |> print_s ) ;
   [%expect
     {|
     (Error
@@ -306,7 +309,8 @@ let%expect_test "read_aln_out_file (extra seqs)" =
   Utils.with_temp_file (fun file_name ->
       Out_channel.write_all file_name ~data ;
       Or_error.try_with (fun () -> read_aln_out_file file_name)
-      |> [%sexp_of: aln_out Or_error.t] |> print_s ) ;
+      |> [%sexp_of: aln_out Or_error.t]
+      |> print_s ) ;
   [%expect
     {|
     (Error

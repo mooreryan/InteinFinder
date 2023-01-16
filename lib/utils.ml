@@ -73,7 +73,9 @@ let assert_all_files_exist : string list -> unit =
   List.map files ~f:(fun file ->
       if Sys_unix.file_exists_exn file then Or_error.return file
       else Or_error.errorf "Expected '%s' to exist, but it does not" file )
-  |> Or_error.all |> Or_error.ok_exn |> ignore
+  |> Or_error.all
+  |> Or_error.ok_exn
+  |> ignore
 
 let iter_if_ok (v : 'a Async.Deferred.Or_error.t) ~f =
   match%bind.Async.Deferred v with

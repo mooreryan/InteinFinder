@@ -470,6 +470,7 @@ module Test_sub = struct
 
   let%expect_test "bad decr" =
     Or_error.try_with (fun () -> C.(decr_exn @@ zero_raw_exn 0))
-    |> [%sexp_of: C.zero_raw Or_error.t] |> print_s ;
+    |> [%sexp_of: C.zero_raw Or_error.t]
+    |> print_s ;
     [%expect {| (Error (Failure "decr failed with 0")) |}]
 end

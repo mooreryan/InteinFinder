@@ -28,7 +28,8 @@ let%expect_test _ =
   Utils.with_temp_file (fun btab ->
       Out_channel.write_all btab ~data:btab_data ;
       let mmseqs_search_out = Mmseqs_search.Out.v ~out:btab ~log:"ignore" in
-      print_s @@ [%sexp_of: Intein_hits.Query_region_hits.t]
+      print_s
+      @@ [%sexp_of: Intein_hits.Query_region_hits.t]
       @@ Intein_hits.Query_region_hits.of_mmseqs_search_out
            mmseqs_search_out
            regions ) ;

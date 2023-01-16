@@ -96,7 +96,8 @@ module Search = struct
         else
           Or_error.error_string
             [%string "SMP file '%{path}' was listed, but it does not exist."] )
-    |> Or_error.all_unit |> Or_error.ok_exn
+    |> Or_error.all_unit
+    |> Or_error.ok_exn
 
   (** Run all the rpsblast jobs in parallel, one for each query file. *)
   let run ~exe ~query_files ~target_db ~out_dir ~evalue ~log_base =
