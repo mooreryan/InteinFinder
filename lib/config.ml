@@ -47,10 +47,6 @@ let existing_file_term ~toml_path =
   let open Tiny_toml in
   Value.find toml_path @@ Converter.v Accessor.string existing
 
-let non_existing_file_term ~toml_path =
-  let open Tiny_toml in
-  Value.find toml_path @@ Converter.v Accessor.string non_existing
-
 let executable_term ~default toml_path =
   let open Tiny_toml in
   Value.find_or ~default toml_path @@ Converter.v Accessor.string executable
@@ -486,70 +482,22 @@ module Mmseqs = struct
     {exe; evalue; num_iterations; sensitivity}
 end
 
-module Inteins_file = struct
-  [@@@coverage off]
+let find_inteins_file config =
+  Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path:["inteins"]
 
-  type t = string [@@deriving sexp_of]
+let find_queries_file config =
+  Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path:["queries"]
 
-  [@@@coverage on]
+let find_smp_dir config =
+  Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path:["smp_dir"]
 
-  let toml_path = ["inteins"]
-
-  let find config = Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path
-end
-
-module Queries_file = struct
-  [@@@coverage off]
-
-  type t = string [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let toml_path = ["queries"]
-
-  let find config = Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path
-end
-
-module Smp_dir = struct
-  [@@@coverage off]
-
-  type t = string [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let toml_path = ["smp_dir"]
-
-  let find config = Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path
-end
-
-module Out_dir = struct
-  [@@@coverage off]
-
-  type t = string [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let toml_path = ["out_dir"]
-
-  let default = "intein_finder_out"
-
-  let find config =
-    Tiny_toml.Term.eval ~config @@ non_existing_file_term ~toml_path
-end
+let find_out_dir config =
+  let open Tiny_toml in
+  Term.eval ~config
+  @@ Value.find_or ~default:"intein_finder_out" ["out_dir"]
+  @@ Converter.v Accessor.string non_existing
 
 module Log_level = struct
-  (* NOTE: ideally take the log level variant...but would need sexp for it. *)
-
-  [@@@coverage off]
-
-  type t = string [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let toml_path = ["log_level"]
-
-  let default = "info"
-
   let parse s =
     match String.lowercase s with
     | "error" ->
@@ -570,115 +518,73 @@ module Log_level = struct
   let find config =
     let open Tiny_toml in
     Term.eval ~config
-    @@ Value.find_or ~default toml_path
+    @@ Value.find_or ~default:"info" ["log_level"]
     @@ Converter.v Accessor.string parse
 end
 
-module Clip_region_padding = struct
-  [@@@coverage off]
+let find_clip_region_padding config =
+  let open Tiny_toml in
+  Term.eval ~config
+  @@ Value.find_or
+       ~default:10
+       ["clip_region_padding"]
+       Converter.Int.non_negative
 
-  type t = int [@@deriving sexp_of]
+let find_min_query_length config =
+  let open Tiny_toml in
+  Term.eval ~config
+  @@ Value.find_or ~default:100 ["min_query_length"] Converter.Int.non_negative
 
-  [@@@coverage on]
+let find_min_region_length config =
+  let open Tiny_toml in
+  Term.eval ~config
+  @@ Value.find_or ~default:100 ["min_region_length"] Converter.Int.non_negative
 
-  let term =
-    let open Tiny_toml in
-    Value.find_or ~default:10 ["clip_region_padding"] Converter.Int.non_negative
+let find_remove_aln_files config =
+  let open Tiny_toml in
+  Term.eval ~config
+  @@ Value.find_or ~default:true ["remove_aln_files"] Converter.bool
 
-  let find config = Tiny_toml.Term.eval term ~config
-end
-
-module Min_query_length = struct
-  [@@@coverage off]
-
-  type t = int [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let term =
-    let open Tiny_toml in
-    Value.find_or ~default:100 ["min_query_length"] Converter.Int.non_negative
-
-  let find config = Tiny_toml.Term.eval term ~config
-end
-
-module Min_region_length = struct
-  [@@@coverage off]
-
-  type t = int [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let term =
-    let open Tiny_toml in
-    Value.find_or ~default:100 ["min_region_length"] Converter.Int.non_negative
-
-  let find config = Tiny_toml.Term.eval term ~config
-end
-
-module Remove_aln_files = struct
-  [@@@coverage off]
-
-  type t = bool [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let term =
-    let open Tiny_toml in
-    Value.find_or ~default:true ["remove_aln_files"] Converter.bool
-
-  let find config = Tiny_toml.Term.eval term ~config
-end
-
-module Threads = struct
-  [@@@coverage off]
-
-  type t = int [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let term =
-    let open Tiny_toml in
-    Value.find_or ~default:1 ["threads"] Converter.Int.positive
-
-  let find config = Tiny_toml.Term.eval term ~config
-end
+let find_threads config =
+  let open Tiny_toml in
+  Term.eval ~config
+  @@ Value.find_or ~default:1 ["threads"] Converter.Int.positive
 
 type t =
   { (* Inputs *)
-    inteins_file: Inteins_file.t
-  ; queries_file: Queries_file.t
-  ; smp_dir: Smp_dir.t
-  ; out_dir: Out_dir.t
+    inteins_file: string
+  ; queries_file: string
+  ; smp_dir: string
+  ; out_dir: string
   ; checks: Checks.t
   ; mafft: Mafft.t
   ; makeprofiledb: Makeprofiledb.t
   ; mmseqs: Mmseqs.t
   ; rpsblast: Rpsblast.t
-  ; log_level: Log_level.t
-  ; clip_region_padding: Clip_region_padding.t
-  ; min_query_length: Min_query_length.t
-  ; min_region_length: Min_region_length.t
-  ; remove_aln_files: Remove_aln_files.t
-  ; threads: Threads.t }
+  ; log_level: string
+  ; clip_region_padding: int
+  ; min_query_length: int
+  ; min_region_length: int
+  ; remove_aln_files: bool
+  ; threads: int }
 [@@deriving sexp_of]
 
 let find toml =
-  let%map out_dir = Out_dir.find toml
-  and inteins_file = Inteins_file.find toml
-  and queries_file = Queries_file.find toml
-  and smp_dir = Smp_dir.find toml
+  let%map out_dir = find_out_dir toml
+  and inteins_file = find_inteins_file toml
+  and queries_file = find_queries_file toml
+  and smp_dir = find_smp_dir toml
   and checks = Checks.find toml
   and mafft = Mafft.find toml
   and makeprofiledb = Makeprofiledb.find toml
   and mmseqs = Mmseqs.find toml
   and rpsblast = Rpsblast.find toml
   and log_level = Log_level.find toml
-  and clip_region_padding = Clip_region_padding.find toml
-  and min_query_length = Min_query_length.find toml
-  and min_region_length = Min_region_length.find toml
-  and remove_aln_files = Remove_aln_files.find toml
-  and threads = Threads.find toml in
+  and clip_region_padding = find_clip_region_padding toml
+  and min_query_length = find_min_query_length toml
+  and min_region_length = find_min_region_length toml
+  and remove_aln_files = find_remove_aln_files toml
+  and threads = find_threads toml in
   { inteins_file
   ; queries_file
   ; smp_dir
