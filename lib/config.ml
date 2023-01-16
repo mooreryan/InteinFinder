@@ -64,6 +64,10 @@ module type PATH = sig
   val path : string -> string list
 end
 
+let evalue_term ~default path =
+  let open Tiny_toml in
+  Value.find_or ~default path Converter.Float.non_negative
+
 module Make_evalue (M : PATH) = struct
   [@@@coverage off]
 
@@ -345,141 +349,80 @@ end
 module Makeprofiledb = struct
   let path s = ["makeprofiledb"; s]
 
-  module Exe = struct
-    [@@@coverage off]
+  type t = {exe: string} [@@deriving sexp_of]
 
-    type t = string [@@deriving sexp_of]
+  let exe = executable_term ~default:"makeprofiledb" @@ path "exe"
 
-    [@@@coverage on]
-
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ executable_term ~default:"makeprofiledb"
-      @@ path "exe"
-  end
-
-  type t = {exe: Exe.t} [@@deriving sexp_of]
-
-  let find toml =
-    let%map exe = Exe.find toml in
+  let term =
+    let open Tiny_toml.Term.Let_syntax in
+    let%map exe = exe in
     {exe}
+
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Rpsblast = struct
   let path s = ["rpsblast"; s]
 
-  module Exe = struct
-    [@@@coverage off]
+  type t = {exe: string; evalue: float} [@@deriving sexp_of]
 
-    type t = string [@@deriving sexp_of]
+  let exe = executable_term ~default:"rpsblast+" @@ path "exe"
 
-    [@@@coverage on]
+  let evalue = evalue_term ~default:1e-3 @@ path "evalue"
 
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ executable_term ~default:"rpsblast+"
-      @@ path "exe"
-  end
-
-  module Evalue = Make_evalue (struct
-    let path = path
-  end)
-
-  type t = {exe: Exe.t; evalue: Evalue.t} [@@deriving sexp_of]
-
-  let find toml =
-    let%map exe = Exe.find toml and evalue = Evalue.find toml in
+  let term =
+    let open Tiny_toml.Term.Let_syntax in
+    let%map exe = exe and evalue = evalue in
     {exe; evalue}
+
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Mafft = struct
   let path s = ["mafft"; s]
 
-  module Exe = struct
-    [@@@coverage off]
+  type t = {exe: string} [@@deriving sexp_of]
 
-    type t = string [@@deriving sexp_of]
-
-    [@@@coverage on]
-
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ executable_term ~default:"mafft"
-      @@ path "exe"
-  end
-
-  type t = {exe: Exe.t} [@@deriving sexp_of]
-
-  let find toml =
-    let%map exe = Exe.find toml in
+  let term =
+    let open Tiny_toml.Term.Let_syntax in
+    let%map exe = executable_term ~default:"mafft" @@ path "exe" in
     {exe}
+
+  let find config = Tiny_toml.Term.eval ~config term
 end
 
 module Mmseqs = struct
   let path s = ["mmseqs"; s]
 
-  module Exe = struct
-    [@@@coverage off]
+  type t = {exe: string; evalue: float; num_iterations: int; sensitivity: float}
+  [@@deriving sexp_of]
 
-    type t = string [@@deriving sexp_of]
+  let exe = executable_term ~default:"mmseqs" @@ path "exe"
 
-    [@@@coverage on]
+  let evalue = evalue_term ~default:1e-3 @@ path "evalue"
 
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ executable_term ~default:"mmseqs"
-      @@ path "exe"
-  end
+  let num_iterations =
+    let open Tiny_toml in
+    Value.find_or ~default:2 (path "num_iterations") @@ Converter.Int.positive
 
-  module Evalue = Make_evalue (struct
-    let path = path
-  end)
-
-  module Num_iterations = struct
-    [@@@coverage off]
-
-    type t = int [@@deriving sexp_of]
-
-    [@@@coverage on]
-
-    let find config =
-      let open Tiny_toml in
-      Term.eval ~config
-      @@ Value.find_or ~default:2 (path "num_iterations")
-      @@ Converter.Int.positive
-  end
-
-  module Sensitivity = struct
-    [@@@coverage off]
-
-    type t = float [@@deriving sexp_of]
-
-    [@@@coverage on]
-
+  let sensitivity =
     let parser n =
       if Float.(n >= 1.0 && n <= 7.5) then Or_error.return n
       else Or_error.errorf "expected 1.0 <= sensitivity <= 7.5, but got %f" n
+    in
+    let open Tiny_toml in
+    Value.find_or ~default:5.7 (path "sensitivity")
+    @@ Converter.v Accessor.float parser
 
-    let find config =
-      let open Tiny_toml in
-      Term.eval ~config
-      @@ Value.find_or ~default:5.7 (path "sensitivity")
-      @@ Converter.v Accessor.float parser
-  end
-
-  type t =
-    { exe: Exe.t
-    ; evalue: Evalue.t
-    ; num_iterations: Num_iterations.t
-    ; sensitivity: Sensitivity.t }
-  [@@deriving sexp_of]
-
-  let find toml =
-    let%map exe = Exe.find toml
-    and evalue = Evalue.find toml
-    and num_iterations = Num_iterations.find toml
-    and sensitivity = Sensitivity.find toml in
+  let term =
+    let open Tiny_toml.Term.Let_syntax in
+    let%map exe = exe
+    and evalue = evalue
+    and num_iterations = num_iterations
+    and sensitivity = sensitivity in
     {exe; evalue; num_iterations; sensitivity}
+
+  let find config = Tiny_toml.Term.eval term ~config
 end
 
 let find_inteins_file config =
