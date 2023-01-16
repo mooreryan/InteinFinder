@@ -5,8 +5,13 @@ out_dir = "if_out"
 log_level = "info"
 
 [start_residue]
-pass = ["A", "B"]
-maybe = ["a", "c"]
+# Tier 1
+A = "T1"
+B = "T1"
+
+# Tier 2
+a = "T2"
+c = "T2"
 
 [end_residues]
 pass = ["AA", "BB"]

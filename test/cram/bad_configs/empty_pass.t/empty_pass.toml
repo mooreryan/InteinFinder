@@ -5,8 +5,9 @@ out_dir = "if_out"
 log_level = "info"
 
 [start_residue]
-pass = []
-maybe = ["a", "b", "d"]
+a = "T2"
+b = "T2"
+d = "T2"
 
 [end_residues]
 pass = []
@@ -15,4 +16,3 @@ maybe = ["aa", "bb", "dd"]
 [end_plus_one_residue]
 pass = []
 maybe = ["a", "b", "d"]
-

@@ -11,12 +11,8 @@ Wrong number string length in checks
   generate
   config:
   (("config error: start_residue"
-    ("config error: start_residue -> pass"
-     ("expected string to be a single character but got 'apple'"
-      (Failure "Char.of_string: \"apple\"")))
-    ("config error: start_residue -> maybe"
-     ("expected string to be a single character but got 'pie'"
-      (Failure "Char.of_string: \"pie\""))))
+    "expected key to be a single character but got 'apple'"
+    "expected key to be a single character but got 'pie'")
    ("config error: end_residues"
     ("config error: end_residues -> maybe"
      "expected two end residues but got 'ryan'"))

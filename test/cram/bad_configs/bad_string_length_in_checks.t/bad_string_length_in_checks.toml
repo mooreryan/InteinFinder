@@ -5,8 +5,8 @@ out_dir = "if_out"
 log_level = "info"
 
 [start_residue]
-pass = ["apple"]
-maybe = ["pie"]
+apple = "T1"
+pie = "T2"
 
 [end_residues]
 pass = ["hi"]
@@ -14,4 +14,4 @@ maybe = ["ryan"]
 
 [end_plus_one_residue]
 pass = ["ice cream"]
-maybe = ["magic"]  
+maybe = ["magic"]

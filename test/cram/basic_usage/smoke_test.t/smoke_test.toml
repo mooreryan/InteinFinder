@@ -11,8 +11,21 @@ remove_aln_files = false
 threads = 2
 
 [start_residue]
-pass = ["C", "S", "A", "Q", "P", "T"]
-maybe = ["V", "G", "L", "M", "N", "F"]
+# Tier 1
+C = "T1"
+S = "T1"
+A = "T1"
+Q = "T1"
+P = "T1"
+T = "T1"
+
+# Tier 2
+V = "T2"
+G = "T2"
+L = "T2"
+M = "T2"
+N = "T2"
+F = "T2"
 
 [end_residues]
 pass = ["HN", "SN", "GN", "GQ", "LD", "FN"]

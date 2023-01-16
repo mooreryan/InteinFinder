@@ -49,7 +49,7 @@ module Map : sig
   val of_toml :
        Otoml.t
     -> path:string list
-    -> default:(string * Otoml.t) list
+    -> default:(string * string) list
     -> t Or_error.t
 
   val find : t -> string -> Tier_or_fail.t

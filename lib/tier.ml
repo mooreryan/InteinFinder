@@ -113,6 +113,7 @@ end
 module Map = struct
   type tier = t [@@deriving sexp_of]
 
+  (* Maps the residue(s) to its tier. *)
   type t = tier Map.M(String).t [@@deriving sexp_of]
 
   let of_alist_or_error = String.Map.of_alist_or_error
@@ -120,20 +121,38 @@ module Map = struct
   let otoml_from_string_oe s =
     Or_error.try_with (fun () -> Otoml.Parser.from_string s)
 
-  let of_toml toml ~path ~default =
+  (* Validate that start residue key is good and return Or_error. *)
+  let start_residue_key s =
+    if String.length s = 1 then Or_error.return @@ String.uppercase s
+    else Or_error.errorf "expected key to be a single character but got '%s'" s
+
+  (* Parse the (string * string) list to the Map *)
+  let start_residue_parser l =
     let open Or_error.Let_syntax in
-    let otoml_get_tier otoml = Otoml.get_string otoml |> create in
-    let l = Otoml.find_or toml Otoml.get_table path ~default in
-    let l =
+    let residue_tier_list =
       List.map l ~f:(fun (k, v) ->
-          let%map tier = otoml_get_tier v in
+          let%bind tier = create v in
+          let%map k = start_residue_key k in
           (k, tier) )
     in
-    let%bind l = Or_error.all l in
-    let tiers : tier list = List.map l ~f:snd in
-    let%bind _list = Valid_list.create tiers in
-    let%bind map = of_alist_or_error l in
+    let%bind residue_tier_list = Or_error.all residue_tier_list in
+    (* Now we check that the tiers are valid *)
+    let tier_list = List.map residue_tier_list ~f:snd in
+    let%bind _tier_list = Valid_list.create tier_list in
+    let%bind map = of_alist_or_error residue_tier_list in
     return map
+
+  (* Converter for this type. *)
+  let tiny_toml_converter =
+    let open Tiny_toml in
+    let acc = Otoml.get_table_values Otoml.get_string in
+    Converter.v acc start_residue_parser
+
+  let tiny_toml_term ~default path =
+    Tiny_toml.Value.find_or ~default path tiny_toml_converter
+
+  let of_toml config ~path ~default : t Or_error.t =
+    Tiny_toml.Term.eval ~config @@ tiny_toml_term ~default path
 
   let find : t -> string -> Tier_or_fail.t =
    fun t element ->
@@ -213,7 +232,7 @@ A = "T2"
 B = "T2"
 C = "T3"
 |} in
-      run s ; [%expect {| (Error "Bad tiers: (2 3)") |}]
+      run s ; [%expect {| (Error ("config error: yo" "Bad tiers: (2 3)")) |}]
 
     let%expect_test _ =
       let s = {|

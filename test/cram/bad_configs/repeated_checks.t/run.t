@@ -10,8 +10,7 @@ Repeated checks
   not
   generate
   config:
-  (("config error: start_residue"
-    "expected nothing shared between pass and maybe, but found (A) shared")
+  (("config error: start_residue" ("Map.of_alist_or_error: duplicate key" A))
    ("config error: end_residues"
     "expected nothing shared between pass and maybe, but found (AA) shared")
    ("config error: end_plus_one_residue"
