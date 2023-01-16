@@ -9,8 +9,8 @@ normal clip region.
   query                                            region  intein_target        intein_length  region_check  overall_check
   the_2_second_sequence                            2       inbase___seq_440     1162           End_pass      Fail
   the_2_second_sequence                            2       inbase___seq_524     1239           Fail          Fail
-  the_3_third_sequence                             1       inbase___seq_219     367            Pass          Pass (Strict)
-  the_4_fourth_sequence                            2       inbase___seq_440     407            Pass          Pass (Strict)
+  the_3_third_sequence                             1       inbase___seq_219     367            Pass          Pass (T1)
+  the_4_fourth_sequence                            2       inbase___seq_440     407            Pass          Pass (T1)
   the_5_fifth_sequence                             1       inbase___seq_524     842            Fail          Fail
   z1_little_piece_of___inbase___seq_524            1       inbase___seq_524     None           Fail          Fail
   z2_little_piece_of___inbase___seq_524            1       inbase___seq_524     None           Fail          Fail

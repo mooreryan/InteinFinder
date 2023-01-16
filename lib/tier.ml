@@ -37,13 +37,54 @@ let to_int t = t
 
 let to_string t = [%string "T%{t#Int}"]
 
+(* Lower tiers are better than higher tiers, so do opposite of normal int
+   comparison. *)
+let compare t1 t2 = Int.compare t2 t1
+
 (* Could use tier option as well. *)
 module Tier_or_fail = struct
-  type tier = t [@@deriving sexp_of]
+  type tier = t [@@deriving sexp_of, equal]
 
-  type t = Tier of tier | Fail [@@deriving sexp_of]
+  type t = Tier of tier | Fail [@@deriving sexp_of, equal]
 
-  let to_string = function Tier t -> to_string t | Fail -> "Fail"
+  (* Fail is always, less than (or worse) than Tiers. Tiers compare as they
+     normally do (eg lower tiers are better/greater than higher tiers). *)
+  let compare t1 t2 =
+    match (t1, t2) with
+    | Fail, Fail ->
+        0
+    | Fail, Tier _ ->
+        (* Fail is less than (worse) than a tier *)
+        -1
+    | Tier _, Fail ->
+        (* Tier is greater than (better) than fail *)
+        1
+    | Tier t1, Tier t2 ->
+        compare t1 t2
+
+  let to_string = function
+    | Tier t ->
+        [%string "Pass (%{to_string t})"]
+    | Fail ->
+        "Fail"
+
+  let worst_tier : t list -> t option = fun ts -> List.min_elt ts ~compare
+
+  let%expect_test "worst tier" =
+    print_s @@ [%sexp_of: t option] @@ worst_tier [] ;
+    [%expect {| () |}] ;
+    print_s @@ [%sexp_of: t option] @@ worst_tier [Fail] ;
+    [%expect {| (Fail) |}] ;
+    print_s @@ [%sexp_of: t option] @@ worst_tier [Tier t1] ;
+    [%expect {| ((Tier 1)) |}] ;
+    print_s @@ [%sexp_of: t option] @@ worst_tier [Tier t1; Fail] ;
+    [%expect {| (Fail) |}] ;
+    print_s @@ [%sexp_of: t option] @@ worst_tier [Fail; Tier t1] ;
+    [%expect {| (Fail) |}] ;
+    print_s @@ [%sexp_of: t option] @@ worst_tier [Tier t1; Tier t2; Fail] ;
+    [%expect {| (Fail) |}] ;
+    print_s @@ [%sexp_of: t option] @@ worst_tier [Tier t1; Tier t2] ;
+    [%expect {| ((Tier 2)) |}]
 end
 
 (** Silly name, but it is a list of tiers that start at one, and increase in

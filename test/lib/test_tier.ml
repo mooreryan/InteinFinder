@@ -38,41 +38,51 @@ module Test_tier_list = struct
     List.map ints ~f:(fun i -> Tier.create_exn [%string "T%{i#Int}"])
 
   let%expect_test "empty list is okay" =
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create [] ;
     [%expect {| (Ok ()) |}]
 
   let%expect_test "good" =
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
-    @@ Tier.Valid_list.create @@ tl [1] ;
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    @@ Tier.Valid_list.create
+    @@ tl [1] ;
     [%expect {| (Ok (1)) |}] ;
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 2] ;
     [%expect {| (Ok (1 2)) |}] ;
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 3; 2] ;
     [%expect {| (Ok (1 2 3)) |}] ;
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 3; 2; 4] ;
     [%expect {| (Ok (1 2 3 4)) |}]
 
   let%expect_test "bad" =
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 3] ;
     [%expect {| (Error "Bad tiers: (1 3)") |}] ;
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [2; 3] ;
     [%expect {| (Error "Bad tiers: (2 3)") |}] ;
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 2; 3; 5] ;
     [%expect {| (Error "Bad tiers: (1 2 3 5)") |}] ;
-    print_s @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
+    print_s
+    @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 3; 2; 5] ;
     [%expect {| (Error "Bad tiers: (1 2 3 5)") |}]

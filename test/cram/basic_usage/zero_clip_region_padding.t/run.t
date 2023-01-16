@@ -6,9 +6,9 @@ Zero clip region padding
   INFO [DATETIME] Done!
   $ sort -t "$(printf '\t')" -k1,1 -k2,2n if_out/results/2_intein_hit_checks.tsv | cut -f1,16 | column -t -s "$(printf '\t')" 
   query                                            overall_check
-  the_2_second_sequence                            Pass
-  the_3_third_sequence                             Pass (Strict)
-  the_4_fourth_sequence                            Pass (Strict)
+  the_2_second_sequence                            Pass (T2)
+  the_3_third_sequence                             Pass (T1)
+  the_4_fourth_sequence                            Pass (T1)
   the_5_fifth_sequence                             Fail
   z1_little_piece_of___inbase___seq_524            Fail
   z2_little_piece_of___inbase___seq_524            Fail

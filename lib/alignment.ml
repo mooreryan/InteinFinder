@@ -639,6 +639,12 @@ module Checks = struct
 
     let pass = strict_pass
 
+    let to_tier_or_fail : t -> Tier.Tier_or_fail.t = function
+      | Pass _ ->
+          Tier Tier.t1
+      | Fail _ | Fail_none ->
+          Fail
+
     let to_string = function
       | Pass v ->
           let x = C.Query_aln_to_raw.Value.to_string v in
@@ -717,6 +723,12 @@ module Checks = struct
       | Fail_none, Fail _
       | Fail_none, Fail_none ->
           Fail
+
+    let to_tier_or_fail : t -> Tier.Tier_or_fail.t = function
+      | Pass ->
+          Tier Tier.t1
+      | Start_pass | End_pass | Fail ->
+          Fail
   end
 
   (* TODO: add to hacking...should have t, should have check, should have pass,
@@ -731,6 +743,12 @@ module Checks = struct
 
     let of_tier_or_fail : char -> Tier.Tier_or_fail.t -> t =
      fun c tof -> match tof with Tier t -> Pass (t, c) | Fail -> Fail c
+
+    let to_tier_or_fail : t -> Tier.Tier_or_fail.t = function
+      | Pass (tier, _) ->
+          Tier tier
+      | Fail _ ->
+          Fail
 
     let check' c tier_map =
       of_tier_or_fail c @@ Tier.Map.find tier_map @@ String.of_char c
@@ -764,6 +782,12 @@ module Checks = struct
 
     let of_tier_or_fail : string -> Tier.Tier_or_fail.t -> t =
      fun s tof -> match tof with Tier t -> Pass (t, s) | Fail -> Fail s
+
+    let to_tier_or_fail : t -> Tier.Tier_or_fail.t = function
+      | Pass (tier, _) ->
+          Tier tier
+      | Fail _ ->
+          Fail
 
     let check' s tier_map = of_tier_or_fail s @@ Tier.Map.find tier_map s
 
@@ -807,6 +831,18 @@ module Checks = struct
 
     let of_tier_or_fail : char -> Tier.Tier_or_fail.t -> t =
      fun c tof -> match tof with Tier t -> Pass (t, c) | Fail -> Fail c
+
+    (* WARNING: a little counterintuitive, but the [Na] case goes to Tier 1
+       pass. Generally this should only be used along with the lowest tier...so
+       treating no data as the highest tier will not affect the calculation of
+       the lowest tier. *)
+    let to_tier_or_fail : t -> Tier.Tier_or_fail.t = function
+      | Pass (tier, _) ->
+          Tier tier
+      | Fail _ ->
+          Fail
+      | Na ->
+          Tier Tier.t1
 
     (* TODO: there is logic below to handle the NA condition...should it be
        moved here? *)
@@ -926,6 +962,7 @@ module Checks = struct
     ; end_position
     ; region }
 
+  (* TODO: remove *)
   let strict_pass : t -> bool =
    fun t ->
     let use pass _ _ v = pass v in
@@ -940,6 +977,7 @@ module Checks = struct
       ~region:(use Full_region_check.strict_pass)
       ~intein_length:ignore
 
+  (* TODO: remove *)
   let pass : t -> bool =
    fun t ->
     let use pass _ _ v = pass v in
@@ -954,7 +992,32 @@ module Checks = struct
       ~region:(use Full_region_check.pass)
       ~intein_length:ignore
 
-  let overall_pass_string t =
+  (* Fold the record down to Pass with tier or fail. *)
+  let to_tier_or_fail_list t : Tier.Tier_or_fail.t list =
+    let conv to_tier_or_fail acc _ _ v = to_tier_or_fail v :: acc in
+    let ignore acc _ _ _ = acc in
+    Fields.Direct.fold
+      t
+      ~init:[]
+      ~start_residue:(conv Start_residue_check.to_tier_or_fail)
+      ~end_residues:(conv End_residues_check.to_tier_or_fail)
+      ~end_plus_one_residue:(conv End_plus_one_residue_check.to_tier_or_fail)
+      ~start_position:(conv Position_check.to_tier_or_fail)
+      ~end_position:(conv Position_check.to_tier_or_fail)
+      ~region:(conv Full_region_check.to_tier_or_fail)
+      ~intein_length:ignore
+
+  (* TODO: rename *)
+  let overall_pass_string : t -> string =
+   fun t ->
+    t
+    |> to_tier_or_fail_list
+    |> Tier.Tier_or_fail.worst_tier
+    |> Option.value_exn ~message:"tier or fail list should never be empty"
+    |> Tier.Tier_or_fail.to_string
+
+  (* TODO: remove *)
+  let _overall_pass_string t =
     match (pass t, strict_pass t) with
     | false, false ->
         "Fail"
@@ -1045,7 +1108,8 @@ module Mafft = struct
     | Ok stdout ->
         let%bind _ =
           Writer.with_file opts.out_file ~f:(fun writer ->
-              Deferred.Or_error.return @@ Writer.write_line writer
+              Deferred.Or_error.return
+              @@ Writer.write_line writer
               @@ String.strip stdout )
         in
         Deferred.Or_error.return opts.out_file

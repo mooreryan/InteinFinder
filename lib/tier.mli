@@ -1,6 +1,6 @@
 open! Core
 
-type t = private int [@@deriving sexp_of]
+type t = private int [@@deriving sexp_of, compare, equal]
 
 val create : string -> t Or_error.t
 
@@ -16,6 +16,8 @@ val t2 : t
 
 val is_t1 : t -> bool
 
+val compare : t -> t -> int
+
 module Valid_list : sig
   type tier := t
 
@@ -30,6 +32,10 @@ module Tier_or_fail : sig
   type t = Tier of tier | Fail [@@deriving sexp_of]
 
   val to_string : t -> string
+
+  val compare : t -> t -> int
+
+  val worst_tier : t list -> t option
 end
 
 (** A map from Amino Acids (one or more) to Tiers. *)
