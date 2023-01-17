@@ -116,7 +116,29 @@ module Map = struct
   (* Maps the residue(s) to its tier. *)
   type t = tier Map.M(String).t [@@deriving sexp_of]
 
-  let of_alist_or_error = String.Map.of_alist_or_error
+  (* let of_alist_or_error = String.Map.of_alist_or_error *)
+  let of_alist_or_error alist =
+    (* If there are no duplicate keys, return the alist, if there are, return an
+       error with the duplicates. Need this to give better errors to the
+       user. *)
+    let unique_keys alist =
+      let counts =
+        List.fold alist ~init:String.Map.empty ~f:(fun key_counts (k, _) ->
+            Map.update key_counts k ~f:(function None -> 1 | Some i -> i + 1) )
+      in
+      let non_unique_keys =
+        Map.filteri counts ~f:(fun ~key:_ ~data:count -> count <> 1) |> Map.keys
+      in
+      match non_unique_keys with
+      | [] ->
+          Or_error.return alist
+      | [key] ->
+          Or_error.error "duplicate key" key String.sexp_of_t
+      | keys ->
+          Or_error.error "duplicate keys" keys [%sexp_of: string list]
+    in
+    let%bind.Or_error alist = unique_keys alist in
+    String.Map.of_alist_or_error alist
 
   let otoml_from_string_oe s =
     Or_error.try_with (fun () -> Otoml.Parser.from_string s)
