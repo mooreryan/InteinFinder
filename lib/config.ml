@@ -2,54 +2,48 @@ open! Core
 open Or_error.Let_syntax
 module Sh = Shexp_process
 
-(** Type of config option *)
-module type OPT = sig
-  type t [@@deriving sexp_of]
-
-  val find : Otoml.t -> t Or_error.t
-end
-
 let otoml_get_string_list = Otoml.get_array Otoml.get_string
 
-let existing s =
-  if Sys_unix.file_exists_exn s then Or_error.return s
-  else Or_error.errorf "expected file '%s' to exist, but it does not" s
+module Non_existing_file = struct
+  let parser s =
+    if Sys_unix.file_exists_exn s then
+      Or_error.errorf "expected file '%s' not to exist, but it does" s
+    else Or_error.return s
 
-let non_existing s =
-  if Sys_unix.file_exists_exn s then
-    Or_error.errorf "expected file '%s' not to exist, but it does" s
-  else Or_error.return s
+  let converter = Tiny_toml.(Converter.v Accessor.string parser)
 
-let get_exe_path exe =
-  let exe_found, path =
-    Sh.eval @@ Sh.capture [Sh.Std_io.Stdout] @@ Sh.run_bool "which" [exe]
-  in
-  if exe_found then Some (String.strip path) else None
+  let term ~default path = Tiny_toml.Value.find_or ~default path converter
+end
 
-let executable s =
-  match get_exe_path s with
-  | Some path ->
-      Or_error.return path
-  | None ->
-      Or_error.errorf "expected '%s' to be executable, but it was not" s
+module Existing_file = struct
+  let parser s =
+    if Sys_unix.file_exists_exn s then Or_error.return s
+    else Or_error.errorf "expected file '%s' to exist, but it does not" s
 
-(** Wrapper for [Or_error.tag] that makes more uniform error tags for config
-    problems. *)
-let config_error_tag oe ~toml_path =
-  let msg = String.concat toml_path ~sep:" -> " in
-  let tag = "config error: " ^ msg in
-  Or_error.tag oe ~tag
+  let converter = Tiny_toml.(Converter.v Accessor.string parser)
 
-let otoml_find_oe toml accessor path =
-  Or_error.try_with (fun () -> Otoml.find_exn toml accessor path)
+  let term path = Tiny_toml.Value.find path converter
+end
 
-let existing_file_term ~toml_path =
-  let open Tiny_toml in
-  Value.find toml_path @@ Converter.v Accessor.string existing
+module Executable = struct
+  let get_exe_path exe =
+    let exe_found, path =
+      Sh.eval @@ Sh.capture [Sh.Std_io.Stdout] @@ Sh.run_bool "which" [exe]
+    in
+    if exe_found then Some (String.strip path) else None
 
-let executable_term ~default toml_path =
-  let open Tiny_toml in
-  Value.find_or ~default toml_path @@ Converter.v Accessor.string executable
+  let parser s =
+    match get_exe_path s with
+    | Some path ->
+        Or_error.return path
+    | None ->
+        Or_error.errorf "expected '%s' to be executable, but it was not" s
+
+  let converter = Tiny_toml.(Converter.v Accessor.string parser)
+
+  let term ~default toml_path =
+    Tiny_toml.Value.find_or ~default toml_path converter
+end
 
 module type PATH = sig
   val path : string -> string list
@@ -149,7 +143,7 @@ module Makeprofiledb = struct
 
   type t = {exe: string} [@@deriving sexp_of]
 
-  let exe = executable_term ~default:"makeprofiledb" @@ path "exe"
+  let exe = Executable.term ~default:"makeprofiledb" @@ path "exe"
 
   let term =
     let open Tiny_toml.Term.Let_syntax in
@@ -164,7 +158,7 @@ module Rpsblast = struct
 
   type t = {exe: string; evalue: float} [@@deriving sexp_of]
 
-  let exe = executable_term ~default:"rpsblast+" @@ path "exe"
+  let exe = Executable.term ~default:"rpsblast+" @@ path "exe"
 
   let evalue = evalue_term ~default:1e-3 @@ path "evalue"
 
@@ -183,7 +177,7 @@ module Mafft = struct
 
   let term =
     let open Tiny_toml.Term.Let_syntax in
-    let%map exe = executable_term ~default:"mafft" @@ path "exe" in
+    let%map exe = Executable.term ~default:"mafft" @@ path "exe" in
     {exe}
 
   let find config = Tiny_toml.Term.eval ~config term
@@ -195,7 +189,7 @@ module Mmseqs = struct
   type t = {exe: string; evalue: float; num_iterations: int; sensitivity: float}
   [@@deriving sexp_of]
 
-  let exe = executable_term ~default:"mmseqs" @@ path "exe"
+  let exe = Executable.term ~default:"mmseqs" @@ path "exe"
 
   let evalue = evalue_term ~default:1e-3 @@ path "evalue"
 
@@ -224,19 +218,18 @@ module Mmseqs = struct
 end
 
 let find_inteins_file config =
-  Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path:["inteins"]
+  Tiny_toml.Term.eval ~config @@ Existing_file.term ["inteins"]
 
 let find_queries_file config =
-  Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path:["queries"]
+  Tiny_toml.Term.eval ~config @@ Existing_file.term ["queries"]
 
 let find_smp_dir config =
-  Tiny_toml.Term.eval ~config @@ existing_file_term ~toml_path:["smp_dir"]
+  Tiny_toml.Term.eval ~config @@ Existing_file.term ["smp_dir"]
 
 let find_out_dir config =
   let open Tiny_toml in
   Term.eval ~config
-  @@ Value.find_or ~default:"intein_finder_out" ["out_dir"]
-  @@ Converter.v Accessor.string non_existing
+  @@ Non_existing_file.term ~default:"intein_finder_out" ["out_dir"]
 
 module Log_level = struct
   let parse s =
