@@ -51,15 +51,6 @@ let executable_term ~default toml_path =
   let open Tiny_toml in
   Value.find_or ~default toml_path @@ Converter.v Accessor.string executable
 
-let disjoint s1 s2 ~sexp_of =
-  let intersection = Set.inter s1 s2 in
-  if Set.length intersection = 0 then Or_error.return (s1, s2)
-  else
-    Or_error.errorf
-      "expected nothing shared between pass and maybe, but found %s shared"
-    @@ Sexp.to_string_mach
-    @@ sexp_of intersection
-
 module type PATH = sig
   val path : string -> string list
 end
@@ -82,124 +73,6 @@ module Make_evalue (M : PATH) = struct
   let find toml : t Or_error.t = Tiny_toml.Term.eval term ~config:toml
 end
 
-module Single_residue_check = struct
-  module type MAKE = sig
-    val top : string
-
-    val pass_default : string list
-
-    val maybe_default : string list
-  end
-
-  let char_list_of_string_list l =
-    List.map l ~f:(fun s ->
-        Or_error.try_with (fun () -> Char.of_string s)
-        |> Or_error.tag
-             ~tag:
-               [%string
-                 "expected string to be a single character but got '%{s}'"] )
-    |> Or_error.all
-
-  let non_empty_char_list_of_string_list = function
-    | [] ->
-        Or_error.error_string "expected a non-empty list, but got an empty list"
-    | residues ->
-        char_list_of_string_list residues
-
-  let%expect_test "non_empty_char_list_of_string_list" =
-    (* Works *)
-    let toml = Otoml.Parser.from_string {|apple = ["a", "b"]|} in
-    Otoml.find toml (Otoml.get_array Otoml.get_string) ["apple"]
-    |> non_empty_char_list_of_string_list
-    |> [%sexp_of: char list Or_error.t]
-    |> print_s ;
-    [%expect {| (Ok (a b)) |}] ;
-    (* Fails *)
-    let toml = Otoml.Parser.from_string {|apple = ["yeah", "b", "Okay"]|} in
-    Otoml.find toml (Otoml.get_array Otoml.get_string) ["apple"]
-    |> non_empty_char_list_of_string_list
-    |> [%sexp_of: char list Or_error.t]
-    |> print_s ;
-    [%expect
-      {|
-    (Error
-     (("expected string to be a single character but got 'yeah'"
-       (Failure "Char.of_string: \"yeah\""))
-      ("expected string to be a single character but got 'Okay'"
-       (Failure "Char.of_string: \"Okay\"")))) |}]
-
-  let find' toml ~default ~toml_path ~parse =
-    Otoml.find_or ~default toml otoml_get_string_list toml_path
-    |> parse
-    |> Or_error.map ~f:(List.map ~f:Char.uppercase)
-    |> Or_error.map ~f:Char.Set.of_list
-    |> config_error_tag ~toml_path
-
-  module Make (M : MAKE) = struct
-    let path s = [M.top; s]
-
-    module Pass : OPT with type t = Char.Set.t = struct
-      [@@@coverage off]
-
-      type t = Char.Set.t [@@deriving sexp_of]
-
-      [@@@coverage on]
-
-      let toml_path = path "pass"
-
-      let default = M.pass_default
-
-      let parser result =
-        result
-        |> non_empty_char_list_of_string_list
-        |> Or_error.map ~f:(List.map ~f:Char.uppercase)
-        |> Or_error.map ~f:Char.Set.of_list
-
-      let converter = Tiny_toml.Converter.v otoml_get_string_list parser
-
-      let term = Tiny_toml.Value.find_or ~default toml_path converter
-
-      let find config = Tiny_toml.Term.eval term ~config
-    end
-
-    module Maybe : OPT with type t = Char.Set.t = struct
-      [@@@coverage off]
-
-      type t = Char.Set.t [@@deriving sexp_of]
-
-      [@@@coverage on]
-
-      let toml_path = path "maybe"
-
-      let default = M.maybe_default
-
-      let parser result =
-        result
-        |> char_list_of_string_list
-        |> Or_error.map ~f:(List.map ~f:Char.uppercase)
-        |> Or_error.map ~f:Char.Set.of_list
-
-      let converter = Tiny_toml.Converter.v otoml_get_string_list parser
-
-      let term = Tiny_toml.Value.find_or ~default toml_path converter
-
-      let find config = Tiny_toml.Term.eval term ~config
-    end
-
-    type t' = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
-
-    type t = Tier.Map.t [@@deriving sexp_of]
-
-    let find toml : t Or_error.t =
-      let result =
-        let%bind pass = Pass.find toml and maybe = Maybe.find toml in
-        let%map pass, maybe = disjoint pass maybe ~sexp_of:Char.Set.sexp_of_t in
-        Tier.Map.of_passes_maybies_c {passes= pass; maybies= maybe}
-      in
-      config_error_tag result ~toml_path:[M.top]
-  end
-end
-
 module Checks = struct
   module Start_residue = struct
     type t = Tier.Map.t [@@deriving sexp_of]
@@ -215,7 +88,9 @@ module Checks = struct
       let t2_default = make_default Tier.t2 ["V"; "G"; "L"; "M"; "N"; "F"] in
       t1_default @ t2_default
 
-    let find toml = Tier.Map.of_toml toml ~path:toml_path ~default
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ Tier.Map.tiny_toml_single_residue_term ~default toml_path
   end
 
   module End_plus_one_residue = struct
@@ -230,101 +105,50 @@ module Checks = struct
       in
       make_default Tier.t1 ["S"; "T"; "C"]
 
-    let find toml = Tier.Map.of_toml toml ~path:toml_path ~default
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ Tier.Map.tiny_toml_single_residue_term ~default toml_path
   end
 
   module End_residues = struct
-    let end_residues_list l =
-      List.map l ~f:(fun s ->
-          if String.length s = 2 then Or_error.return s
-          else Or_error.errorf "expected two end residues but got '%s'" s )
-      |> Or_error.all
-
-    let non_empty_end_residues_list = function
-      | [] ->
-          Or_error.error_string
-            "expected a non-empty list, but got an empty list"
-      | l ->
-          end_residues_list l
-
-    let parser f result =
-      result
-      |> f
-      |> Or_error.map ~f:(List.map ~f:String.uppercase)
-      |> Or_error.map ~f:String.Set.of_list
-
-    let path s = ["end_residues"; s]
-
-    module Pass : OPT with type t = String.Set.t = struct
-      [@@@coverage off]
-
-      type t = String.Set.t [@@deriving sexp_of]
-
-      [@@@coverage on]
-
-      let toml_path = path "pass"
-
-      let default = ["HN"; "SN"; "GN"; "GQ"; "LD"; "FN"]
-
-      let term =
-        let open Tiny_toml in
-        Value.find_or ~default toml_path
-        @@ Converter.v otoml_get_string_list
-        @@ parser non_empty_end_residues_list
-
-      let find config = Tiny_toml.Term.eval term ~config
-    end
-
-    module Maybe : OPT with type t = String.Set.t = struct
-      [@@@coverage off]
-
-      type t = String.Set.t [@@deriving sexp_of]
-
-      [@@@coverage on]
-
-      let toml_path = path "maybe"
-
-      let default =
-        [ "KN"
-        ; "DY"
-        ; "SQ"
-        ; "HQ"
-        ; "NS"
-        ; "AN"
-        ; "SD"
-        ; "TH"
-        ; "RD"
-        ; "PY"
-        ; "YN"
-        ; "VH"
-        ; "KQ"
-        ; "PP"
-        ; "NT"
-        ; "CN"
-        ; "LH" ]
-
-      let term =
-        let open Tiny_toml in
-        Value.find_or ~default toml_path
-        @@ Converter.v otoml_get_string_list
-        @@ parser end_residues_list
-
-      let find config = Tiny_toml.Term.eval term ~config
-    end
-
-    type t' = {pass: Pass.t; maybe: Maybe.t} [@@deriving sexp_of]
-
     type t = Tier.Map.t [@@deriving sexp_of]
 
-    let find toml : t Or_error.t =
-      let result =
-        let%bind pass = Pass.find toml and maybe = Maybe.find toml in
-        let%map pass, maybe =
-          disjoint pass maybe ~sexp_of:String.Set.sexp_of_t
-        in
-        Tier.Map.of_passes_maybies_s {passes= pass; maybies= maybe}
+    let toml_path = ["end_residues"]
+
+    let default : (string * string) list =
+      let make_default tier residues =
+        let tier = Tier.to_string tier in
+        List.map residues ~f:(fun r -> (r, tier))
       in
-      config_error_tag result ~toml_path:["end_residues"]
+      let t1_default =
+        make_default Tier.t1 ["HN"; "SN"; "GN"; "GQ"; "LD"; "FN"]
+      in
+      let t2_default =
+        make_default
+          Tier.t2
+          [ "KN"
+          ; "DY"
+          ; "SQ"
+          ; "HQ"
+          ; "NS"
+          ; "AN"
+          ; "SD"
+          ; "TH"
+          ; "RD"
+          ; "PY"
+          ; "YN"
+          ; "VH"
+          ; "KQ"
+          ; "PP"
+          ; "NT"
+          ; "CN"
+          ; "LH" ]
+      in
+      t1_default @ t2_default
+
+    let find config =
+      Tiny_toml.Term.eval ~config
+      @@ Tier.Map.tiny_toml_end_residues_term ~default toml_path
   end
 
   type t =

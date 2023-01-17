@@ -9,8 +9,8 @@ apple = "T1"
 pie = "T2"
 
 [end_residues]
-pass = ["hi"]
-maybe = ["ryan"]
+hi = "T1"
+ryan = "T2"
 
 [end_plus_one_residue]
 "ice cream" = "T1"

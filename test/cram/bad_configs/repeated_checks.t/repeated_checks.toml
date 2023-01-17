@@ -14,8 +14,13 @@ a = "T2"
 c = "T2"
 
 [end_residues]
-pass = ["AA", "BB"]
-maybe = ["aa", "cc"]
+# Tier 1
+AA = "T1"
+BB = "T1"
+
+# Tier 2
+aa = "T2"
+cc = "T2"
 
 [end_plus_one_residue]
 # Tier 1

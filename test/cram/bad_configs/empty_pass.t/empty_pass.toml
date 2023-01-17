@@ -10,8 +10,9 @@ b = "T2"
 d = "T2"
 
 [end_residues]
-pass = []
-maybe = ["aa", "bb", "dd"]
+aa = "T2"
+bb = "T2"
+dd = "T2"
 
 [end_plus_one_residue]
 a = "T2"

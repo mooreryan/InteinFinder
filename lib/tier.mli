@@ -44,13 +44,13 @@ module Map : sig
 
   type t [@@deriving sexp_of]
 
-  val of_alist_or_error : (string * tier) list -> t Or_error.t
+  val tiny_toml_single_residue_term :
+    default:(string * string) list -> string list -> t Tiny_toml.Term.t
 
-  val of_toml :
-       Otoml.t
-    -> path:string list
-    -> default:(string * string) list
-    -> t Or_error.t
+  val tiny_toml_end_residues_term :
+    default:(string * string) list -> string list -> t Tiny_toml.Term.t
+
+  val of_alist_or_error : (string * tier) list -> t Or_error.t
 
   val find : t -> string -> Tier_or_fail.t
 

@@ -11,11 +11,10 @@ Wrong number string length in checks
   generate
   config:
   (("config error: start_residue"
-    "expected key to be a single character but got 'apple'"
-    "expected key to be a single character but got 'pie'")
+    "expected key to be a single residue but got 'apple'"
+    "expected key to be a single residue but got 'pie'")
    ("config error: end_residues"
-    ("config error: end_residues -> maybe"
-     "expected two end residues but got 'ryan'"))
+    "expected key to be two end residues but got 'ryan'")
    ("config error: end_plus_one_residue"
-    "expected key to be a single character but got 'ice cream'"
-    "expected key to be a single character but got 'magic'"))
+    "expected key to be a single residue but got 'ice cream'"
+    "expected key to be a single residue but got 'magic'"))

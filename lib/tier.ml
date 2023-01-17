@@ -146,7 +146,12 @@ module Map = struct
   (* Validate that start residue key is good and return Or_error. *)
   let start_residue_key s =
     if String.length s = 1 then Or_error.return @@ String.uppercase s
-    else Or_error.errorf "expected key to be a single character but got '%s'" s
+    else Or_error.errorf "expected key to be a single residue but got '%s'" s
+
+  (* Validate that end_residues key is good and return Or_error. *)
+  let end_residues_key s =
+    if String.length s = 2 then Or_error.return @@ String.uppercase s
+    else Or_error.errorf "expected key to be two end residues but got '%s'" s
 
   (* Parse the (string * string) list to the Map *)
   let start_residue_parser l =
@@ -164,17 +169,37 @@ module Map = struct
     let%bind map = of_alist_or_error residue_tier_list in
     return map
 
-  (* Converter for this type. *)
-  let tiny_toml_converter =
+  (* Parse the (string * string) list to the Map *)
+  let end_residues_parser l =
+    let open Or_error.Let_syntax in
+    let residue_tier_list =
+      List.map l ~f:(fun (k, v) ->
+          let%bind tier = create v in
+          let%map k = end_residues_key k in
+          (k, tier) )
+    in
+    let%bind residue_tier_list = Or_error.all residue_tier_list in
+    (* Now we check that the tiers are valid *)
+    let tier_list = List.map residue_tier_list ~f:snd in
+    let%bind _tier_list = Valid_list.create tier_list in
+    let%bind map = of_alist_or_error residue_tier_list in
+    return map
+
+  let tiny_toml_start_residue_converter =
     let open Tiny_toml in
     let acc = Otoml.get_table_values Otoml.get_string in
     Converter.v acc start_residue_parser
 
-  let tiny_toml_term ~default path =
-    Tiny_toml.Value.find_or ~default path tiny_toml_converter
+  let tiny_toml_end_residues_converter =
+    let open Tiny_toml in
+    let acc = Otoml.get_table_values Otoml.get_string in
+    Converter.v acc end_residues_parser
 
-  let of_toml config ~path ~default : t Or_error.t =
-    Tiny_toml.Term.eval ~config @@ tiny_toml_term ~default path
+  let tiny_toml_single_residue_term ~default path =
+    Tiny_toml.Value.find_or ~default path tiny_toml_start_residue_converter
+
+  let tiny_toml_end_residues_term ~default path =
+    Tiny_toml.Value.find_or ~default path tiny_toml_end_residues_converter
 
   let find : t -> string -> Tier_or_fail.t =
    fun t element ->
@@ -236,7 +261,8 @@ module Map = struct
 |}] in
       let t =
         let%bind.Or_error toml = otoml_from_string_oe s in
-        of_toml toml ~path ~default
+        Tiny_toml.Term.eval ~config:toml
+        @@ tiny_toml_single_residue_term path ~default
       in
       print_s @@ [%sexp_of: t Or_error.t] t
 

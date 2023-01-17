@@ -28,13 +28,33 @@ N = "T2"
 F = "T2"
 
 [end_residues]
-pass = ["HN", "SN", "GN", "GQ", "LD", "FN"]
-maybe = [
-  "KN", "DY", "SQ", "HQ", "NS",
-  "AN", "SD", "TH", "RD", "PY",
-  "YN", "VH", "KQ", "PP", "NT",
-  "CN", "LH"
-]
+# Tier 1
+HN = "T1"
+SN = "T1"
+GN = "T1"
+GQ = "T1"
+LD = "T1"
+FN = "T1"
+
+# Tier 2
+KN = "T2"
+DY = "T2"
+SQ = "T2"
+HQ = "T2"
+NS = "T2"
+AN = "T2"
+SD = "T2"
+TH = "T2"
+RD = "T2"
+PY = "T2"
+YN = "T2"
+VH = "T2"
+KQ = "T2"
+PP = "T2"
+NT = "T2"
+CN = "T2"
+LH = "T2"
+
 
 [end_plus_one_residue]
 S = "T1"
