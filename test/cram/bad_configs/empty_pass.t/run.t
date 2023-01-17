@@ -10,6 +10,9 @@ Empty pass spec in checks
   not
   generate
   config:
-  (("config error: start_residue" "Bad tiers: (2)")
-   ("config error: end_residues" "Bad tiers: (2)")
-   ("config error: end_plus_one_residue" "Bad tiers: (2)"))
+  (("config error: start_residue"
+    "Expected tiers to start at one and increase by one, but got: (2)")
+   ("config error: end_residues"
+    "Expected tiers to start at one and increase by one, but got: (2)")
+   ("config error: end_plus_one_residue"
+    "Expected tiers to start at one and increase by one, but got: (2)"))

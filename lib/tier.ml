@@ -98,12 +98,12 @@ module Valid_list = struct
   let create tiers =
     let tiers = Set.of_list tiers |> Set.to_list in
     let sorted = List.sort tiers ~compare:Int.compare in
-    let starts_at_one_and_increases_by_one l =
+    let not_starts_at_one_and_increases_by_one l =
       List.existsi l ~f:(fun i tier -> tier <> i + 1)
     in
-    if starts_at_one_and_increases_by_one sorted then
+    if not_starts_at_one_and_increases_by_one sorted then
       Or_error.errorf
-        "Bad tiers: %s"
+        "Expected tiers to start at one and increase by one, but got: %s"
         (Sexp.to_string_hum @@ [%sexp_of: int list] sorted)
     else Or_error.return sorted
 end
@@ -262,7 +262,10 @@ A = "T2"
 B = "T2"
 C = "T3"
 |} in
-      run s ; [%expect {| (Error ("config error: yo" "Bad tiers: (2 3)")) |}]
+      run s ; [%expect {|
+        (Error
+         ("config error: yo"
+          "Expected tiers to start at one and increase by one, but got: (2 3)")) |}]
 
     let%expect_test _ =
       let s = {|
