@@ -1,7 +1,11 @@
 open! Core
 
 module T = struct
+  [@@@coverage off]
+
   type t = int [@@deriving sexp, compare, equal]
+
+  [@@@coverage on]
 end
 
 include T
@@ -31,10 +35,6 @@ let t1 = create_exn "T1"
 
 let t2 = create_exn "T2"
 
-let is_t1 t = t = 1
-
-let to_int t = t
-
 let to_string t = [%string "T%{t#Int}"]
 
 (* Lower tiers are better than higher tiers, so do opposite of normal int
@@ -43,9 +43,13 @@ let compare t1 t2 = Int.compare t2 t1
 
 (* Could use tier option as well. *)
 module Tier_or_fail = struct
+  [@@@coverage off]
+
   type tier = t [@@deriving sexp_of, equal]
 
   type t = Tier of tier | Fail [@@deriving sexp_of, equal]
+
+  [@@@coverage on]
 
   (* Fail is always, less than (or worse) than Tiers. Tiers compare as they
      normally do (eg lower tiers are better/greater than higher tiers). *)
@@ -90,9 +94,13 @@ end
 (** Silly name, but it is a list of tiers that start at one, and increase in
     steps of 1 without skipping. I.e., a "valid" list of tiers. *)
 module Valid_list = struct
+  [@@@coverage off]
+
   type tier = t [@@deriving sexp_of]
 
   type t = tier list [@@deriving sexp_of]
+
+  [@@@coverage on]
 
   (** Ensures tiers are sorted, unique, start at 1, and increase by 1. *)
   let create tiers =
@@ -108,13 +116,15 @@ module Valid_list = struct
     else Or_error.return sorted
 end
 
-(* type tier = t [@@deriving sexp_of] *)
-
 module Map = struct
+  [@@@coverage off]
+
   type tier = t [@@deriving sexp_of]
 
   (* Maps the residue(s) to its tier. *)
   type t = tier Map.M(String).t [@@deriving sexp_of]
+
+  [@@@coverage on]
 
   (* let of_alist_or_error = String.Map.of_alist_or_error *)
   let of_alist_or_error alist =
@@ -187,48 +197,6 @@ module Map = struct
    fun t element ->
     match Map.find t element with Some tier -> Tier tier | None -> Fail
 
-  (* Tmp types to help with the switch. *)
-  type passes_maybies_c = {passes: Char.Set.t; maybies: Char.Set.t}
-
-  type passes_maybies_s = {passes: String.Set.t; maybies: String.Set.t}
-
-  let t1_keys t = Map.filter t ~f:(equal t1) |> Map.keys
-
-  let non_t1_keys t = Map.filter t ~f:(Fn.non @@ equal t1) |> Map.keys
-
-  let char_set_of_string_list l =
-    Char.Set.of_list @@ List.map ~f:Char.of_string l
-
-  let to_passes_maybies_c : t -> passes_maybies_c =
-   fun t ->
-    { passes= char_set_of_string_list @@ t1_keys t
-    ; maybies= char_set_of_string_list @@ non_t1_keys t }
-
-  let to_passes_maybies_s : t -> passes_maybies_s =
-   fun t ->
-    { passes= String.Set.of_list @@ t1_keys t
-    ; maybies= String.Set.of_list @@ non_t1_keys t }
-
-  let of_passes_maybies_c : passes_maybies_c -> t =
-    let add_to_tier_map tier_map aa ~tier =
-      Core.Map.add_exn tier_map ~key:(String.of_char aa) ~data:tier
-    in
-    fun {passes; maybies} ->
-      let t = String.Map.empty in
-      let t = Core.Set.fold passes ~init:t ~f:(add_to_tier_map ~tier:t1) in
-      let t = Core.Set.fold maybies ~init:t ~f:(add_to_tier_map ~tier:t2) in
-      t
-
-  let of_passes_maybies_s : passes_maybies_s -> t =
-    let add_to_tier_map tier_map aa ~tier =
-      Core.Map.add_exn tier_map ~key:aa ~data:tier
-    in
-    fun {passes; maybies} ->
-      let t = String.Map.empty in
-      let t = Core.Set.fold passes ~init:t ~f:(add_to_tier_map ~tier:t1) in
-      let t = Core.Set.fold maybies ~init:t ~f:(add_to_tier_map ~tier:t2) in
-      t
-
   module Test = struct
     let key = "yo"
 
@@ -262,7 +230,9 @@ A = "T2"
 B = "T2"
 C = "T3"
 |} in
-      run s ; [%expect {|
+      run s ;
+      [%expect
+        {|
         (Error
          ("config error: yo"
           "Expected tiers to start at one and increase by one, but got: (2 3)")) |}]

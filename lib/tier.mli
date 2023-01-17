@@ -6,15 +6,11 @@ val create : string -> t Or_error.t
 
 val create_exn : string -> t
 
-val to_int : t -> int
-
 val to_string : t -> string
 
 val t1 : t
 
 val t2 : t
-
-val is_t1 : t -> bool
 
 val compare : t -> t -> int
 
@@ -53,17 +49,4 @@ module Map : sig
   val of_alist_or_error : (string * tier) list -> t Or_error.t
 
   val find : t -> string -> Tier_or_fail.t
-
-  (* Tmp types to help with the switch. *)
-  type passes_maybies_c = {passes: Char.Set.t; maybies: Char.Set.t}
-
-  val to_passes_maybies_c : t -> passes_maybies_c
-
-  val of_passes_maybies_c : passes_maybies_c -> t
-
-  type passes_maybies_s = {passes: String.Set.t; maybies: String.Set.t}
-
-  val to_passes_maybies_s : t -> passes_maybies_s
-
-  val of_passes_maybies_s : passes_maybies_s -> t
 end

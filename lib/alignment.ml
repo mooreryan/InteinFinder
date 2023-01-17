@@ -635,9 +635,7 @@ module Checks = struct
 
     [@@@coverage on]
 
-    let strict_pass t = is_pass t
-
-    let pass = strict_pass
+    let pass t = is_pass t
 
     let to_tier_or_fail : t -> Tier.Tier_or_fail.t = function
       | Pass _ ->
@@ -702,9 +700,7 @@ module Checks = struct
 
     [@@@coverage on]
 
-    let strict_pass t = is_pass t
-
-    let pass = strict_pass
+    let pass t = is_pass t
 
     let to_string = Variants.to_name
 
@@ -734,12 +730,14 @@ module Checks = struct
   (* TODO: add to hacking...should have t, should have check, should have pass,
      to_string, etc etc. *)
   module Start_residue_check = struct
+    [@@@coverage off]
+
     type t = Pass of (Tier.t * char) | Fail of char
     [@@deriving sexp_of, variants]
 
-    let pass t = is_pass t
+    [@@@coverage on]
 
-    let strict_pass = function Pass (tier, _) -> Tier.is_t1 tier | _ -> false
+    let pass t = is_pass t
 
     let of_tier_or_fail : char -> Tier.Tier_or_fail.t -> t =
      fun c tof -> match tof with Tier t -> Pass (t, c) | Fail -> Fail c
@@ -778,8 +776,6 @@ module Checks = struct
 
     let pass t = is_pass t
 
-    let strict_pass = function Pass (tier, _) -> Tier.is_t1 tier | _ -> false
-
     let of_tier_or_fail : string -> Tier.Tier_or_fail.t -> t =
      fun s tof -> match tof with Tier t -> Pass (t, s) | Fail -> Fail s
 
@@ -816,16 +812,6 @@ module Checks = struct
     [@@deriving sexp_of, variants]
 
     [@@@coverage on]
-
-    (** Strict pass condition is [Pass] or [Na]. [Na] is no data so it should
-        not trigger the fail condition. *)
-    let strict_pass = function
-      | Na ->
-          true
-      | Pass (tier, _) ->
-          Tier.is_t1 tier
-      | _ ->
-          false
 
     let pass = function Pass _ | Na -> true | Fail _ -> false
 
@@ -962,22 +948,6 @@ module Checks = struct
     ; end_position
     ; region }
 
-  (* TODO: remove *)
-  let strict_pass : t -> bool =
-   fun t ->
-    let use pass _ _ v = pass v in
-    let ignore _ _ _ = true in
-    Fields.Direct.for_all
-      t
-      ~start_residue:(use Start_residue_check.strict_pass)
-      ~end_residues:(use End_residues_check.strict_pass)
-      ~end_plus_one_residue:(use End_plus_one_residue_check.strict_pass)
-      ~start_position:(use Position_check.strict_pass)
-      ~end_position:(use Position_check.strict_pass)
-      ~region:(use Full_region_check.strict_pass)
-      ~intein_length:ignore
-
-  (* TODO: remove *)
   let pass : t -> bool =
    fun t ->
     let use pass _ _ v = pass v in
@@ -1015,20 +985,6 @@ module Checks = struct
     |> Tier.Tier_or_fail.worst_tier
     |> Option.value_exn ~message:"tier or fail list should never be empty"
     |> Tier.Tier_or_fail.to_string
-
-  (* TODO: remove *)
-  let _overall_pass_string t =
-    match (pass t, strict_pass t) with
-    | false, false ->
-        "Fail"
-    | true, false ->
-        "Pass"
-    | false, true ->
-        Utils.impossible
-          "if strict pass is true, pass must be true, but it wasn't"
-        [@coverage off]
-    | true, true ->
-        "Pass (Strict)"
 
   let to_string t =
     let conv to_s acc _ _ v = to_s v :: acc in

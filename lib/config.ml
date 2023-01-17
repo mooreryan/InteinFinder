@@ -59,24 +59,8 @@ let evalue_term ~default path =
   let open Tiny_toml in
   Value.find_or ~default path Converter.Float.non_negative
 
-module Make_evalue (M : PATH) = struct
-  [@@@coverage off]
-
-  type t = float [@@deriving sexp_of]
-
-  [@@@coverage on]
-
-  let term =
-    let open Tiny_toml in
-    Value.find_or ~default:1e-3 (M.path "evalue") Converter.Float.non_negative
-
-  let find toml : t Or_error.t = Tiny_toml.Term.eval term ~config:toml
-end
-
 module Checks = struct
   module Start_residue = struct
-    type t = Tier.Map.t [@@deriving sexp_of]
-
     let toml_path = ["start_residue"]
 
     let default : (string * string) list =
@@ -94,8 +78,6 @@ module Checks = struct
   end
 
   module End_plus_one_residue = struct
-    type t = Tier.Map.t [@@deriving sexp_of]
-
     let toml_path = ["end_plus_one_residue"]
 
     let default : (string * string) list =
@@ -111,8 +93,6 @@ module Checks = struct
   end
 
   module End_residues = struct
-    type t = Tier.Map.t [@@deriving sexp_of]
-
     let toml_path = ["end_residues"]
 
     let default : (string * string) list =
@@ -152,9 +132,9 @@ module Checks = struct
   end
 
   type t =
-    { start_residue: Start_residue.t
-    ; end_residues: End_residues.t
-    ; end_plus_one_residue: End_plus_one_residue.t }
+    { start_residue: Tier.Map.t
+    ; end_residues: Tier.Map.t
+    ; end_plus_one_residue: Tier.Map.t }
   [@@deriving sexp_of]
 
   let find toml =
