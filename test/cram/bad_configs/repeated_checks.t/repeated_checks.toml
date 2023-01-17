@@ -18,5 +18,12 @@ pass = ["AA", "BB"]
 maybe = ["aa", "cc"]
 
 [end_plus_one_residue]
-pass = ["A", "B", "C"]
-maybe = ["a", "b", "d"]
+# Tier 1
+A = "T1"
+B = "T1"
+C = "T1"
+
+# Tier 2
+a = "T2"
+b = "T2"
+d = "T2"

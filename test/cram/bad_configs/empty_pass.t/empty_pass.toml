@@ -14,5 +14,6 @@ pass = []
 maybe = ["aa", "bb", "dd"]
 
 [end_plus_one_residue]
-pass = []
-maybe = ["a", "b", "d"]
+a = "T2"
+b = "T2"
+d = "T2"

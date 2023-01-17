@@ -14,6 +14,4 @@ Empty pass spec in checks
    ("config error: end_residues"
     ("config error: end_residues -> pass"
      "expected a non-empty list, but got an empty list"))
-   ("config error: end_plus_one_residue"
-    ("config error: end_plus_one_residue -> pass"
-     "expected a non-empty list, but got an empty list")))
+   ("config error: end_plus_one_residue" "Bad tiers: (2)"))

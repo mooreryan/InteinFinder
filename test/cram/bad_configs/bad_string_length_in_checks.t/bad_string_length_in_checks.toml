@@ -13,5 +13,5 @@ pass = ["hi"]
 maybe = ["ryan"]
 
 [end_plus_one_residue]
-pass = ["ice cream"]
-maybe = ["magic"]
+"ice cream" = "T1"
+magic = "T2"

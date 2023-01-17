@@ -37,7 +37,9 @@ maybe = [
 ]
 
 [end_plus_one_residue]
-pass = ["S", "T", "C"]
+S = "T1"
+T = "T1"
+C = "T1"
 
 [mmseqs]
 exe = "mmseqs"

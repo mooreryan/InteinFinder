@@ -218,28 +218,20 @@ module Checks = struct
     let find toml = Tier.Map.of_toml toml ~path:toml_path ~default
   end
 
-  module End_plus_one_residue = Single_residue_check.Make (struct
-    let top = "end_plus_one_residue"
+  module End_plus_one_residue = struct
+    type t = Tier.Map.t [@@deriving sexp_of]
 
-    let pass_default = ["S"; "T"; "C"]
+    let toml_path = ["end_plus_one_residue"]
 
-    let maybe_default = []
-  end)
+    let default : (string * string) list =
+      let make_default tier residues =
+        let tier = Tier.to_string tier in
+        List.map residues ~f:(fun r -> (r, tier))
+      in
+      make_default Tier.t1 ["S"; "T"; "C"]
 
-  (* module End_plus_one_residue = struct *)
-  (*   type t = Tier.Map.t [@@deriving sexp_of] *)
-
-  (* let toml_path = ["end_plus_one_residue"] *)
-
-  (*   let default : (string * string) list = *)
-  (*     let make_default tier residues = *)
-  (*       let tier = Tier.to_string tier in *)
-  (*       List.map residues ~f:(fun r -> (r, tier)) *)
-  (*     in *)
-  (*     make_default Tier.t1 ["S"; "T"; "C"] *)
-
-  (*   let find toml = Tier.Map.of_toml toml ~path:toml_path ~default *)
-  (* end *)
+    let find toml = Tier.Map.of_toml toml ~path:toml_path ~default
+  end
 
   module End_residues = struct
     let end_residues_list l =

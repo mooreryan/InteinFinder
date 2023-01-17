@@ -17,9 +17,5 @@ Wrong number string length in checks
     ("config error: end_residues -> maybe"
      "expected two end residues but got 'ryan'"))
    ("config error: end_plus_one_residue"
-    ("config error: end_plus_one_residue -> pass"
-     ("expected string to be a single character but got 'ice cream'"
-      (Failure "Char.of_string: \"ice cream\"")))
-    ("config error: end_plus_one_residue -> maybe"
-     ("expected string to be a single character but got 'magic'"
-      (Failure "Char.of_string: \"magic\"")))))
+    "expected key to be a single character but got 'ice cream'"
+    "expected key to be a single character but got 'magic'"))
