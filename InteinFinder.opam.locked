@@ -34,9 +34,9 @@ depends: [
   "cppo" {= "1.6.9"}
   "csexp" {= "1.5.1"}
   "csvfields" {= "v0.15.1" & with-test}
-  "dune" {= "3.5.0"}
-  "dune-build-info" {= "3.5.0"}
-  "dune-configurator" {= "3.5.0"}
+  "dune" {= "3.6.1"}
+  "dune-build-info" {= "3.6.1"}
+  "dune-configurator" {= "3.6.1"}
   "either" {= "1.0.0"}
   "expect_test_helpers_core" {with-test & = "v0.15.0" & = "v0.15.0"}
   "faraday" {= "0.8.2" & with-test}
@@ -46,8 +46,8 @@ depends: [
   "fpath" {= "0.7.3"}
   "int_repr" {= "v0.15.0"}
   "jane-street-headers" {= "v0.15.0"}
-  "js_of_ocaml" {= "4.1.0"}
-  "js_of_ocaml-compiler" {= "4.1.0"}
+  "js_of_ocaml" {= "5.0.1"}
+  "js_of_ocaml-compiler" {= "5.0.1"}
   "jsonaf" {= "v0.15.0" & with-test}
   "jst-config" {= "v0.15.1"}
   "logs" {= "0.7.0"}
@@ -71,7 +71,7 @@ depends: [
   "ocplib-endian" {= "1.2"}
   "odoc" {= "2.1.1" & with-doc}
   "odoc-parser" {= "1.0.1"}
-  "otoml" {= "1.0.2"}
+  "otoml" {= "1.0.4"}
   "parsexp" {= "v0.15.0"}
   "posixat" {= "v0.15.0"}
   "ppx_assert" {= "v0.15.0"}
@@ -129,7 +129,8 @@ depends: [
   "textutils_kernel" {= "v0.15.0"}
   "time_now" {= "v0.15.0"}
   "timezone" {= "v0.15.0"}
-  "topkg" {= "1.0.5"}
+  "tiny_toml" {= "0.0.1"}
+  "topkg" {= "1.0.6"}
   "typerep" {= "v0.15.0"}
   "tyxml" {= "4.5.0" & with-doc}
   "uucp" {= "15.0.0"}
@@ -154,6 +155,10 @@ build: [
 ]
 dev-repo: "git+https://github.com/mooreryan/InteinFinder.git"
 pin-depends: [
+  [
   "bio_io.0.6.0"
   "https://github.com/mooreryan/bio_io/archive/refs/tags/0.6.0.tar.gz"
+]
+  ["otoml.1.0.4" "git+https://github.com/dmbaturin/otoml.git"]
+  ["tiny_toml.0.0.1" "git+https://github.com/mooreryan/tiny_config.git#main"]
 ]
