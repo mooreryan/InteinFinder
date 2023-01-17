@@ -1,22 +1,22 @@
 open! Core
 open Lib
 
-let%expect_test "Log_level.parse" =
+let%expect_test "log_level_parse" =
   let open Config in
-  print_s @@ [%sexp_of: string Or_error.t] @@ Log_level.parse "eRrOr" ;
+  print_s @@ [%sexp_of: string Or_error.t] @@ log_level_parse "eRrOr" ;
   [%expect {| (Ok error) |}] ;
-  print_s @@ [%sexp_of: string Or_error.t] @@ Log_level.parse "wArNiNg" ;
+  print_s @@ [%sexp_of: string Or_error.t] @@ log_level_parse "wArNiNg" ;
   [%expect {| (Ok warning) |}] ;
-  print_s @@ [%sexp_of: string Or_error.t] @@ Log_level.parse "InFo" ;
+  print_s @@ [%sexp_of: string Or_error.t] @@ log_level_parse "InFo" ;
   [%expect {| (Ok info) |}] ;
-  print_s @@ [%sexp_of: string Or_error.t] @@ Log_level.parse "DeBuG" ;
+  print_s @@ [%sexp_of: string Or_error.t] @@ log_level_parse "DeBuG" ;
   [%expect {| (Ok debug) |}] ;
-  print_s @@ [%sexp_of: string Or_error.t] @@ Log_level.parse "" ;
+  print_s @@ [%sexp_of: string Or_error.t] @@ log_level_parse "" ;
   [%expect
     {|
     (Error
      "Log level must be one of 'error', 'warning', 'info', or 'debug'. Got ''") |}] ;
-  print_s @@ [%sexp_of: string Or_error.t] @@ Log_level.parse "apple pie" ;
+  print_s @@ [%sexp_of: string Or_error.t] @@ log_level_parse "apple pie" ;
   [%expect
     {|
     (Error

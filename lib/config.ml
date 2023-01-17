@@ -1,59 +1,43 @@
 open! Core
-open Or_error.Let_syntax
 module Sh = Shexp_process
 
-module Non_existing_file = struct
+let non_existing_file_term ~default path =
   let parser s =
     if Sys_unix.file_exists_exn s then
       Or_error.errorf "expected file '%s' not to exist, but it does" s
     else Or_error.return s
+  in
+  let converter = Tiny_toml.(Converter.v Accessor.string parser) in
+  Tiny_toml.Value.find_or ~default path converter
 
-  let converter = Tiny_toml.(Converter.v Accessor.string parser)
-
-  let term ~default path = Tiny_toml.Value.find_or ~default path converter
-end
-
-module Existing_file = struct
+let existing_file_term path =
   let parser s =
     if Sys_unix.file_exists_exn s then Or_error.return s
     else Or_error.errorf "expected file '%s' to exist, but it does not" s
+  in
+  let converter = Tiny_toml.(Converter.v Accessor.string parser) in
+  Tiny_toml.Value.find path converter
 
-  let converter = Tiny_toml.(Converter.v Accessor.string parser)
-
-  let term path = Tiny_toml.Value.find path converter
-end
-
-module Executable = struct
+let executable_term ~default toml_path =
   let get_exe_path exe =
     let exe_found, path =
       Sh.eval @@ Sh.capture [Sh.Std_io.Stdout] @@ Sh.run_bool "which" [exe]
     in
     if exe_found then Some (String.strip path) else None
-
+  in
   let parser s =
     match get_exe_path s with
     | Some path ->
         Or_error.return path
     | None ->
         Or_error.errorf "expected '%s' to be executable, but it was not" s
-
-  let converter = Tiny_toml.(Converter.v Accessor.string parser)
-
-  let term ~default toml_path =
-    Tiny_toml.Value.find_or ~default toml_path converter
-end
-
-module Evalue = struct
-  let term ~default path =
-    let open Tiny_toml in
-    Value.find_or ~default path Converter.Float.non_negative
-end
+  in
+  let converter = Tiny_toml.(Converter.v Accessor.string parser) in
+  Tiny_toml.Value.find_or ~default toml_path converter
 
 module Checks = struct
-  module Start_residue = struct
-    let toml_path = ["start_residue"]
-
-    let default : (string * string) list =
+  let start_residue_term =
+    let default =
       let make_default tier residues =
         let tier = Tier.to_string tier in
         List.map residues ~f:(fun r -> (r, tier))
@@ -61,31 +45,21 @@ module Checks = struct
       let t1_default = make_default Tier.t1 ["C"; "S"; "A"; "Q"; "P"; "T"] in
       let t2_default = make_default Tier.t2 ["V"; "G"; "L"; "M"; "N"; "F"] in
       t1_default @ t2_default
+    in
+    Tier.Map.tiny_toml_single_residue_term ~default ["start_residue"]
 
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ Tier.Map.tiny_toml_single_residue_term ~default toml_path
-  end
-
-  module End_plus_one_residue = struct
-    let toml_path = ["end_plus_one_residue"]
-
-    let default : (string * string) list =
+  let end_plus_one_residue_term =
+    let default =
       let make_default tier residues =
         let tier = Tier.to_string tier in
         List.map residues ~f:(fun r -> (r, tier))
       in
       make_default Tier.t1 ["S"; "T"; "C"]
+    in
+    Tier.Map.tiny_toml_single_residue_term ~default ["end_plus_one_residue"]
 
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ Tier.Map.tiny_toml_single_residue_term ~default toml_path
-  end
-
-  module End_residues = struct
-    let toml_path = ["end_residues"]
-
-    let default : (string * string) list =
+  let end_residues_term =
+    let default =
       let make_default tier residues =
         let tier = Tier.to_string tier in
         List.map residues ~f:(fun r -> (r, tier))
@@ -115,11 +89,8 @@ module Checks = struct
           ; "LH" ]
       in
       t1_default @ t2_default
-
-    let find config =
-      Tiny_toml.Term.eval ~config
-      @@ Tier.Map.tiny_toml_end_residues_term ~default toml_path
-  end
+    in
+    Tier.Map.tiny_toml_end_residues_term ~default ["end_residues"]
 
   type t =
     { start_residue: Tier.Map.t
@@ -127,10 +98,11 @@ module Checks = struct
     ; end_plus_one_residue: Tier.Map.t }
   [@@deriving sexp_of]
 
-  let find toml =
-    let%map start_residue = Start_residue.find toml
-    and end_residues = End_residues.find toml
-    and end_plus_one_residue = End_plus_one_residue.find toml in
+  let term =
+    let open Tiny_toml.Term.Let_syntax in
+    let%map start_residue = start_residue_term
+    and end_residues = end_residues_term
+    and end_plus_one_residue = end_plus_one_residue_term in
     {start_residue; end_residues; end_plus_one_residue}
 end
 
@@ -139,14 +111,12 @@ module Makeprofiledb = struct
 
   type t = {exe: string} [@@deriving sexp_of]
 
-  let exe = Executable.term ~default:"makeprofiledb" @@ path "exe"
+  let exe = executable_term ~default:"makeprofiledb" @@ path "exe"
 
   let term =
     let open Tiny_toml.Term.Let_syntax in
     let%map exe = exe in
     {exe}
-
-  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Rpsblast = struct
@@ -154,16 +124,16 @@ module Rpsblast = struct
 
   type t = {exe: string; evalue: float} [@@deriving sexp_of]
 
-  let exe = Executable.term ~default:"rpsblast+" @@ path "exe"
+  let exe = executable_term ~default:"rpsblast+" @@ path "exe"
 
-  let evalue = Evalue.term ~default:1e-3 @@ path "evalue"
+  let evalue =
+    let open Tiny_toml in
+    Value.find_or ~default:1e-3 (path "evalue") Converter.Float.non_negative
 
   let term =
     let open Tiny_toml.Term.Let_syntax in
     let%map exe = exe and evalue = evalue in
     {exe; evalue}
-
-  let find config = Tiny_toml.Term.eval term ~config
 end
 
 module Mafft = struct
@@ -173,10 +143,8 @@ module Mafft = struct
 
   let term =
     let open Tiny_toml.Term.Let_syntax in
-    let%map exe = Executable.term ~default:"mafft" @@ path "exe" in
+    let%map exe = executable_term ~default:"mafft" @@ path "exe" in
     {exe}
-
-  let find config = Tiny_toml.Term.eval ~config term
 end
 
 module Mmseqs = struct
@@ -185,9 +153,11 @@ module Mmseqs = struct
   type t = {exe: string; evalue: float; num_iterations: int; sensitivity: float}
   [@@deriving sexp_of]
 
-  let exe = Executable.term ~default:"mmseqs" @@ path "exe"
+  let exe = executable_term ~default:"mmseqs" @@ path "exe"
 
-  let evalue = Evalue.term ~default:1e-3 @@ path "evalue"
+  let evalue =
+    let open Tiny_toml in
+    Value.find_or ~default:1e-3 (path "evalue") Converter.Float.non_negative
 
   let num_iterations =
     let open Tiny_toml in
@@ -209,76 +179,57 @@ module Mmseqs = struct
     and num_iterations = num_iterations
     and sensitivity = sensitivity in
     {exe; evalue; num_iterations; sensitivity}
-
-  let find config = Tiny_toml.Term.eval term ~config
 end
 
-let find_inteins_file config =
-  Tiny_toml.Term.eval ~config @@ Existing_file.term ["inteins"]
+let inteins_file_term = existing_file_term ["inteins"]
 
-let find_queries_file config =
-  Tiny_toml.Term.eval ~config @@ Existing_file.term ["queries"]
+let queries_file_term = existing_file_term ["queries"]
 
-let find_smp_dir config =
-  Tiny_toml.Term.eval ~config @@ Existing_file.term ["smp_dir"]
+let smp_dir_term = existing_file_term ["smp_dir"]
 
-let find_out_dir config =
+let out_dir_term =
+  non_existing_file_term ~default:"intein_finder_out" ["out_dir"]
+
+let log_level_parse s =
+  match String.lowercase s with
+  | "error" ->
+      Or_error.return "error"
+  | "warning" ->
+      Or_error.return "warning"
+  | "info" ->
+      Or_error.return "info"
+  | "debug" ->
+      Or_error.return "debug"
+  | _ ->
+      Or_error.errorf
+        "Log level must be one of 'error', 'warning', 'info', or 'debug'. Got \
+         '%s'"
+        s
+
+let log_level_term =
   let open Tiny_toml in
-  Term.eval ~config
-  @@ Non_existing_file.term ~default:"intein_finder_out" ["out_dir"]
+  Value.find_or ~default:"info" ["log_level"]
+  @@ Converter.v Accessor.string log_level_parse
 
-module Log_level = struct
-  let parse s =
-    match String.lowercase s with
-    | "error" ->
-        Or_error.return "error"
-    | "warning" ->
-        Or_error.return "warning"
-    | "info" ->
-        Or_error.return "info"
-    | "debug" ->
-        Or_error.return "debug"
-    | _ ->
-        Or_error.errorf
-          "Log level must be one of 'error', 'warning', 'info', or 'debug'. \
-           Got '%s'"
-          s
-
-  (* Note: will alwas return Ok *)
-  let find config =
-    let open Tiny_toml in
-    Term.eval ~config
-    @@ Value.find_or ~default:"info" ["log_level"]
-    @@ Converter.v Accessor.string parse
-end
-
-let find_clip_region_padding config =
+let clip_region_padding_term =
   let open Tiny_toml in
-  Term.eval ~config
-  @@ Value.find_or
-       ~default:10
-       ["clip_region_padding"]
-       Converter.Int.non_negative
+  Value.find_or ~default:10 ["clip_region_padding"] Converter.Int.non_negative
 
-let find_min_query_length config =
+let min_query_length_term =
   let open Tiny_toml in
-  Term.eval ~config
-  @@ Value.find_or ~default:100 ["min_query_length"] Converter.Int.non_negative
+  Value.find_or ~default:100 ["min_query_length"] Converter.Int.non_negative
 
-let find_min_region_length config =
+let min_region_length_term =
   let open Tiny_toml in
-  Term.eval ~config
-  @@ Value.find_or ~default:100 ["min_region_length"] Converter.Int.non_negative
+  Value.find_or ~default:100 ["min_region_length"] Converter.Int.non_negative
 
-let find_remove_aln_files config =
+let remove_aln_files_term =
   let open Tiny_toml in
-  Term.eval ~config
-  @@ Value.find_or ~default:true ["remove_aln_files"] Converter.bool
+  Value.find_or ~default:true ["remove_aln_files"] Converter.bool
 
-let find_threads config =
+let threads_term =
   let open Tiny_toml in
-  Term.eval ~config
-  @@ Value.find_or ~default:1 ["threads"] Converter.Int.positive
+  Value.find_or ~default:1 ["threads"] Converter.Int.positive
 
 type t =
   { (* Inputs *)
@@ -299,22 +250,23 @@ type t =
   ; threads: int }
 [@@deriving sexp_of]
 
-let find toml =
-  let%map out_dir = find_out_dir toml
-  and inteins_file = find_inteins_file toml
-  and queries_file = find_queries_file toml
-  and smp_dir = find_smp_dir toml
-  and checks = Checks.find toml
-  and mafft = Mafft.find toml
-  and makeprofiledb = Makeprofiledb.find toml
-  and mmseqs = Mmseqs.find toml
-  and rpsblast = Rpsblast.find toml
-  and log_level = Log_level.find toml
-  and clip_region_padding = find_clip_region_padding toml
-  and min_query_length = find_min_query_length toml
-  and min_region_length = find_min_region_length toml
-  and remove_aln_files = find_remove_aln_files toml
-  and threads = find_threads toml in
+let term =
+  let open Tiny_toml.Term.Let_syntax in
+  let%map out_dir = out_dir_term
+  and inteins_file = inteins_file_term
+  and queries_file = queries_file_term
+  and smp_dir = smp_dir_term
+  and checks = Checks.term
+  and mafft = Mafft.term
+  and makeprofiledb = Makeprofiledb.term
+  and mmseqs = Mmseqs.term
+  and rpsblast = Rpsblast.term
+  and log_level = log_level_term
+  and clip_region_padding = clip_region_padding_term
+  and min_query_length = min_query_length_term
+  and min_region_length = min_region_length_term
+  and remove_aln_files = remove_aln_files_term
+  and threads = threads_term in
   { inteins_file
   ; queries_file
   ; smp_dir
@@ -330,6 +282,8 @@ let find toml =
   ; min_region_length
   ; remove_aln_files
   ; threads }
+
+let find config = Tiny_toml.Term.eval term ~config
 
 let read_config config_file =
   let toml = Otoml.Parser.from_file config_file in
@@ -406,35 +360,3 @@ let write_pipeline_info t dir =
 let write_config_file ~config_file ~dir =
   let out_file = Out_file_name.config_file dir in
   Sh.eval @@ Sh.run "cp" [config_file; out_file]
-
-module X = struct
-  let s = {|
-[magic]
-T1 = ["S", "T", "C"]
-T2 = ["X"]
-|}
-
-  let f s = Otoml.Parser.from_string_result s
-
-  let%expect_test _ =
-    let toml = f s in
-    ( match toml with
-    | Error s ->
-        print_endline s
-    | Ok toml ->
-        Otoml.list_table_keys toml |> [%sexp_of: string list] |> print_s ) ;
-    [%expect {| (magic) |}]
-
-  let%expect_test _ =
-    let toml = f s in
-    ( match toml with
-    | Error s ->
-        print_endline s
-    | Ok toml ->
-        let x = Otoml.find_exn toml Otoml.get_table ["magic"] in
-        List.iter x ~f:(fun (k, v) ->
-            print_endline [%string "%{k} => %{Otoml.Printer.to_string v}"] ) ) ;
-    [%expect {|
-      T1 => ["S", "T", "C"]
-      T2 => ["X"] |}]
-end
