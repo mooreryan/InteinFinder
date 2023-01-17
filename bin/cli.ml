@@ -55,39 +55,73 @@ clip_region_padding = 10
 min_query_length = 100
 min_region_length = 100
 remove_aln_files = true
-
-[start_residue]
-pass  = ["C", "S", "A", "Q", "P", "T"]
-maybe = ["V", "G", "L", "M", "N", "F"]
-
-[end_residues]
-pass  = ["HN", "SN", "GN", "GQ", "LD", "FN"]
-maybe = ["KN", "DY", "SQ", "HQ", "NS", "AN", 
-         "SD", "TH", "RD", "PY", "YN", "VH",
-         "KQ", "PP", "NT", "CN", "LH"]
-
-[end_plus_one_residue]
-pass  = ["S", "T", "C"]
-maybe = []
+threads = 1
 
 [makeprofiledb]
 exe = "makeprofiledb"
 
 [mafft]
 exe = mafft
-max_concurrent_jobs = 1
 
 [mmseqs]
 exe = mmseqs
 evalue = 1e-3
 num_iterations = 2
 sensitivity = 5.7
-threads = 1
 
 [rpsblast]
 exe = "rpsblast+"
 evalue = 1e-3
-num_splits = 1
+
+[start_residue]
+# Tier 1
+C = "T1"
+S = "T1"
+A = "T1"
+Q = "T1"
+P = "T1"
+T = "T1"
+
+# Tier 2
+V = "T2"
+G = "T2"
+L = "T2"
+M = "T2"
+N = "T2"
+F = "T2"
+
+[end_residues]
+# Tier 1
+HN = "T1"
+SN = "T1"
+GN = "T1"
+GQ = "T1"
+LD = "T1"
+FN = "T1"
+
+# Tier 2
+KN = "T2"
+DY = "T2"
+SQ = "T2"
+HQ = "T2"
+NS = "T2"
+AN = "T2"
+SD = "T2"
+TH = "T2"
+RD = "T2"
+PY = "T2"
+YN = "T2"
+VH = "T2"
+KQ = "T2"
+PP = "T2"
+NT = "T2"
+CN = "T2"
+LH = "T2"
+
+[end_plus_one_residue]
+S = "T1"
+T = "T1"
+C = "T1"
 ```|}
     ; `P "=== Pipeline Output"
     ; `P "TODO"
