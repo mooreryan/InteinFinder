@@ -106,7 +106,9 @@ jobs:
         run: |
           git clone https://github.com/mooreryan/tiny_config.git
           cd tiny_config
-          opam install base yaml otoml
+          opam install base otoml
+          opam pin add tiny_config .
+          opam pin add tiny_toml .
           opam install tiny_config
           opam install tiny_toml
 
