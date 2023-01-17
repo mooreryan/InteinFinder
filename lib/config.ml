@@ -2,8 +2,6 @@ open! Core
 open Or_error.Let_syntax
 module Sh = Shexp_process
 
-let otoml_get_string_list = Otoml.get_array Otoml.get_string
-
 module Non_existing_file = struct
   let parser s =
     if Sys_unix.file_exists_exn s then
@@ -45,13 +43,11 @@ module Executable = struct
     Tiny_toml.Value.find_or ~default toml_path converter
 end
 
-module type PATH = sig
-  val path : string -> string list
+module Evalue = struct
+  let term ~default path =
+    let open Tiny_toml in
+    Value.find_or ~default path Converter.Float.non_negative
 end
-
-let evalue_term ~default path =
-  let open Tiny_toml in
-  Value.find_or ~default path Converter.Float.non_negative
 
 module Checks = struct
   module Start_residue = struct
@@ -160,7 +156,7 @@ module Rpsblast = struct
 
   let exe = Executable.term ~default:"rpsblast+" @@ path "exe"
 
-  let evalue = evalue_term ~default:1e-3 @@ path "evalue"
+  let evalue = Evalue.term ~default:1e-3 @@ path "evalue"
 
   let term =
     let open Tiny_toml.Term.Let_syntax in
@@ -191,7 +187,7 @@ module Mmseqs = struct
 
   let exe = Executable.term ~default:"mmseqs" @@ path "exe"
 
-  let evalue = evalue_term ~default:1e-3 @@ path "evalue"
+  let evalue = Evalue.term ~default:1e-3 @@ path "evalue"
 
   let num_iterations =
     let open Tiny_toml in
