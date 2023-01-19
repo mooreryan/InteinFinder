@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
-          - ubuntu-latest
+          - macos-11
+          - ubuntu-20.04
         ocaml-compiler:
           - 4.14.0
 
@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v2
 
       - run: brew install tree
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-11'
 
       - run: echo "LOCAL_PATH=$HOME/.local/bin" >> $GITHUB_ENV
 
@@ -54,7 +54,7 @@ jobs:
           https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-linux-sse2.tar.gz \
           | tar xz \
           && mv mmseqs/bin/mmseqs "$LOCAL_PATH"
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
 
       - name: Download & Install MMseqs2 (macOS)
         run: |
@@ -62,7 +62,7 @@ jobs:
           https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-osx-universal.tar.gz \
           | tar xz \
           && mv mmseqs/bin/mmseqs "$LOCAL_PATH"
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-11'
 
       - name: Download & Install NCBI BLAST+ (ubuntu)
         run: |
@@ -71,7 +71,7 @@ jobs:
           | tar xz \
           && mv ncbi-blast-2.12.0+/bin/rpsblast "${LOCAL_PATH}/rpsblast+" \
           && mv ncbi-blast-2.12.0+/bin/makeprofiledb "${LOCAL_PATH}/makeprofiledb"
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
 
       - name: Download & Install NCBI BLAST+ (macOS)
         run: |
@@ -80,7 +80,7 @@ jobs:
           | tar xz \
           && mv ncbi-blast-2.12.0+/bin/rpsblast "${LOCAL_PATH}/rpsblast+" \
           && mv ncbi-blast-2.12.0+/bin/makeprofiledb "${LOCAL_PATH}/makeprofiledb"
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-11'
 
       - name: Use OCaml ${{ matrix.ocaml-compiler }} (ubuntu)
         uses: ocaml/setup-ocaml@v2
@@ -90,7 +90,7 @@ jobs:
           cache-prefix: v1-${{ matrix.os }}
           opam-pin: false
           opam-depext: false
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
 
       - name: Use OCaml ${{ matrix.ocaml-compiler }} (macOS)
         uses: ocaml/setup-ocaml@v2
@@ -100,7 +100,7 @@ jobs:
           cache-prefix: v1-${{ matrix.os }}
           opam-pin: false
           opam-depext: false
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-11'
 
       - name: Install tiny_config
         run: |
@@ -127,7 +127,7 @@ jobs:
         run: |
           opam install bisect_ppx
           opam exec -- make send_coverage
-        if: matrix.ocaml-compiler == '4.14.0' && matrix.os == 'ubuntu-latest'
+        if: matrix.ocaml-compiler == '4.14.0' && matrix.os == 'ubuntu-20.04'
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
