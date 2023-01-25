@@ -15,6 +15,8 @@ The InteinFinder pipeline's [continuous integration testing](https://github.com/
 - makeprofiledb: 2.12.0 (Package: blast 2.12.0)
 - rpsblast+: 2.12.0+ (Package: blast 2.12.0)
 
+In other words, InteinFinder is continuously tested with those software versions.
+
 ## Using other versions
 
 Other versions will likely work too, but they may give slightly different output, causing the tests to fail if you run them locally.  (E.g., it's possible a different version of BLAST could give slightly different alignment of queries.)
@@ -37,7 +39,7 @@ $ rpsblast -query QUERY -db DB_OUT \
     -num_threads 1 -outfmt 6 -out OUT -evalue X.X
 ```
 
-Again, occasionally a new release of those dependencies could change the CLI.  If you find this to be the case, let me know!
+Again, occasionally a new release of one of those software dependencies could change the CLI.  If you run into issues related to this, let me know!
 
 ## Example installation instructions
 
@@ -45,11 +47,13 @@ Here are some basic instructions for installing the required software on the lat
 
 *Note: These instructions are taken from one of the [GitHub actions that builds and tests InteinFinder](https://github.com/mooreryan/InteinFinder/blob/master/.github/workflows/build_and_test.yml), so if it is [passing](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml) then these instructions should still work if you have a similar OS.*
 
-*Note: I have no idea if these work on Apple Silicon!*
+*Note: I am not able to test these instructions on Apple Silicon!*
 
 For these instructions, replace the `${LOCAL_PATH}` variable with whatever is appropriate for your environment.
 
 ### MAFFT
+
+Here is an example of downloading the source code for MAFFT and compiling it.  MAFFT has pre-compiled binaries available on their site if you would rather use those.
 
 ```
 $ \curl -L \
@@ -59,6 +63,8 @@ $ \curl -L \
 ```
 
 ### MMseqs2
+
+Here is how to download pre-compiled MMseqs2 binaries from GitHub.
 
 #### On Ubuntu
 
@@ -79,6 +85,8 @@ $ \curl -L \
 ```
 
 ### RPSBLAST
+
+Note that in these examples, I'm only bothering to move the `rpsblast` and `makeprofiledb` binaries to a location that is on the path.  (Again, it's taken directly from the CI, which is why it is like this.)
 
 #### On Ubuntu
 

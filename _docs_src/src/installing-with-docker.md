@@ -1,6 +1,8 @@
 # Installing & Using InteinFinder with Docker
 
-*Note: If you're using Windows, I think this is your only option.  WSL may work, but I don't have a way to support it right now.*
+*Note: If you're using Windows, I think this is your only option.  WSL may work, but I don't have a way to test it.*
+
+*Note: Some users have reported issues with Docker on Apple Silicon.  Unfortunately, this is not something I am able to debug now.*
 
 *Note: If you use Docker, you won't have to install the [external dependencies](./installing-external-dependencies.md) that InteinFinder relies on.  (Other than Docker of course!)*
 
