@@ -417,6 +417,8 @@ end = struct
          weird, so we don't allow it. *)
       match (a, b) with At x, At y -> Some (to_int x - to_int y) | _ -> None
 
+    (** [length ~start ~end_] returns the length on a sequences where [start]
+        and [end_] are both inclusive. *)
     let length ~start ~end_ =
       let%map.Option y = sub end_ start in
       y + 1
