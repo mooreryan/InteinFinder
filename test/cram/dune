@@ -2,5 +2,6 @@
  (applies_to :whole_subtree)
  (deps
   %{bin:InteinFinder}
+  %{bin:RemoveInteins}
   (glob_files_rec ./assets/*)
   (glob_files_rec ./scripts/*)))

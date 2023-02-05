@@ -1,0 +1,17 @@
+query	region	intein_target	intein_start_minus_one	intein_start	intein_penultimate	intein_end	intein_end_plus_one	intein_length	start_residue_check	end_residues_check	end_plus_one_residue_check	start_position_check	end_position_check	region_check	overall_check
+a	1	i1	X	X	X	X	X	X	X	X	X	Pass (At 2)	Pass (At 2)	X	Pass (T1)
+a	2	i2	X	X	X	X	X	X	X	X	X	Pass (At 4)	Pass (At 4)	X	Pass (T2)
+a	3	i3	X	X	X	X	X	X	X	X	X	Pass (At 7)	Pass (At 8)	X	Pass (T1)
+a	4	i4	X	X	X	X	X	X	X	X	X	Pass (At 11)	Pass (At 12)	X	Pass (T2)
+a	5	i5	X	X	X	X	X	X	X	X	X	Pass (At 16)	Pass (At 18)	X	Pass (T1)
+a	6	i6	X	X	X	X	X	X	X	X	X	Pass (At 22)	Pass (At 24)	X	Pass (T2)
+a	7	i7	X	X	X	X	X	X	X	X	X	Pass (At 29)	Pass (At 32)	X	Pass (T1)
+a	8	i8	X	X	X	X	X	X	X	X	X	Pass (At 37)	Pass (At 40)	X	Pass (T3)
+b	1	i1	X	X	X	X	X	X	X	X	X	Pass (At 2)	Pass (At 2)	X	Pass (T1)
+b	2	i2	X	X	X	X	X	X	X	X	X	Fail (At 4)	Pass (At 4)	X	Fail
+b	3	i3	X	X	X	X	X	X	X	X	X	Pass (At 7)	Fail (At 8)	X	Fail
+b	4	i4	X	X	X	X	X	X	X	X	X	Fail (At 11)	Fail (At 12)	X	Fail
+b	5	i5	X	X	X	X	X	X	X	X	X	Pass (At 16)	Pass (At 18)	X	Fail
+b	6	i6	X	X	X	X	X	X	X	X	X	Pass (At 22)	Pass (At 24)	X	Pass (T2)
+b	7	i7	X	X	X	X	X	X	X	X	X	Pass (At 29)	Pass (At 32)	X	Fail
+b	8	i8	X	X	X	X	X	X	X	X	X	Pass (At 37)	Pass (At 40)	X	Pass (T3)

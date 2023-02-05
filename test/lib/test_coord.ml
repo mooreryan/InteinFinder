@@ -474,3 +474,297 @@ module Test_sub = struct
     |> print_s ;
     [%expect {| (Error (Failure "decr failed with 0")) |}]
 end
+
+module Test_length = struct
+  (* one_raw *)
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_raw_exn 1) ~end_:(C.one_raw_exn 1) () in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_raw_exn 1) ~end_:(C.one_raw_exn 2) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_raw_exn 2) ~end_:(C.one_raw_exn 1) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_raw_exn 1) ~end_:(C.one_raw_exn 3) () in
+    [%test_result: int] len ~expect:3
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_raw_exn 3) ~end_:(C.one_raw_exn 1) () in
+    [%test_result: int] len ~expect:3
+
+  (* one_aln *)
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_aln_exn 1) ~end_:(C.one_aln_exn 1) () in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_aln_exn 1) ~end_:(C.one_aln_exn 2) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_aln_exn 2) ~end_:(C.one_aln_exn 1) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_aln_exn 1) ~end_:(C.one_aln_exn 3) () in
+    [%test_result: int] len ~expect:3
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.one_aln_exn 3) ~end_:(C.one_aln_exn 1) () in
+    [%test_result: int] len ~expect:3
+
+  (* zero_raw *)
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_raw_exn 1) ~end_:(C.zero_raw_exn 1) () in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_raw_exn 1) ~end_:(C.zero_raw_exn 2) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_raw_exn 2) ~end_:(C.zero_raw_exn 1) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_raw_exn 1) ~end_:(C.zero_raw_exn 3) () in
+    [%test_result: int] len ~expect:3
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_raw_exn 3) ~end_:(C.zero_raw_exn 1) () in
+    [%test_result: int] len ~expect:3
+
+  (* zero_aln *)
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_aln_exn 1) ~end_:(C.zero_aln_exn 1) () in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_aln_exn 1) ~end_:(C.zero_aln_exn 2) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_aln_exn 2) ~end_:(C.zero_aln_exn 1) () in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_aln_exn 1) ~end_:(C.zero_aln_exn 3) () in
+    [%test_result: int] len ~expect:3
+
+  let%test_unit _ =
+    let len = C.length ~start:(C.zero_aln_exn 3) ~end_:(C.zero_aln_exn 1) () in
+    [%test_result: int] len ~expect:3
+
+  (* exclusive end *)
+
+  (* TODO: quickcheck *)
+
+  (* one_raw *)
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_raw_exn 1)
+        ~end_:(C.one_raw_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:0
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_raw_exn 1)
+        ~end_:(C.one_raw_exn 2)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_raw_exn 2)
+        ~end_:(C.one_raw_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_raw_exn 1)
+        ~end_:(C.one_raw_exn 3)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_raw_exn 3)
+        ~end_:(C.one_raw_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  (* one_aln *)
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_aln_exn 1)
+        ~end_:(C.one_aln_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:0
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_aln_exn 1)
+        ~end_:(C.one_aln_exn 2)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_aln_exn 2)
+        ~end_:(C.one_aln_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_aln_exn 1)
+        ~end_:(C.one_aln_exn 3)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.one_aln_exn 3)
+        ~end_:(C.one_aln_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  (* zero_raw *)
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_raw_exn 1)
+        ~end_:(C.zero_raw_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:0
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_raw_exn 1)
+        ~end_:(C.zero_raw_exn 2)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_raw_exn 2)
+        ~end_:(C.zero_raw_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_raw_exn 1)
+        ~end_:(C.zero_raw_exn 3)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_raw_exn 3)
+        ~end_:(C.zero_raw_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  (* zero_aln *)
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_aln_exn 1)
+        ~end_:(C.zero_aln_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:0
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_aln_exn 1)
+        ~end_:(C.zero_aln_exn 2)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_aln_exn 2)
+        ~end_:(C.zero_aln_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:1
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_aln_exn 1)
+        ~end_:(C.zero_aln_exn 3)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+
+  let%test_unit _ =
+    let len =
+      C.length
+        ~end_is:`exclusive
+        ~start:(C.zero_aln_exn 3)
+        ~end_:(C.zero_aln_exn 1)
+        ()
+    in
+    [%test_result: int] len ~expect:2
+end

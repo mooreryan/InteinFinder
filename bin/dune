@@ -1,6 +1,6 @@
 (executables
- (names main)
- (public_names InteinFinder)
+ (names main remove_inteins)
+ (public_names InteinFinder RemoveInteins)
  (instrumentation
   (backend bisect_ppx))
  (libraries

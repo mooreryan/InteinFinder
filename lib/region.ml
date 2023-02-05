@@ -7,6 +7,7 @@ module C = Coord
 
 [@@@coverage off]
 
+(** [query] is the name of the query *)
 type t =
   {start: C.one_raw; end_: C.one_raw; index: Zero_indexed_int.t; query: string}
 [@@deriving fields, sexp_of]

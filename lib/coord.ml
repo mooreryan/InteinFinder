@@ -276,6 +276,9 @@ let rec ( <= ) : type idx1 idx2 wrt. (idx1, wrt) t -> (idx2, wrt) t -> bool =
   | (Zero_aln _ as x), (One_aln _ as y) ->
       x <=* one_to_zero y
 
+(* TODO: arithmatic on different indexing is fine, but different wrt is not.
+   Currently they both have to be the same. *)
+
 (* Position is closed over addition, so no need to check return values. *)
 let add : type idx wrt. (idx, wrt) t -> (idx, wrt) t -> (idx, wrt) t =
  fun x y ->
@@ -317,6 +320,8 @@ let add'' : type idx wrt. int -> (idx, wrt) t -> (idx, wrt) t =
   | One_aln x ->
       One_aln (x + i)
 
+(* VERY IMPORTANT...DON'T USE SUBTRACTION FOR LENGTH. *)
+
 let sub : type idx wrt. (idx, wrt) t -> (idx, wrt) t -> (idx, wrt) t option =
  fun x y ->
   match (x, y) with
@@ -351,6 +356,36 @@ let decr_exn t =
       failwithf "decr failed with %s" (to_int t |> Int.to_string) ()
   | Some x ->
       x
+
+(** Both [start] and [end_] are inclusive. *)
+let length :
+    type idx wrt.
+       ?end_is:[`inclusive | `exclusive]
+    -> start:(idx, wrt) t
+    -> end_:(idx, wrt) t
+    -> unit
+    -> int =
+  (* Ensure that start is [always] <= [end_] *)
+  let canonicalize ~start ~end_ =
+    if Int.(start > end_) then (end_, start) else (start, end_)
+  in
+  fun ?(end_is = `inclusive) ~start ~end_ () ->
+    let length =
+      match (start, end_) with
+      | One_raw start, One_raw end_ ->
+          let start, end_ = canonicalize ~start ~end_ in
+          end_ - start + 1
+      | Zero_raw start, Zero_raw end_ ->
+          let start, end_ = canonicalize ~start ~end_ in
+          end_ - start + 1
+      | One_aln start, One_aln end_ ->
+          let start, end_ = canonicalize ~start ~end_ in
+          end_ - start + 1
+      | Zero_aln start, Zero_aln end_ ->
+          let start, end_ = canonicalize ~start ~end_ in
+          end_ - start + 1
+    in
+    match end_is with `inclusive -> length | `exclusive -> length - 1
 
 (** Maps the Query alignment columns to the raw positions. *)
 module Query_aln_to_raw : sig
