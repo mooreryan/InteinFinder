@@ -21,7 +21,7 @@ Inteins vs inteins
 
 Show output directory
 
-  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin
+  $ tree --nolinks if_out | ../../scripts/redact_date /dev/stdin | grep -v -E '[0-9]+ directories, [0-9]+ files'
   if_out
   |-- _done
   |-- logs
@@ -41,7 +41,6 @@ Show output directory
           |-- 2_intein_db_search_with_regions.tsv
           `-- 3_intein_db_search_summary.tsv
   
-  5 directories, 12 files
 
 Show the putative intein regions
 
