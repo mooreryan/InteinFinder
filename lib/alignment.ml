@@ -1115,10 +1115,11 @@ module Trim_inteins = struct
           let%map.Option len =
             Coord.Query_aln_to_raw.Value.length ~start ~end_
           in
+          let intein_start_pos = Coord.to_zero_indexed_int start_coord in
           let intein =
             String.sub
               (Bio_io.Fasta.Record.seq raw_query)
-              ~pos:(Coord.to_zero_indexed_int start_coord)
+              ~pos:intein_start_pos
               ~len
           in
           let region_string =
