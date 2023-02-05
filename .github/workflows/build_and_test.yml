@@ -139,9 +139,16 @@ jobs:
           opam exec -- make install_release
         if: matrix.ocaml-compiler == '4.14.0'
 
-      - name: Upload the build artifact
+      - name: Upload InteinFinder artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROGRAM_NAME }}-${{ matrix.os }}
           path: _build/install/default/bin/${{ env.PROGRAM_NAME }}
+        if: matrix.ocaml-compiler == '4.14.0'
+
+      - name: Upload RemoveInteins artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: RemoveInteins-${{ matrix.os }}
+          path: _build/install/default/bin/RemoveInteins
         if: matrix.ocaml-compiler == '4.14.0'
