@@ -26,7 +26,7 @@ Here is an example of getting one of the `InteinFinder` binaries working:
 
 ```
 $ \curl -L https://github.com/mooreryan/InteinFinder/releases/download/1.0.0-alpha/InteinFinder-linux.tar.gz \
-  \ tar xz
+  | tar xz
 $ cd InteinFinder-linux
 $ chmod 755 InteinFinder
 $ ./InteinFinder --help
