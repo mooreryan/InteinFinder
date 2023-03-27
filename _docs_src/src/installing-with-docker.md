@@ -14,7 +14,7 @@ First, you will need to [install Docker](https://docs.docker.com/get-docker/) on
 
 ## Run InteinFinder in Docker
 
-Now you can run `InteinFinder` inside of the Docker container.  You can run Docker directly, or use one of the [helper scripts](TODO).
+Now you can run `InteinFinder` inside of the Docker container.  You can run Docker directly, or use one of the [helper scripts](todo.md).
 
 ### Using Docker directly
 
@@ -34,7 +34,7 @@ $ docker run \
 
 ### Using helper scripts
 
-That's a lot to remember to type, so I recommend using one of the [helper scripts](TODO).
+That's a lot to remember to type, so I recommend using one of the [helper scripts](todo.md).
 
 To "install" the scripts, just download them and put them somewhere on your `PATH`.
 

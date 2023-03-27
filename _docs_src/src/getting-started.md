@@ -68,7 +68,7 @@ InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets
 
 ## Make a config file
 
-Config files are in [TOML](TODO) format.  Here is an example.
+Config files are in [TOML](todo.md) format.  Here is an example.
 
 *Note: all paths are relative to the directory in which you run the `InteinFinder` executable.
 
@@ -100,10 +100,10 @@ threads = 4
 
 ## Run the pipeline
 
-Assuming that the `InteinFinder` binary is somewhere on your [path](TODO), then you can run InteinFinder like so:
+Assuming that the `InteinFinder` binary is somewhere on your [path](http://www.linfo.org/path_env_var.html), then you can run InteinFinder like so:
 
 ```
-$ InteinFinder config.toml 
+$ InteinFinder config.toml
 INFO [2023-01-24 20:12:01] Renaming queries
 INFO [2023-01-24 20:12:01] Splitting queries
 INFO [2023-01-24 20:12:01] Making profile DB
