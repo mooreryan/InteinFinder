@@ -6,6 +6,7 @@ on:
       - "main"
       - "staging"
       - "dev"
+      - "just"
 
   pull_request:
     branches:
@@ -40,6 +41,17 @@ jobs:
         run: |
           mkdir -p "$LOCAL_PATH"
           echo "$LOCAL_PATH" >> $GITHUB_PATH
+
+      - name: Setup just
+        run: |
+          \curl \
+            --proto '=https' \
+            --tlsv1.2 \
+            -sSf \
+            https://just.systems/install.sh \
+          | bash -s -- \
+            --to "$LOCAL_PATH" \
+            --tag 1.13.0
 
       - name: Download MAFFT
         run: |
@@ -116,27 +128,27 @@ jobs:
 
       - name: Check dev profile
         run: |
-          opam exec -- make clean
-          opam exec -- make build_dev
-          opam exec -- make test_dev
-          opam exec -- make install_dev
+          opam exec -- just clean
+          opam exec -- just build_dev
+          opam exec -- just test_dev
+          opam exec -- just install_dev
         if: matrix.ocaml-compiler == '4.14.0'
 
       # Send the coverage.
       - name: Send coverage
         run: |
           opam install bisect_ppx
-          opam exec -- make send_coverage
+          opam exec -- just send_coverage
         if: matrix.ocaml-compiler == '4.14.0' && matrix.os == 'ubuntu-20.04'
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check release profile
         run: |
-          opam exec -- make clean
-          opam exec -- make build_release
-          opam exec -- make test_release
-          opam exec -- make install_release
+          opam exec -- just clean
+          opam exec -- just build_release
+          opam exec -- just test_release
+          opam exec -- just install_release
         if: matrix.ocaml-compiler == '4.14.0'
 
       - name: Upload InteinFinder artifact
