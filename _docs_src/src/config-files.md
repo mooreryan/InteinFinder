@@ -6,7 +6,16 @@ InteinFinder config files are written in [TOML](https://toml.io), which is (supp
 
 ## Example
 
-Here is an example with all the available options given with their default values.  Note that you can break arrays across multiple lines if you want to!
+Here is an example with all the available options given with their default values.
+
+Note:
+
+- Most of these are optional!
+- Double quote your strings
+- You can break arrays across multiple lines if you want to!
+- Any line starting with a `#` is a comment.
+  - That means that they are ignored.
+  - You can use them for your own clarification, or whatever you need.
 
 ```toml
 # General I/O
@@ -27,20 +36,6 @@ min_region_length = 100
 remove_aln_files = true
 threads = 1
 
-[start_residue]
-pass  = ["C", "S", "A", "Q", "P", "T"]
-maybe = ["V", "G", "L", "M", "N", "F"]
-
-[end_residues]
-pass  = ["HN", "SN", "GN", "GQ", "LD", "FN"]
-maybe = ["KN", "DY", "SQ", "HQ", "NS", "AN", 
-         "SD", "TH", "RD", "PY", "YN", "VH", 
-		 "KQ", "PP", "NT", "CN", "LH"]
-
-[end_plus_one_residue]
-pass  = ["S", "T", "C"]
-maybe = []
-
 [makeprofiledb]
 exe = "makeprofiledb"
 
@@ -56,6 +51,56 @@ sensitivity = 5.7
 [rpsblast]
 exe = "rpsblast+"
 evalue = 1e-3
+
+[start_residue]
+# Tier 1
+C = "T1"
+S = "T1"
+A = "T1"
+Q = "T1"
+P = "T1"
+T = "T1"
+
+# Tier 2
+V = "T2"
+G = "T2"
+L = "T2"
+M = "T2"
+N = "T2"
+F = "T2"
+
+[end_residues]
+# Tier 1
+HN = "T1"
+SN = "T1"
+GN = "T1"
+GQ = "T1"
+LD = "T1"
+FN = "T1"
+
+# Tier 2
+KN = "T2"
+DY = "T2"
+SQ = "T2"
+HQ = "T2"
+NS = "T2"
+AN = "T2"
+SD = "T2"
+TH = "T2"
+RD = "T2"
+PY = "T2"
+YN = "T2"
+VH = "T2"
+KQ = "T2"
+PP = "T2"
+NT = "T2"
+CN = "T2"
+LH = "T2"
+
+[end_plus_one_residue]
+S = "T1"
+T = "T1"
+C = "T1"
 ```
 
 ## Details
@@ -79,23 +124,23 @@ If that is confusing, you may want to stick to absolute paths.
 	- Will be created if it does not exist
 	- Pipeline will fail if it does exist
 
-Both these options are required.
+Both these options are **required**.
 
 ### InteinFinder DB location
 
 - `inteins`
     - Path to the file containing the intein DB you want to search against
-	- In most cases, you will use the file [included](TODO) with InteinFinder, but you can always use your own.
+	- In most cases, you will use the file [included](https://github.com/mooreryan/InteinFinder/blob/main/_assets/intein_sequences/all_derep.faa) with InteinFinder, but you can always use your own.
 - `smp_dir`
     - Path to the directory containing `SMP` files to search against
-	- This is the file format that rpsblast uses ([link](TODO)).
-	- In most cases, you will use the file [included](TODO) with InteinFinder, but you can always use your own.
+	- This is the file format that rpsblast uses ([link](todo.md)).
+	- In most cases, you will use the files [included](https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp) with InteinFinder, but you can always use your own.
 
-Both these options are required.
+Both these options are **required**.
 
 ### General pipeline options
 
-These options are all optional.  That means if you leave them out of your config file, they will be assigned to their default values.
+These config pairs are all **optional**.  That means if you leave them out of your config file, they will be assigned to their default values.
 
 - `clip_region_padding`
     - The "padding" added to each side of the hit region to "clip" from the query sequence and include in the alignment files
@@ -130,89 +175,64 @@ These options are all optional.  That means if you leave them out of your config
         - For MMseqs2, this is the `threads` option.
 		- For RPSBLAST, it is the number of concurrent search jobs that are run
 		- For running alignments, it controls how many alignment jobs are run concurrently.
-	- A reasonable value is the number of cores your machine has (or a few less than that if you need to do other work at the same time).
+	- A reasonable value is close to the number of cores your machine has.
     - default value: `1`
 
-## Key intein residues
+### Key intein residues
 
-You can customize the key intein residues that InteinFinder pipeline will check for.  The defaults are based on a combination of literature support and frequency in known/annotated inteins, so you often won't be adjusting them.  However, you have the power if you need to!
+You can customize the key intein residues that InteinFinder pipeline will check for.  The defaults are based on a combination of literature support and frequency in known/annotated inteins, so you may not need to adjust them.  However, you have the power if you need to!
 
-TODO: probably change `maybe` to `pass` and `pass` to `strict_pass`.
+All of these tables are **optional**.  Be careful though:  if you specify one of the following options, then you need to *fully specify* that option.
 
-You control the key residues with a TOML [table](https://toml.io/en/v1.0.0#table).
+Here is an incorrect example....You want to change start residue `G` from tier 2 to tier 1, but you want all other residues to be the same.  The following **will NOT** do that.
 
-All of these tables are optional.
-
-### Start residues
-
-The header to control start residues is `[start_residue]`.  There are two options: `pass` and `maybe`.
-
-- `pass`
-    - An array of residues considered for a "strict" pass
-	- default value: `["C", "S", "A", "Q", "P", "T"]`
-- `maybe`
-    - An array of residues considered for a regular pass
-	- default value: `["V", "G", "L", "M", "N", "F"]`
-
-This is what the default would look like in a TOML file.
-
-```toml
+```
 [start_residue]
-pass  = ["C", "S", "A", "Q", "P", "T"]
-maybe = ["V", "G", "L", "M", "N", "F"]
+G = "T1"
 ```
 
-Of course, if you want the default, simply leave out the entire table!
+Why will that not work?  Because you are saying for start residue, `G` is a tier 1 pass and all other residues that you didn't specify should be considered as `Fail`.
 
-### End residues
+#### Tiers
 
-Control the final two residues with `[end_residues]`.  Again, two options: `pass` and `maybe`.
+InteinFinder uses the concept of tiers in its scoring scheme.  You can find an explanation of that [here](todo.md) or in the [manuscript](todo.md).
 
-- `pass`
-    - An array of residues considered for a "strict" pass
-	- default value: `["HN", "SN", "GN", "GQ", "LD", "FN"]`
-- `maybe`
-    - An array of residues considered for a regular pass
-	- default value: `["KN", "DY", "SQ", "HQ", "NS", "AN", "SD", "TH", "RD", "PY", "YN", "VH", "KQ", "PP", "NT", "CN", "LH"]`
+- Pass tiers
+  - To specify tier 1 pass, you use `"T1"`
+  - To specify tier 2 pass, you use `"T2"`
+  - Etc.
+- Fail
+  - Any residue not explicitly listed as one of the pass tiers is considered a `Fail`
 
-This is what the default would look like in a TOML file.
+#### Start residue
 
-```toml
-[end_residues]
-pass  = ["HN", "SN", "GN", "GQ", "LD", "FN"]
-maybe = ["KN", "DY", "SQ", "HQ", "NS", "AN", 
-         "SD", "TH", "RD", "PY", "YN", "VH", 
-		 "KQ", "PP", "NT", "CN", "LH"]
-```
+- The table to control start residue tiers is `[start_residue]`.
+- The start residue is the first amino acid of the predicted intein.
+- Defaults:
+  - Tier 1 pass: C, S, A, Q, P, T
+  - Tier 2 pass: V, G, L, M, N, F
+  - Fail: any other residue
+- If you want the default, simply leave out the entire table!
 
-The whitespace is just there to make it look nicer.  You can put it on the same line if you want!
+#### End residues
 
-Same as above, if you want the default, simply leave out the entire table!
+- Control the final two residues with `[end_residues]`.
+- The end residues are the final two amino acids of the predicted intein.
+- Defaults:
+  - Tier 1 pass: HN, SN, GN, GQ, LD, FN
+  - Tier 2 pass: KN, DY, SQ, HQ, NS, AN, SD, TH, RD, PY, YN, VH, KQ, PP, NT, CN, LH
+  - Fail: any other AA pair
+- If you want the default, simply leave out the entire table!
 
-### End plus one residue
+#### End plus one residue
 
-This is the C-terminal extein residue check.  It's called "end plus one" just for clarity, as in one residue past the end of the intein.
-
-Control the residues considered for pass and strict pass with `[end_plus_one_residues]` table.  Again, two options: `pass` and `maybe`.
-
-- `pass`
-    - An array of residues considered for a "strict" pass
-	- default value: `["S", "T", "C"]`
-- `maybe`
-    - An array of residues considered for a regular pass
-	- default value: `[]`
-	- Hang on...what does an empty array mean for a default value?
-	    - It means that there are only strict passes and failures by default for the C-terminal intein residue check.
-        - Also, it means not providing a value here is the same as the default value.
-
-Here's an example of how it would look in your config file.
-
-```toml
-[end_plus_one_residue]
-pass  = ["S", "T", "C"]
-maybe = []
-```
-Like the last couple of options, if you want the default, simply leave out the entire table!
+- This is the C-terminal extein residue check.
+  - It's called "end plus one" just for clarity, as in one residue past the end of the intein.
+- Control the residues considered for pass and strict pass with `[end_plus_one_residues]` table
+- Like the last couple of options, if you want the default, simply leave out the entire table!
+- Defaults:
+  - Tier 1 pass: S, T, C
+  - Fail: any other AA pair
 
 ## External program options
 
@@ -230,27 +250,27 @@ There is only one option for this table:
     - The name of the executable program
 	- Also, you could pass in a path to the program (TODO add a test for this)
     - default value: `makeprofiledb`
-	    - Note that this default value assumes that the program is on you [PATH](TODO)
+	    - Note that this default value assumes that the program is on your [PATH](http://www.linfo.org/path_env_var.html)
 
 ### MAFFT
 
-[MAFFT](TODO) is used to do the alignments when refining putative intein regions.
+[MAFFT](https://mafft.cbrc.jp/alignment/software/) is used to do the alignments when refining putative intein regions.
 
 - `exe`
     - The name of the executable program
 	- Also, you could pass in a path to the program (TODO add a test for this)
     - default value: `mafft`
-	    - Note that this default value assumes that the program is on you [PATH](TODO)
+	    - Note that this default value assumes that the program is on your path
 
 ### MMseqs2
 
-[MMseqs2](TODO) is used to search queries against intein sequences
+[MMseqs2](https://github.com/soedinglab/MMseqs2) is used to search queries against intein sequences
 
 - `exe`
     - The name of the executable program
 	- Also, you could pass in a path to the program (TODO add a test for this)
     - default value: `mmseqs`
-	    - Note that this default value assumes that the program is on you [PATH](TODO)
+	    - Note that this default value assumes that the program is on your path
 - `evalue`
     - default value: `1e-3`
 - `num_iterations`
@@ -264,7 +284,7 @@ There is only one option for this table:
     - The name of the executable program
 	- Also, you could pass in a path to the program (TODO add a test for this)
     - default value: `rpsblast+`
-	    - Note that this default value assumes that the program is on you [PATH](TODO)
+	    - Note that this default value assumes that the program is on you [PATH](todo.md)
 		- There is a good chance that you will change this to `rpsblast`.
 		    - On my system, it's called `rpsblast+`, but I'm not sure which is more common.
 - `evalue`
