@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/installing-external-dependencies/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Installing External Software Dependencies - InteinFinder</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installing External Software Dependencies";
+        var mkdocs_page_input_path = "installing-external-dependencies.md";
+        var mkdocs_page_url = "/InteinFinder/installing-external-dependencies/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/toml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+<meta property="og:site_name" content="Installing External Software Dependencies - InteinFinder" />
+
+<meta property="og:type" content="website">
+
+<meta property="og:title" content="Installing External Software Dependencies - InteinFinder">
+
+<meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/installing-external-dependencies/">
+
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Installing External Software Dependencies - InteinFinder">
+
+  
+
+  
+
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> InteinFinder
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../intein-finder-use-cases.md">InteinFinder Use Cases</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../jargon.md">Definitions & Jargon</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../bibliography.md">Bibliography</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Installing External Software Dependencies</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#using-other-versions">Using other versions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-installation-instructions">Example installation instructions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#mafft">MAFFT</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mmseqs2">MMseqs2</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#on-ubuntu">On Ubuntu</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#on-macos">On macOS</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rpsblast">RPSBLAST</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#on-ubuntu_1">On Ubuntu</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#on-macos_1">On macOS</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-with-docker/">Installing With Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../intein-finder-output/">Output</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="" href="../tons-of-examples.md">Tons of Examples</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">InteinFinder</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Installation &raquo;</li>
+      <li>Installing External Software Dependencies</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/installing-external-dependencies.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="installing-external-dependencies">Installing External Dependencies</h1>
+<p>InteinFinder relies on a few other software packages:</p>
+<ul>
+<li><a href="https://mafft.cbrc.jp/alignment/software/">MAFFT</a></li>
+<li><a href="https://github.com/soedinglab/MMseqs2">MMseqs2</a></li>
+<li><a href="https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.12.0/">NCBI BLAST+</a> (specifically, <code>rpsblast</code> and <code>makeprofiledb</code>)</li>
+</ul>
+<p>For detailed instructions on installing these packages, please consult their respective installation pages.</p>
+<p>The InteinFinder pipeline's <a href="https://github.com/mooreryan/InteinFinder/actions">continuous integration testing</a> is done with the following versions:</p>
+<ul>
+<li>MAFFT: v7.490 (2021/Oct/30)</li>
+<li>MMseqs2: 45111b641859ed0ddd875b94d6fd1aef1a675b7e</li>
+<li>makeprofiledb: 2.12.0 (Package: blast 2.12.0)</li>
+<li>rpsblast+: 2.12.0+ (Package: blast 2.12.0)</li>
+</ul>
+<p>In other words, InteinFinder is continuously tested with those software versions.</p>
+<h2 id="using-other-versions">Using other versions</h2>
+<p>Other versions will likely work too, but they may give slightly different output, causing the tests to fail if you run them locally.  (E.g., it's possible a different version of BLAST could give slightly different alignment of queries.)</p>
+<p>Occasionally, the command line interface of the external dependencies will change (e.g., <code>mmseqs</code> has changed a bit in the past).  So, if you discover an error due to that, please <a href="https://github.com/mooreryan/InteinFinder/issues">submit a bug report</a> (GitHub account required).</p>
+<p>For reference, <code>InteinFinder</code> pipeline assumes that the command line interface of its external dependencies work something like this:</p>
+<pre><code># MAFFT
+$ mafft --quiet --auto --thread 1 input.faa
+
+# MMseqs2
+$ mmseqs easy-search QUERIES TARGETS OUT TMPDIR \
+    --format-mode 2 -s X.X --num-iterations N -e X --threads N
+
+# RPSBLAST
+$ makeprofiledb -in DB_IN -out DB_OUT
+$ rpsblast -query QUERY -db DB_OUT \
+    -num_threads 1 -outfmt 6 -out OUT -evalue X.X
+</code></pre>
+<p>Again, occasionally a new release of one of those software dependencies could change the CLI.  If you run into issues related to this, let me know!</p>
+<h2 id="example-installation-instructions">Example installation instructions</h2>
+<p>Here are some basic instructions for installing the required software on the latest versions of macOS and Ubuntu Linux.</p>
+<p><em>Note: These instructions are taken from one of the <a href="https://github.com/mooreryan/InteinFinder/blob/master/.github/workflows/build_and_test.yml">GitHub actions that builds and tests InteinFinder</a>, so if it is <a href="https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml">passing</a> then these instructions should still work if you have a similar OS.</em></p>
+<p><em>Note: I am not able to test these instructions on Apple Silicon!</em></p>
+<p>For these instructions, replace the <code>${LOCAL_PATH}</code> variable with whatever is appropriate for your environment.</p>
+<h3 id="mafft">MAFFT</h3>
+<p>Here is an example of downloading the source code for MAFFT and compiling it.  MAFFT has pre-compiled binaries available on their site if you would rather use those.</p>
+<pre><code>$ \curl -L \
+  https://mafft.cbrc.jp/alignment/software/mafft-7.490-without-extensions-src.tgz \
+  | tar xz \
+  &amp;&amp; cd mafft-*/core/ &amp;&amp; make clean &amp;&amp; make &amp;&amp; sudo make install
+</code></pre>
+<h3 id="mmseqs2">MMseqs2</h3>
+<p>Here is how to download pre-compiled MMseqs2 binaries from GitHub.</p>
+<h4 id="on-ubuntu">On Ubuntu</h4>
+<pre><code>$ \curl -L \
+  https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-linux-sse2.tar.gz \
+  | tar xz \
+  &amp;&amp; mv mmseqs/bin/mmseqs &quot;$LOCAL_PATH&quot;
+</code></pre>
+<h4 id="on-macos">On macOS</h4>
+<pre><code>$ \curl -L \
+  https://github.com/soedinglab/MMseqs2/releases/download/13-45111/mmseqs-osx-universal.tar.gz \
+  | tar xz \
+  &amp;&amp; mv mmseqs/bin/mmseqs &quot;$LOCAL_PATH&quot;
+</code></pre>
+<h3 id="rpsblast">RPSBLAST</h3>
+<p>Note that in these examples, I'm only bothering to move the <code>rpsblast</code> and <code>makeprofiledb</code> binaries to a location that is on the path.  (Again, it's taken directly from the CI, which is why it is like this.)</p>
+<h4 id="on-ubuntu_1">On Ubuntu</h4>
+<pre><code>$ \curl -L \
+  https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.12.0/ncbi-blast-2.12.0+-x64-linux.tar.gz \
+  | tar xz \
+  &amp;&amp; mv ncbi-blast-2.12.0+/bin/rpsblast &quot;${LOCAL_PATH}/rpsblast+&quot; \
+  &amp;&amp; mv ncbi-blast-2.12.0+/bin/makeprofiledb &quot;${LOCAL_PATH}/makeprofiledb&quot;
+</code></pre>
+<h4 id="on-macos_1">On macOS</h4>
+<pre><code>$ \curl -L \
+  https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.12.0/ncbi-blast-2.12.0+-x64-macosx.tar.gz \
+  | tar xz \
+  &amp;&amp; mv ncbi-blast-2.12.0+/bin/rpsblast &quot;${LOCAL_PATH}/rpsblast+&quot; \
+  &amp;&amp; mv ncbi-blast-2.12.0+/bin/makeprofiledb &quot;${LOCAL_PATH}/makeprofiledb&quot;
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting-started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../installing-precompiled-binaries/" class="btn btn-neutral float-right" title="Installing Precompiled Binaries">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/mooreryan/InteinFinder" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../getting-started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../installing-precompiled-binaries/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

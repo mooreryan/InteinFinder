@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/intein-finder-output/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Output - InteinFinder</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Output";
+        var mkdocs_page_input_path = "intein-finder-output.md";
+        var mkdocs_page_url = "/InteinFinder/intein-finder-output/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/toml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+<meta property="og:site_name" content="Output - InteinFinder" />
+
+<meta property="og:type" content="website">
+
+<meta property="og:title" content="Output - InteinFinder">
+
+<meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/intein-finder-output/">
+
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Output - InteinFinder">
+
+  
+
+  
+
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> InteinFinder
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../intein-finder-use-cases.md">InteinFinder Use Cases</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../jargon.md">Definitions & Jargon</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../bibliography.md">Bibliography</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-with-docker/">Installing With Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Output</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_done">_done</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#alignments">Alignments</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#logs">Logs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pipeline-info">Pipeline info</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#results">Results</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#putative-intein-regions">Putative intein regions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#intein-sequence-hits">Intein sequence hits</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#intein-hit-checks">Intein hit checks</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="" href="../tons-of-examples.md">Tons of Examples</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">InteinFinder</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Usage &raquo;</li>
+      <li>Output</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/intein-finder-output.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="yo">Yo</h1>
+<p>Let's talk about the pipeline's output.</p>
+<p>Here is the example output from one of InteinFinder's <a href="https://github.com/mooreryan/InteinFinder/blob/work/test/cram/basic_usage/smoke_test.t/run.t">tests</a>.</p>
+<p>By default, the intermediate alignment files are not shown, but this time, we show them.  Here it is:</p>
+<pre><code class="language-text">$ tree if_out
+if_out
+|-- _done
+|-- alignments
+|   |-- 1_name_map.tsv
+|   |-- mafft_out___seq_10___green_2018___seq_11___1___4.fa
+|   |-- mafft_out___seq_10___inbase___seq_236___1___2.fa
+|   |-- mafft_out___seq_10___kelley_2016___seq_1___1___3.fa
+|   |-- mafft_out___seq_10___kelley_2016___seq_9___1___1.fa
+|   |-- mafft_out___seq_11___green_2018___seq_11___1___4.fa
+|   |-- mafft_out___seq_11___inbase___seq_236___1___2.fa
+|   |-- mafft_out___seq_11___kelley_2016___seq_1___1___3.fa
+|   |-- mafft_out___seq_11___kelley_2016___seq_9___1___1.fa
+|   |-- mafft_out___seq_2___inbase___seq_440___2___1.fa
+|   |-- mafft_out___seq_3___inbase___seq_219___1___1.fa
+|   |-- mafft_out___seq_4___inbase___seq_440___2___1.fa
+|   |-- mafft_out___seq_5___inbase___seq_524___1___1.fa
+|   |-- mafft_out___seq_8___inbase___seq_524___1___1.fa
+|   `-- mafft_out___seq_9___inbase___seq_524___1___1.fa
+|-- logs
+|   |-- 1_config.toml
+|   |-- 2_pipeline_info.txt
+|   `-- if_log.DATE.mmseqs_search.txt
+|-- results
+|   |-- 1_putative_intein_regions.tsv
+|   |-- 2_intein_hit_info.tsv
+|   |-- 2_intein_hit_checks.tsv
+|   `-- 3_trimmed_inteins.faa
+`-- search
+    |-- 1_intein_db_search_out.tsv
+    |-- 1_cdm_db_search_out.tsv
+    |-- 2_intein_db_search_summary.tsv
+    `-- 2_cdm_db_search_summary.tsv
+</code></pre>
+<h2 id="_done">_done</h2>
+<p>First, you see a file called <code>_done</code>.  It is an empty file, just there so you can see at a glance if the pipeline completed successfully.</p>
+<h2 id="alignments">Alignments</h2>
+<p>If you set <code>remove_aln_files = false</code> in the config file, you will see a directory called <code>alignments</code>.  Within, there are all the alignment files generated by the pipeline, as well as a file, <code>1_name_map.tsv</code>, which shows the mapping from internal sequence names used by the pipeline to the original names of the sequences.</p>
+<p>Note that in the other output files, the original sequence IDs are used, however, in the alignments folder, the internal names are used.  So, you can use the name map file to figure out what is going on.</p>
+<p>The alignment file names contain the internal query ID, along with the InteinFinder DB sequence ID with which it was aligned.</p>
+<h2 id="logs">Logs</h2>
+<p>The logs can be found in the <code>logs</code> directory.  </p>
+<ul>
+<li><code>1_config.toml</code>: <ul>
+<li>This is the original config file copied in to the output directory.</li>
+<li>It is here purely for convenience....I have found that it is easy for output directories and log files to get misplaced years after running a pipeline, so this should help you stay organized.</li>
+</ul>
+</li>
+<li><code>2_pipeline_info.txt</code><ul>
+<li>Contains versions of all software used in the pipeline</li>
+<li>Shows the config options as interpreted by InteinFinder<ul>
+<li>Since you don't have to supply optional values in the config file, you can use this file to see exactly what config options the pipeline has been run with.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>if_log.DATE.*</code><ul>
+<li>Next you will see one or more files that have this format.</li>
+<li>If the pipeline succeeds, you will probably only see one for MMseqs2, as it dumps a lot of info even when it is successful.</li>
+<li>If the pipeline fails, you should see at least a few more files in here, containing information about what went wrong.</li>
+</ul>
+</li>
+</ul>
+<h3 id="pipeline-info">Pipeline info</h3>
+<p>Here is an example of how the <code>2_pipeline_info.txt</code> file might look:</p>
+<pre><code class="language-text">Program Versions
+================
+InteinFinder version: 1.0.0-SNAPSHOT [3bbadae-dirty].
+/usr/bin/mafft version: v7.490 (2021/Oct/30). 
+/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e. 
+/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+
+Working Directory
+=================
+/home/ryan/projects/InteinFinder/test/cram/basic_usage/smoke_test.t
+
+Config
+======
+((inteins_file ../../assets/all_derep.faa)
+ (queries_file ../../assets/rnr_5.faa) (smp_dir ../../assets/smp)
+ (out_dir if_out)
+ (checks
+  ((start_residue ((pass (A C P Q S T)) (maybe (F G L M N V))))
+   (end_residues
+    ((pass (FN GN GQ HN LD SN))
+     (maybe (AN CN DY HQ KN KQ LH NS NT PP PY RD SD SQ TH VH YN))))
+   (end_plus_one_residue ((pass (C S T)) (maybe ())))))
+ (mafft ((exe /usr/bin/mafft) (max_concurrent_jobs 2)))
+ (makeprofiledb ((exe /usr/bin/makeprofiledb)))
+ (mmseqs
+  ((exe /home/ryan/software/mmseqs/bin/mmseqs) (evalue 0.001)
+   (num_iterations 2) (sensitivity 5.7) (threads 1)))
+ (rpsblast ((exe /usr/bin/rpsblast+) (evalue 0.001) (num_splits 2)))
+ (log_level info) (clip_region_padding 10) (min_query_length 100)
+ (min_region_length 50) (remove_aln_files false))
+</code></pre>
+<p>There are three sections:</p>
+<ul>
+<li><code>Program Versions</code>: contains info about the executable binary file as well as versions for all of the programs used in the pipeline</li>
+<li><code>Working Directory</code>: <ul>
+<li>The working directory from which the <code>InteinFinder</code> executable was run</li>
+<li>This is useful if you want to rerun the pipeline using the same config file, as you are allowed to use relative file paths in the config files.</li>
+</ul>
+</li>
+<li><code>Config</code>:  all the options as interpreted from the config file</li>
+</ul>
+<h2 id="results">Results</h2>
+<p>The <code>results</code> directory contains the main "results" of the pipeline.</p>
+<h3 id="putative-intein-regions">Putative intein regions</h3>
+<p>The <code>1_putative_intein_regions.tsv</code> file contains coordinates of any putative intein regions for your queries.</p>
+<p>These regions are defined solely through homology to something any of the InteinFinder's databases (either the intein sequence database, or the conserved domain database).</p>
+<p>While these regions will many times contain actual inteins, regions may often be mobile elements or endonucleases, or things like that as many non-intein proteins may have hits to those items in the database.  That is why InteinFinder does a few more steps to check for inteins.</p>
+<ul>
+<li><code>query</code>: the query sequence ID</li>
+<li><code>region_index</code>: 1-indexed, region ID (queries may have multiple hit regions)</li>
+<li><code>start</code>: 1-indexed, inclusive start coordinate</li>
+<li><code>end</code>: 1-indexed, inclusive end coordinate</li>
+</ul>
+<h3 id="intein-sequence-hits">Intein sequence hits</h3>
+<p>TODO: this file should move to the search output</p>
+<p>Putative intein regions are defined by hits to both intein sequences and conserved domains.  Because hits to intein sequences are of particular importance, there is an output file, <code>2_intein_hit_info.tsv</code>, that gives info about the queries that had hits specifically to inteins from InteinFinder's databases, and the region in which those hits occurred.</p>
+<p>This file is similar to the blast tab output format 6, with some added info at the beginning and the end.</p>
+<p>The first few columns describe the query, the intein DB hit, and the region in which that hit occurred.</p>
+<ul>
+<li><code>query</code></li>
+<li><code>region</code></li>
+<li><code>region_start</code></li>
+<li><code>region_end</code></li>
+<li><code>target</code></li>
+</ul>
+<p>The following fields are the same as from a blast tab output format 6 file.</p>
+<ul>
+<li><code>pident</code></li>
+<li><code>alnlen</code></li>
+<li><code>mismatch</code></li>
+<li><code>gapopen</code></li>
+<li><code>qstart</code></li>
+<li><code>qend</code></li>
+<li><code>tstart</code></li>
+<li><code>tend</code></li>
+<li><code>evalue</code></li>
+<li><code>bits</code></li>
+</ul>
+<p>Finally, two additional fields give the length of the query and target sequences.</p>
+<ul>
+<li><code>qlen</code></li>
+<li><code>tlen</code></li>
+</ul>
+<h3 id="intein-hit-checks">Intein hit checks</h3>
+<p>Next, there is a file describing all the "checks" that InteinFinder does on the putative regions: <code>2_intein_hit_checks.tsv</code>.</p>
+<p>This file has a lot of columns and basically all of the important info that the pipeline puts out.</p>
+<ul>
+<li><code>query</code></li>
+<li><code>region</code></li>
+<li><code>intein_target</code></li>
+<li><code>intein_start_minus_one</code></li>
+<li><code>intein_start</code></li>
+<li><code>intein_penultimate</code></li>
+<li><code>intein_end</code></li>
+<li><code>intein_end_plus_one</code></li>
+<li><code>intein_length</code></li>
+<li><code>start_residue_check</code></li>
+<li><code>end_residues_check</code></li>
+<li><code>end_plus_one_residue_check</code></li>
+<li><code>start_position_check</code></li>
+<li><code>end_position_check</code></li>
+<li><code>region_check</code></li>
+<li><code>overall_check</code></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../config-files/" class="btn btn-neutral float-left" title="Config files"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/mooreryan/InteinFinder" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../config-files/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

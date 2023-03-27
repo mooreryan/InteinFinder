@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/config-files/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Config files - InteinFinder</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Config files";
+        var mkdocs_page_input_path = "config-files.md";
+        var mkdocs_page_url = "/InteinFinder/config-files/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/toml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+<meta property="og:site_name" content="Config files - InteinFinder" />
+
+<meta property="og:type" content="website">
+
+<meta property="og:title" content="Config files - InteinFinder">
+
+<meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/config-files/">
+
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Config files - InteinFinder">
+
+  
+
+  
+
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> InteinFinder
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../intein-finder-use-cases.md">InteinFinder Use Cases</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../jargon.md">Definitions & Jargon</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../bibliography.md">Bibliography</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-with-docker/">Installing With Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Config files</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#example">Example</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#details">Details</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-note-about-paths">A note about paths</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#general-io">General I/O</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#inteinfinder-db-location">InteinFinder DB location</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#general-pipeline-options">General pipeline options</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#key-intein-residues">Key intein residues</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#tiers">Tiers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#start-residue">Start residue</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#end-residues">End residues</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#end-plus-one-residue">End plus one residue</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#external-program-options">External program options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#makeprofiledb">makeprofiledb</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mafft">MAFFT</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mmseqs2">MMseqs2</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rpsblast">RPSBLAST</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../intein-finder-output/">Output</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="" href="../tons-of-examples.md">Tons of Examples</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">InteinFinder</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Usage &raquo;</li>
+      <li>Config files</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/config-files.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="config-files">Config Files</h1>
+<p>There are a lot of options that you can specify when running InteinFinder.  The config file is how you specify those options.</p>
+<p>InteinFinder config files are written in <a href="https://toml.io">TOML</a>, which is (supposed to) prioritize ease of reading and writing.  Hopefully you agree :)</p>
+<h2 id="example">Example</h2>
+<p>Here is an example with all the available options given with their default values.</p>
+<p>Note:</p>
+<ul>
+<li>Most of these are optional!</li>
+<li>Double quote your strings</li>
+<li>You can break arrays across multiple lines if you want to!</li>
+<li>Any line starting with a <code>#</code> is a comment.</li>
+<li>That means that they are ignored.</li>
+<li>You can use them for your own clarification, or whatever you need.</li>
+</ul>
+<pre><code class="language-toml"># General I/O
+queries = &quot;path/to/queries.faa&quot;
+out_dir = &quot;path/to/output_directory&quot;
+
+# InteinFinder DB location
+inteins = &quot;path/to/intein_db.faa&quot;
+smp_dir = &quot;path/to/smp_directory&quot;
+
+# All options below this line are optional!
+
+# General pipeline options
+log_level = &quot;info&quot;
+clip_region_padding = 10
+min_query_length = 100
+min_region_length = 100
+remove_aln_files = true
+threads = 1
+
+[makeprofiledb]
+exe = &quot;makeprofiledb&quot;
+
+[mafft]
+exe = mafft
+
+[mmseqs]
+exe = mmseqs
+evalue = 1e-3
+num_iterations = 2
+sensitivity = 5.7
+
+[rpsblast]
+exe = &quot;rpsblast+&quot;
+evalue = 1e-3
+
+[start_residue]
+# Tier 1
+C = &quot;T1&quot;
+S = &quot;T1&quot;
+A = &quot;T1&quot;
+Q = &quot;T1&quot;
+P = &quot;T1&quot;
+T = &quot;T1&quot;
+
+# Tier 2
+V = &quot;T2&quot;
+G = &quot;T2&quot;
+L = &quot;T2&quot;
+M = &quot;T2&quot;
+N = &quot;T2&quot;
+F = &quot;T2&quot;
+
+[end_residues]
+# Tier 1
+HN = &quot;T1&quot;
+SN = &quot;T1&quot;
+GN = &quot;T1&quot;
+GQ = &quot;T1&quot;
+LD = &quot;T1&quot;
+FN = &quot;T1&quot;
+
+# Tier 2
+KN = &quot;T2&quot;
+DY = &quot;T2&quot;
+SQ = &quot;T2&quot;
+HQ = &quot;T2&quot;
+NS = &quot;T2&quot;
+AN = &quot;T2&quot;
+SD = &quot;T2&quot;
+TH = &quot;T2&quot;
+RD = &quot;T2&quot;
+PY = &quot;T2&quot;
+YN = &quot;T2&quot;
+VH = &quot;T2&quot;
+KQ = &quot;T2&quot;
+PP = &quot;T2&quot;
+NT = &quot;T2&quot;
+CN = &quot;T2&quot;
+LH = &quot;T2&quot;
+
+[end_plus_one_residue]
+S = &quot;T1&quot;
+T = &quot;T1&quot;
+C = &quot;T1&quot;
+</code></pre>
+<h2 id="details">Details</h2>
+<p>Let's go into detail on each set of options.</p>
+<p><em>Note: I will try to keep this in sync with the code, but if you notice it is not, then please <a href="https://github.com/mooreryan/InteinFinder/issues/new">file an issue</a>!</em></p>
+<h3 id="a-note-about-paths">A note about paths</h3>
+<p>For any option that takes a path to a file or directory (<code>inteins</code>, <code>queries</code>, <code>smp_dir</code>, and <code>out_dir</code>), you can use a relative path if you want.  But keep in mind that it will be relative to the location in which you run InteinFinder, <em>not the location in which the config file resides</em>.</p>
+<p>If that is confusing, you may want to stick to absolute paths.</p>
+<h3 id="general-io">General I/O</h3>
+<ul>
+<li><code>queries</code><ul>
+<li>Path to the file containing the query peptide sequences that you want to check for inteins</li>
+</ul>
+</li>
+<li><code>out_dir</code><ul>
+<li>Path to the output directory in which InteinFinder will dump its output</li>
+<li>Will be created if it does not exist</li>
+<li>Pipeline will fail if it does exist</li>
+</ul>
+</li>
+</ul>
+<p>Both these options are <strong>required</strong>.</p>
+<h3 id="inteinfinder-db-location">InteinFinder DB location</h3>
+<ul>
+<li><code>inteins</code><ul>
+<li>Path to the file containing the intein DB you want to search against</li>
+<li>In most cases, you will use the file <a href="https://github.com/mooreryan/InteinFinder/blob/main/_assets/intein_sequences/all_derep.faa">included</a> with InteinFinder, but you can always use your own.</li>
+</ul>
+</li>
+<li><code>smp_dir</code><ul>
+<li>Path to the directory containing <code>SMP</code> files to search against</li>
+<li>This is the file format that rpsblast uses (<a href="../todo/">link</a>).</li>
+<li>In most cases, you will use the files <a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp">included</a> with InteinFinder, but you can always use your own.</li>
+</ul>
+</li>
+</ul>
+<p>Both these options are <strong>required</strong>.</p>
+<h3 id="general-pipeline-options">General pipeline options</h3>
+<p>These config pairs are all <strong>optional</strong>.  That means if you leave them out of your config file, they will be assigned to their default values.</p>
+<ul>
+<li><code>clip_region_padding</code><ul>
+<li>The "padding" added to each side of the hit region to "clip" from the query sequence and include in the alignment files</li>
+<li>A value of <code>10</code> means add ten residues to each side of the clipping region.</li>
+<li>(You probably don't want to mess with this.)</li>
+<li>default value: <code>10</code></li>
+</ul>
+</li>
+<li><code>log_level</code><ul>
+<li>Options from least verbose to most verbose: <code>error</code>, <code>warning</code>, <code>info</code>, and <code>debug</code></li>
+<li>default value: <code>"info"</code></li>
+</ul>
+</li>
+<li><code>min_query_length</code><ul>
+<li>Ignore all queries sequences whose length is less than this value.</li>
+<li>default value: <code>100</code></li>
+</ul>
+</li>
+<li><code>min_region_length</code><ul>
+<li>Don't try to refine any hit regions whose length is less than this value.</li>
+<li>It sounds like you might lose cool info with this option, but you really won't.<ul>
+<li>The shortest intein included in InteinFinder's DB is greater than 100 AAs in length.</li>
+<li>That means that any hit regions shorter than this can <em>never</em> pass all the checks anyway.</li>
+<li>But don't worry, they still show up in the putative intein regions file!</li>
+</ul>
+</li>
+<li>default value: <code>100</code></li>
+</ul>
+</li>
+<li><code>remove_aln_files</code><ul>
+<li>Set to <code>true</code> (or leave it out) if you want to remove the alignment files.</li>
+<li>Set to <code>false</code> if you want to keep the alignment files.<ul>
+<li>While this sounds cool, in practice it's not so fun, as it can dump a TON of files.</li>
+<li>Generally, you might use this option if:<ul>
+<li>you have a small number queries</li>
+<li>you really want to look at the aligments</li>
+<li>you found something weird and need to figure out what is going on</li>
+<li>you found a bug and submitted a bug report, but Ryan (aka me) asked you for the intermediate alignment files :)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>default value: <code>true</code></li>
+</ul>
+</li>
+<li><code>threads</code><ul>
+<li>Number of threads/cores/CPUs to use for the parts of the pipeline that can run in parallel<ul>
+<li>For MMseqs2, this is the <code>threads</code> option.</li>
+<li>For RPSBLAST, it is the number of concurrent search jobs that are run</li>
+<li>For running alignments, it controls how many alignment jobs are run concurrently.</li>
+</ul>
+</li>
+<li>A reasonable value is close to the number of cores your machine has.</li>
+<li>default value: <code>1</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="key-intein-residues">Key intein residues</h3>
+<p>You can customize the key intein residues that InteinFinder pipeline will check for.  The defaults are based on a combination of literature support and frequency in known/annotated inteins, so you may not need to adjust them.  However, you have the power if you need to!</p>
+<p>All of these tables are <strong>optional</strong>.  Be careful though:  if you specify one of the following options, then you need to <em>fully specify</em> that option.</p>
+<p>Here is an incorrect example....You want to change start residue <code>G</code> from tier 2 to tier 1, but you want all other residues to be the same.  The following <strong>will NOT</strong> do that.</p>
+<pre><code>[start_residue]
+G = &quot;T1&quot;
+</code></pre>
+<p>Why will that not work?  Because you are saying for start residue, <code>G</code> is a tier 1 pass and all other residues that you didn't specify should be considered as <code>Fail</code>.</p>
+<h4 id="tiers">Tiers</h4>
+<p>InteinFinder uses the concept of tiers in its scoring scheme.  You can find an explanation of that <a href="../todo/">here</a> or in the <a href="../todo/">manuscript</a>.</p>
+<ul>
+<li>Pass tiers</li>
+<li>To specify tier 1 pass, you use <code>"T1"</code></li>
+<li>To specify tier 2 pass, you use <code>"T2"</code></li>
+<li>Etc.</li>
+<li>Fail</li>
+<li>Any residue not explicitly listed as one of the pass tiers is considered a <code>Fail</code></li>
+</ul>
+<h4 id="start-residue">Start residue</h4>
+<ul>
+<li>The table to control start residue tiers is <code>[start_residue]</code>.</li>
+<li>The start residue is the first amino acid of the predicted intein.</li>
+<li>Defaults:</li>
+<li>Tier 1 pass: C, S, A, Q, P, T</li>
+<li>Tier 2 pass: V, G, L, M, N, F</li>
+<li>Fail: any other residue</li>
+<li>If you want the default, simply leave out the entire table!</li>
+</ul>
+<h4 id="end-residues">End residues</h4>
+<ul>
+<li>Control the final two residues with <code>[end_residues]</code>.</li>
+<li>The end residues are the final two amino acids of the predicted intein.</li>
+<li>Defaults:</li>
+<li>Tier 1 pass: HN, SN, GN, GQ, LD, FN</li>
+<li>Tier 2 pass: KN, DY, SQ, HQ, NS, AN, SD, TH, RD, PY, YN, VH, KQ, PP, NT, CN, LH</li>
+<li>Fail: any other AA pair</li>
+<li>If you want the default, simply leave out the entire table!</li>
+</ul>
+<h4 id="end-plus-one-residue">End plus one residue</h4>
+<ul>
+<li>This is the C-terminal extein residue check.</li>
+<li>It's called "end plus one" just for clarity, as in one residue past the end of the intein.</li>
+<li>Control the residues considered for pass and strict pass with <code>[end_plus_one_residues]</code> table</li>
+<li>Like the last couple of options, if you want the default, simply leave out the entire table!</li>
+<li>Defaults:</li>
+<li>Tier 1 pass: S, T, C</li>
+<li>Fail: any other AA pair</li>
+</ul>
+<h2 id="external-program-options">External program options</h2>
+<p>Now we should talk about how to set certain options in the external programs that the InteinFinder pipeline uses.</p>
+<p>The options for each program are specified using a table.</p>
+<h3 id="makeprofiledb">makeprofiledb</h3>
+<p>The <code>makeprofiledb</code> program is used to make the database used for the <code>rpsblast</code> search.  It is why you need to specify the <code>smp_dir</code>.</p>
+<p>There is only one option for this table:</p>
+<ul>
+<li><code>exe</code><ul>
+<li>The name of the executable program</li>
+<li>Also, you could pass in a path to the program (TODO add a test for this)</li>
+<li>default value: <code>makeprofiledb</code><ul>
+<li>Note that this default value assumes that the program is on your <a href="http://www.linfo.org/path_env_var.html">PATH</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="mafft">MAFFT</h3>
+<p><a href="https://mafft.cbrc.jp/alignment/software/">MAFFT</a> is used to do the alignments when refining putative intein regions.</p>
+<ul>
+<li><code>exe</code><ul>
+<li>The name of the executable program</li>
+<li>Also, you could pass in a path to the program (TODO add a test for this)</li>
+<li>default value: <code>mafft</code><ul>
+<li>Note that this default value assumes that the program is on your path</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="mmseqs2">MMseqs2</h3>
+<p><a href="https://github.com/soedinglab/MMseqs2">MMseqs2</a> is used to search queries against intein sequences</p>
+<ul>
+<li><code>exe</code><ul>
+<li>The name of the executable program</li>
+<li>Also, you could pass in a path to the program (TODO add a test for this)</li>
+<li>default value: <code>mmseqs</code><ul>
+<li>Note that this default value assumes that the program is on your path</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>evalue</code><ul>
+<li>default value: <code>1e-3</code></li>
+</ul>
+</li>
+<li><code>num_iterations</code><ul>
+<li>default value: <code>2</code></li>
+</ul>
+</li>
+<li><code>sensitivity</code><ul>
+<li>default value: <code>5.7</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="rpsblast">RPSBLAST</h3>
+<ul>
+<li><code>exe</code><ul>
+<li>The name of the executable program</li>
+<li>Also, you could pass in a path to the program (TODO add a test for this)</li>
+<li>default value: <code>rpsblast+</code><ul>
+<li>Note that this default value assumes that the program is on you <a href="../todo/">PATH</a></li>
+<li>There is a good chance that you will change this to <code>rpsblast</code>.<ul>
+<li>On my system, it's called <code>rpsblast+</code>, but I'm not sure which is more common.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>evalue</code><ul>
+<li>default value: <code>1e-3</code></li>
+</ul>
+</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cli/" class="btn btn-neutral float-left" title="Command Line Interface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../intein-finder-output/" class="btn btn-neutral float-right" title="Output">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/mooreryan/InteinFinder" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../cli/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../intein-finder-output/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

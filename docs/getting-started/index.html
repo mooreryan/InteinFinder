@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/getting-started/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Getting Started - InteinFinder</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Getting Started";
+        var mkdocs_page_input_path = "getting-started.md";
+        var mkdocs_page_url = "/InteinFinder/getting-started/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/toml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+<meta property="og:site_name" content="Getting Started - InteinFinder" />
+
+<meta property="og:type" content="website">
+
+<meta property="og:title" content="Getting Started - InteinFinder">
+
+<meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/getting-started/">
+
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Getting Started - InteinFinder">
+
+  
+
+  
+
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> InteinFinder
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting Started</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#install-inteinfinder">Install InteinFinder</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#get-needed-assets">Get needed assets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#make-a-config-file">Make a config file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">Run the pipeline</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../intein-finder-use-cases.md">InteinFinder Use Cases</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../jargon.md">Definitions & Jargon</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../bibliography.md">Bibliography</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-with-docker/">Installing With Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../intein-finder-output/">Output</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="" href="../tons-of-examples.md">Tons of Examples</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">InteinFinder</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Overview &raquo;</li>
+      <li>Getting Started</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/getting-started.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="getting-started">Getting Started</h1>
+<h2 id="install-inteinfinder">Install InteinFinder</h2>
+<p>The quick start guide assumes you already have InteinFinder installed.  See <a href="../installing-external-dependencies/">installing external dependencies</a>, and <a href="../installing-precompiled-binaries/">installing precompiled binaries</a> for some quick info about installation.</p>
+<h2 id="get-needed-assets">Get needed assets</h2>
+<p>You need a file of inteins and a file of conserved domain models.</p>
+<p>InteinFinder comes with these for your convenience.  But expert users may have their own set to use instead.</p>
+<p>Here are links to find them on GitHub</p>
+<ul>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences">intein sequences</a></li>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp">conserved domain models</a></li>
+</ul>
+<p>It's fairly annoying to download them manually.  It is simpler to download the repository and pull the files.</p>
+<pre><code class="language-bash">$ \curl -L \
+  https://github.com/mooreryan/InteinFinder/archive/refs/tags/1.0.0-SNAPSHOT-7a303c7.tar.gz \
+  | tar xz
+</code></pre>
+<p>That command will download the InteinFinder git repository locked to whatever version is specified.</p>
+<p>Then, the assets you need will be in this folder: <code>InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets</code>.</p>
+<pre><code>$ tree InteinFinder*/_assets
+InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets
+├── intein_sequences
+│   └── all_derep.faa
+└── smp
+    ├── cd00081.smp
+    ├── cd00085.smp
+    ├── cd09643.smp
+    ├── COG1372.smp
+    ├── COG1403.smp
+    ├── COG2356.smp
+    ├── pfam01844.smp
+    ├── pfam04231.smp
+    ├── pfam05204.smp
+    ├── pfam05551.smp
+    ├── pfam07510.smp
+    ├── pfam12639.smp
+    ├── pfam13391.smp
+    ├── pfam13392.smp
+    ├── pfam13395.smp
+    ├── pfam13403.smp
+    ├── pfam14414.smp
+    ├── pfam14527.smp
+    ├── pfam14528.smp
+    ├── pfam14623.smp
+    ├── pfam14890.smp
+    ├── PRK11295.smp
+    ├── PRK15137.smp
+    ├── smart00305.smp
+    ├── smart00306.smp
+    ├── smart00507.smp
+    ├── TIGR01443.smp
+    ├── TIGR01445.smp
+    └── TIGR02646.smp
+
+2 directories, 30 files
+</code></pre>
+<h2 id="make-a-config-file">Make a config file</h2>
+<p>Config files are in <a href="../todo/">TOML</a> format.  Here is an example.</p>
+<p>*Note: all paths are relative to the directory in which you run the <code>InteinFinder</code> executable.</p>
+<p>TODO: does the <code>~</code> work in the paths?
+TODO: does the folder work with trailing slash?</p>
+<p>Let's assume that I have the InteinFinder source directory in the <code>/home/ryan/projects/InteinFinder</code> directory, and that I left the <code>_assets</code> directory that I mention above in its original place in the source directory.</p>
+<p>Assume that in the current directory, I have <a href="https://raw.githubusercontent.com/mooreryan/InteinFinder/main/test/cram/assets/rnr_5.faa">this</a> fasta file: <code>rnr_5.faa</code>.  <em>Note: If you look at this file, you will see that it is pretty weird.  It has some "special" sequences constructed for use in InteinFinder's end-to-end tests.</em></p>
+<p>Assume you have saved this file as <code>config.toml</code> in the same directory in which you have the <code>rnr_5.faa</code> fasta file.</p>
+<pre><code class="language-toml"># Intein target sequences
+inteins = &quot;/home/ryan/projects/InteinFinder/_assets/intein_sequences/all_derep.faa&quot;
+
+# Directory of conserved domain models
+smp_dir = &quot;/home/ryan/projects/InteinFinder/_assets/smp&quot;
+
+# My query sequences that I want to search
+queries = &quot;rnr_5.faa&quot;
+
+# The pipeline's output directory
+out_dir = &quot;intein_finder_output&quot;
+
+# The number of threads to use
+threads = 4
+</code></pre>
+<h2 id="run-the-pipeline">Run the pipeline</h2>
+<p>Assuming that the <code>InteinFinder</code> binary is somewhere on your <a href="http://www.linfo.org/path_env_var.html">path</a>, then you can run InteinFinder like so:</p>
+<pre><code>$ InteinFinder config.toml
+INFO [2023-01-24 20:12:01] Renaming queries
+INFO [2023-01-24 20:12:01] Splitting queries
+INFO [2023-01-24 20:12:01] Making profile DB
+INFO [2023-01-24 20:12:01] Running rpsblast
+INFO [2023-01-24 20:12:01] Running mmseqs
+INFO [2023-01-24 20:12:04] Getting query regions
+INFO [2023-01-24 20:12:04] Writing putative intein regions
+INFO [2023-01-24 20:12:04] Getting queries with intein seq hits
+INFO [2023-01-24 20:12:04] Making query_region_hits
+INFO [2023-01-24 20:12:04] Reading intein DB into memory
+INFO [2023-01-24 20:12:04] Processing regions
+INFO [2023-01-24 20:12:27] Writing name map
+INFO [2023-01-24 20:12:27] Renaming queries in btab files
+INFO [2023-01-24 20:12:27] Summarizing intein DB search
+INFO [2023-01-24 20:12:27] Summarizing conserved domain DB search
+INFO [2023-01-24 20:12:27] Done!
+</code></pre>
+<p>Finally, you will have output that looks something like this.</p>
+<pre><code>$ tree intein_finder_output/
+intein_finder_output/
+├── _done
+├── logs
+│   ├── 1_config.toml
+│   ├── 2_pipeline_info.txt
+│   └── if_log.2023-01-24_20-12-01.515507.mmseqs_search.txt
+├── results
+│   ├── 1_putative_intein_regions.tsv
+│   ├── 2_intein_hit_checks.tsv
+│   └── 3_trimmed_inteins.faa
+└── search
+    ├── cdm_db
+    │   ├── 1_cdm_db_search_out.tsv
+    │   └── 2_cdm_db_search_summary.tsv
+    └── intein_db
+        ├── 1_intein_db_search_out.tsv
+        ├── 2_intein_db_search_with_regions.tsv
+        └── 3_intein_db_search_summary.tsv
+
+5 directories, 12 files
+</code></pre>
+<p>The various output files are described in more detail elsewhere in the manual.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="InteinFinder"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../installing-external-dependencies/" class="btn btn-neutral float-right" title="Installing External Software Dependencies">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/mooreryan/InteinFinder" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../installing-external-dependencies/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
