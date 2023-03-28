@@ -83,9 +83,8 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
                 </li>
               </ul>
-              <p class="caption"><span class="caption-text">Overview</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting Started</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting Started</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#install-inteinfinder">Install InteinFinder</a>
     </li>
@@ -96,13 +95,7 @@
     <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">Run the pipeline</a>
     </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../intein-finder-use-cases.md">InteinFinder Use Cases</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../jargon.md">Definitions & Jargon</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../bibliography.md">Bibliography</a>
-                  </li>
+                </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
@@ -126,7 +119,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Examples</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="" href="../tons-of-examples.md">Tons of Examples</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-examples/">Other Examples</a>
                   </li>
               </ul>
       </div>
@@ -143,7 +138,6 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Overview &raquo;</li>
       <li>Getting Started</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/getting-started.md" class="icon icon-github"> Edit on GitHub</a>
@@ -163,54 +157,59 @@
 <p>Here are links to find them on GitHub</p>
 <ul>
 <li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences">intein sequences</a></li>
+<li>directory containing intein sequence DB</li>
+<li>In the manuscript, this is referred to as the ISDB (intein sequence database)</li>
 <li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp">conserved domain models</a></li>
+<li>directory containing conserved domain models</li>
+<li>In the manuscript, this is referred to as the CDMDB (conserved domain model data base)</li>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz">asset bundle</a></li>
+<li>Use this link for an archive containing both the intein sequence DB and the conserved domain model DB.</li>
+<li>It's the same data, but in a form convenient for direct download.</li>
 </ul>
-<p>It's fairly annoying to download them manually.  It is simpler to download the repository and pull the files.</p>
-<pre><code class="language-bash">$ \curl -L \
-  https://github.com/mooreryan/InteinFinder/archive/refs/tags/1.0.0-SNAPSHOT-7a303c7.tar.gz \
+<p>Here is an example for downloading the assets using the bundled archive:</p>
+<pre><code>$ mkdir InteinFinder_assets
+$ cd InteinFinder_assets
+$ \curl -L \
+  https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz \
   | tar xz
-</code></pre>
-<p>That command will download the InteinFinder git repository locked to whatever version is specified.</p>
-<p>Then, the assets you need will be in this folder: <code>InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets</code>.</p>
-<pre><code>$ tree InteinFinder*/_assets
-InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets
-├── intein_sequences
-│   └── all_derep.faa
-└── smp
-    ├── cd00081.smp
-    ├── cd00085.smp
-    ├── cd09643.smp
-    ├── COG1372.smp
-    ├── COG1403.smp
-    ├── COG2356.smp
-    ├── pfam01844.smp
-    ├── pfam04231.smp
-    ├── pfam05204.smp
-    ├── pfam05551.smp
-    ├── pfam07510.smp
-    ├── pfam12639.smp
-    ├── pfam13391.smp
-    ├── pfam13392.smp
-    ├── pfam13395.smp
-    ├── pfam13403.smp
-    ├── pfam14414.smp
-    ├── pfam14527.smp
-    ├── pfam14528.smp
-    ├── pfam14623.smp
-    ├── pfam14890.smp
-    ├── PRK11295.smp
-    ├── PRK15137.smp
-    ├── smart00305.smp
-    ├── smart00306.smp
-    ├── smart00507.smp
-    ├── TIGR01443.smp
-    ├── TIGR01445.smp
-    └── TIGR02646.smp
+$ tree
+intein_sequences/
+└── all_derep.faa
+smp/
+├── cd00081.smp
+├── cd00085.smp
+├── cd09643.smp
+├── COG1372.smp
+├── COG1403.smp
+├── COG2356.smp
+├── pfam01844.smp
+├── pfam04231.smp
+├── pfam05204.smp
+├── pfam05551.smp
+├── pfam07510.smp
+├── pfam12639.smp
+├── pfam13391.smp
+├── pfam13392.smp
+├── pfam13395.smp
+├── pfam13403.smp
+├── pfam14414.smp
+├── pfam14527.smp
+├── pfam14528.smp
+├── pfam14623.smp
+├── pfam14890.smp
+├── PRK11295.smp
+├── PRK15137.smp
+├── smart00305.smp
+├── smart00306.smp
+├── smart00507.smp
+├── TIGR01443.smp
+├── TIGR01445.smp
+└── TIGR02646.smp
 
-2 directories, 30 files
+0 directories, 29 files
 </code></pre>
 <h2 id="make-a-config-file">Make a config file</h2>
-<p>Config files are in <a href="../todo/">TOML</a> format.  Here is an example.</p>
+<p>Config files are in <a href="https://toml.io">TOML</a> format.  Here is an example.</p>
 <p>*Note: all paths are relative to the directory in which you run the <code>InteinFinder</code> executable.</p>
 <p>TODO: does the <code>~</code> work in the paths?
 TODO: does the folder work with trailing slash?</p>

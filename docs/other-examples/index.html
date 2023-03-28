@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/installing-precompiled-binaries/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/other-examples/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Installing Precompiled Binaries - InteinFinder</title>
+    <title>Other Examples - InteinFinder</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Installing Precompiled Binaries";
-        var mkdocs_page_input_path = "installing-precompiled-binaries.md";
-        var mkdocs_page_url = "/InteinFinder/installing-precompiled-binaries/";
+        var mkdocs_page_name = "Other Examples";
+        var mkdocs_page_input_path = "other-examples.md";
+        var mkdocs_page_url = "/InteinFinder/other-examples/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -40,22 +40,22 @@
   
 
 
-<meta property="og:site_name" content="Installing Precompiled Binaries - InteinFinder" />
+<meta property="og:site_name" content="Other Examples - InteinFinder" />
 
 <meta property="og:type" content="website">
 
-<meta property="og:title" content="Installing Precompiled Binaries - InteinFinder">
+<meta property="og:title" content="Other Examples - InteinFinder">
 
 <meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
 <meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
 <meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
 
-<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/installing-precompiled-binaries/">
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/other-examples/">
 
 <meta property="og:locale" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Installing Precompiled Binaries - InteinFinder">
+<meta name="twitter:title" content="Other Examples - InteinFinder">
 
   
 
@@ -88,14 +88,10 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Installing Precompiled Binaries</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#example">Example</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-with-docker/">Installing With Docker</a>
                   </li>
@@ -112,10 +108,12 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Examples</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../other-examples/">Other Examples</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Other Examples</a>
+    <ul class="current">
+    </ul>
                   </li>
               </ul>
       </div>
@@ -132,10 +130,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Installation &raquo;</li>
-      <li>Installing Precompiled Binaries</li>
+          <li>Examples &raquo;</li>
+      <li>Other Examples</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/installing-precompiled-binaries.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/other-examples.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -143,44 +141,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="installing-precompiled-binaries">Installing Precompiled Binaries</h1>
-<p>Probably the most straightforward way to use the <code>InteinFinder</code> program is to download one of the precompiled binaries available on the GitHub <a href="https://github.com/mooreryan/InteinFinder/releases">releases</a> page.</p>
-<p>A couple different "flavors" are available:</p>
-<ul>
-<li>macOS<ul>
-<li>Use this if you have a Mac</li>
-<li>Note that I have not tested it on the new Apple Silicon chips, but it <em>should</em> work with Rosetta.</li>
-<li>You will (likely) need to deal with the "unidentified developer" prompts<ul>
-<li>This <a href="https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac">macOS user guide page</a> has steps  explaining how to open an app from an unidentified developer.</li>
-<li>Alternatively, here is a <a href="https://www.macworld.com/article/672947/how-to-open-a-mac-app-from-an-unidentified-developer.html">Macworld</a> article explaining the steps with pictures.</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Linux<ul>
-<li>This should work on most Linux systems with GLIBC version 2.31 or greater.</li>
-<li>It does have some dynamically linked C/C++ libraries, so it may not work if you have an older system (e.g., one with GLIBC older than 2.31). See the release page for more info.</li>
-</ul>
-</li>
-</ul>
-<p>You can find them all on the <a href="https://github.com/mooreryan/InteinFinder/releases">releases</a> page.</p>
-<p>Don't forget that after downloading one of the binaries, you will need to adjust the permissions to make it executable (e.g., <code>chmod +x InteinFinder</code>).</p>
-<p>Before running InteinFinder, you will need to install the <a href="../installing-external-dependencies/">external dependencies</a> that <code>InteinFinder</code> relies on.</p>
-<h2 id="example">Example</h2>
-<p>Here is an example of getting one of the <code>InteinFinder</code> binaries working:</p>
-<pre><code>$ \curl -L https://github.com/mooreryan/InteinFinder/releases/download/1.0.0-alpha/InteinFinder-linux.tar.gz \
-  | tar xz
-$ cd InteinFinder-linux
-$ chmod 755 InteinFinder
-$ ./InteinFinder --help
-</code></pre>
-<p>Note that it is for <code>InteinFinder</code> version <code>1.0.0-alpha</code> and using the binary compiled for a Linux system. You can find other versions on the release page.  Replace that with the version you want, or click the links directly on the <a href="https://github.com/mooreryan/InteinFinder/releases">releases</a> page.</p>
+                <h1 id="lots-of-examples">Lots of Examples</h1>
+<p>You can find a lot of usage examples on <a href="https://github.com/mooreryan/InteinFinder/tree/main/test/cram">GitHub</a>.</p>
+<p>The stuff in there probably looks a bit weird, unless you are used to cram tests, but they are all tested under CI, so things that work in there will work and things that are broken in there, are expected to be broken.</p>
+<p>Again, they aren't very user friendly, but they do provide a bunch of example config files and they each exercise a different bit of InteinFinder's functionality.  So, if you need some more examples, feel free to check them out.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../installing-external-dependencies/" class="btn btn-neutral float-left" title="Installing External Software Dependencies"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../installing-with-docker/" class="btn btn-neutral float-right" title="Installing With Docker">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../tutorials/" class="btn btn-neutral float-left" title="Tutorials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -207,10 +176,8 @@ $ ./InteinFinder --help
         </span>
     
     
-      <span><a href="../installing-external-dependencies/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../tutorials/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../installing-with-docker/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

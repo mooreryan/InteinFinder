@@ -83,16 +83,9 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
                 </li>
               </ul>
-              <p class="caption"><span class="caption-text">Overview</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../intein-finder-use-cases.md">InteinFinder Use Cases</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../jargon.md">Definitions & Jargon</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="../bibliography.md">Bibliography</a>
-                  </li>
+                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
@@ -138,7 +131,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Examples</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="" href="../tons-of-examples.md">Tons of Examples</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-examples/">Other Examples</a>
                   </li>
               </ul>
       </div>
@@ -166,7 +161,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="yo">Yo</h1>
+                <h1 id="inteinfinder-output">InteinFinder Output</h1>
 <p>Let's talk about the pipeline's output.</p>
 <p>Here is the example output from one of InteinFinder's <a href="https://github.com/mooreryan/InteinFinder/blob/work/test/cram/basic_usage/smoke_test.t/run.t">tests</a>.</p>
 <p>By default, the intermediate alignment files are not shown, but this time, we show them.  Here it is:</p>
@@ -211,9 +206,9 @@ if_out
 <p>Note that in the other output files, the original sequence IDs are used, however, in the alignments folder, the internal names are used.  So, you can use the name map file to figure out what is going on.</p>
 <p>The alignment file names contain the internal query ID, along with the InteinFinder DB sequence ID with which it was aligned.</p>
 <h2 id="logs">Logs</h2>
-<p>The logs can be found in the <code>logs</code> directory.  </p>
+<p>The logs can be found in the <code>logs</code> directory.</p>
 <ul>
-<li><code>1_config.toml</code>: <ul>
+<li><code>1_config.toml</code>:<ul>
 <li>This is the original config file copied in to the output directory.</li>
 <li>It is here purely for convenience....I have found that it is easy for output directories and log files to get misplaced years after running a pipeline, so this should help you stay organized.</li>
 </ul>
@@ -238,10 +233,10 @@ if_out
 <pre><code class="language-text">Program Versions
 ================
 InteinFinder version: 1.0.0-SNAPSHOT [3bbadae-dirty].
-/usr/bin/mafft version: v7.490 (2021/Oct/30). 
-/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e. 
-/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
-/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+/usr/bin/mafft version: v7.490 (2021/Oct/30).
+/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e.
+/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
+/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
 
 Working Directory
 =================
@@ -270,7 +265,7 @@ Config
 <p>There are three sections:</p>
 <ul>
 <li><code>Program Versions</code>: contains info about the executable binary file as well as versions for all of the programs used in the pipeline</li>
-<li><code>Working Directory</code>: <ul>
+<li><code>Working Directory</code>:<ul>
 <li>The working directory from which the <code>InteinFinder</code> executable was run</li>
 <li>This is useful if you want to rerun the pipeline using the same config file, as you are allowed to use relative file paths in the config files.</li>
 </ul>
@@ -345,6 +340,7 @@ Config
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../config-files/" class="btn btn-neutral float-left" title="Config files"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorials/" class="btn btn-neutral float-right" title="Tutorials">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -373,6 +369,8 @@ Config
     
       <span><a href="../config-files/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../tutorials/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
