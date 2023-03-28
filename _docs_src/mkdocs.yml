@@ -6,11 +6,7 @@ site_description: Installation and usage instructions for InteinFinder, a progra
 site_author: Ryan M. Moore
 nav:
   - InteinFinder: index.md
-  - Overview:
-    - Getting Started: getting-started.md
-    - InteinFinder Use Cases: intein-finder-use-cases.md
-    - Definitions & Jargon: jargon.md
-    - Bibliography: bibliography.md
+  - Getting Started: getting-started.md
   - Installation:
     - Installing External Software Dependencies: installing-external-dependencies.md
     - Installing Precompiled Binaries: installing-precompiled-binaries.md
@@ -21,7 +17,8 @@ nav:
     - Config files: config-files.md
     - Output: intein-finder-output.md
   - Examples:
-    - Tons of Examples: tons-of-examples.md
+    - Tutorials: tutorials.md
+    - Other Examples: other-examples.md
 theme:
   name: readthedocs
   custom_dir: custom_theme

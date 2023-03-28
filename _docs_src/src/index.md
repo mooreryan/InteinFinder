@@ -4,9 +4,7 @@ main: true
 
 # InteinFinder
 
-[![Build and Test](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml) [![Build and Test Static](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test_static.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test_static.yml) [![Generate Docs](https://github.com/mooreryan/InteinFinder/actions/workflows/generate_docs.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/generate_docs.yml)
-
-[![code on GitHub](https://img.shields.io/badge/code-GitHub-blue)](https://github.com/mooreryan/InteinFinder) [![GitHub issues](https://img.shields.io/github/issues/mooreryan/InteinFinder)](https://github.com/mooreryan/InteinFinder/issues) [![Coverage Status](https://coveralls.io/repos/github/mooreryan/InteinFinder/badge.svg?branch=main)](https://coveralls.io/github/mooreryan/InteinFinder?branch=main)
+[![Build and Test](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml/badge.svg?branch=main)](https://github.com/mooreryan/InteinFinder/actions/workflows/build_and_test.yml) [![code on GitHub](https://img.shields.io/badge/code-GitHub-blue)](https://github.com/mooreryan/InteinFinder) [![GitHub issues](https://img.shields.io/github/issues/mooreryan/InteinFinder)](https://github.com/mooreryan/InteinFinder/issues) [![Coverage Status](https://coveralls.io/repos/github/mooreryan/InteinFinder/badge.svg?branch=main)](https://coveralls.io/github/mooreryan/InteinFinder?branch=main)
 
 InteinFinder: automated intein detection from large protein datasets
 
@@ -25,7 +23,7 @@ Given the increased interest in inteins, more studies are focusing on identifyin
 [![license MIT or Apache
 2.0](https://img.shields.io/badge/license-MIT%20or%20Apache%202.0-blue)](https://github.com/mooreryan/InteinFinder)
 
-Copyright (c) 2018 - 2022 Ryan M. Moore
+Copyright (c) 2018 - 2023 Ryan M. Moore
 
 Licensed under the Apache License, Version 2.0 or the MIT license, at your option. This program may not be copied, modified, or distributed except according to those terms.
 
@@ -35,6 +33,6 @@ Licensed under the Apache License, Version 2.0 or the MIT license, at your optio
 <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
 </a>
 
-Copyright (c) 2022 Ryan M. Moore.
+Copyright (c) 2022 - 2023 Ryan M. Moore.
 
 This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

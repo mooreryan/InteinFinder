@@ -13,62 +13,63 @@ InteinFinder comes with these for your convenience.  But expert users may have t
 Here are links to find them on GitHub
 
 - [intein sequences](https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences)
+  - directory containing intein sequence DB
+  - In the manuscript, this is referred to as the ISDB (intein sequence database)
 - [conserved domain models](https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp)
+  - directory containing conserved domain models
+  - In the manuscript, this is referred to as the CDMDB (conserved domain model data base)
+- [asset bundle](https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz)
+  - Use this link for an archive containing both the intein sequence DB and the conserved domain model DB.
+  - It's the same data, but in a form convenient for direct download.
 
-It's fairly annoying to download them manually.  It is simpler to download the repository and pull the files.
+Here is an example for downloading the assets using the bundled archive:
 
-```bash
+```
+$ mkdir InteinFinder_assets
+$ cd InteinFinder_assets
 $ \curl -L \
-  https://github.com/mooreryan/InteinFinder/archive/refs/tags/1.0.0-SNAPSHOT-7a303c7.tar.gz \
+  https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz \
   | tar xz
-```
+$ tree
+intein_sequences/
+└── all_derep.faa
+smp/
+├── cd00081.smp
+├── cd00085.smp
+├── cd09643.smp
+├── COG1372.smp
+├── COG1403.smp
+├── COG2356.smp
+├── pfam01844.smp
+├── pfam04231.smp
+├── pfam05204.smp
+├── pfam05551.smp
+├── pfam07510.smp
+├── pfam12639.smp
+├── pfam13391.smp
+├── pfam13392.smp
+├── pfam13395.smp
+├── pfam13403.smp
+├── pfam14414.smp
+├── pfam14527.smp
+├── pfam14528.smp
+├── pfam14623.smp
+├── pfam14890.smp
+├── PRK11295.smp
+├── PRK15137.smp
+├── smart00305.smp
+├── smart00306.smp
+├── smart00507.smp
+├── TIGR01443.smp
+├── TIGR01445.smp
+└── TIGR02646.smp
 
-That command will download the InteinFinder git repository locked to whatever version is specified.
-
-Then, the assets you need will be in this folder: `InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets`.
-
-```
-$ tree InteinFinder*/_assets
-InteinFinder-1.0.0-SNAPSHOT-7a303c7/_assets
-├── intein_sequences
-│   └── all_derep.faa
-└── smp
-    ├── cd00081.smp
-    ├── cd00085.smp
-    ├── cd09643.smp
-    ├── COG1372.smp
-    ├── COG1403.smp
-    ├── COG2356.smp
-    ├── pfam01844.smp
-    ├── pfam04231.smp
-    ├── pfam05204.smp
-    ├── pfam05551.smp
-    ├── pfam07510.smp
-    ├── pfam12639.smp
-    ├── pfam13391.smp
-    ├── pfam13392.smp
-    ├── pfam13395.smp
-    ├── pfam13403.smp
-    ├── pfam14414.smp
-    ├── pfam14527.smp
-    ├── pfam14528.smp
-    ├── pfam14623.smp
-    ├── pfam14890.smp
-    ├── PRK11295.smp
-    ├── PRK15137.smp
-    ├── smart00305.smp
-    ├── smart00306.smp
-    ├── smart00507.smp
-    ├── TIGR01443.smp
-    ├── TIGR01445.smp
-    └── TIGR02646.smp
-
-2 directories, 30 files
+0 directories, 29 files
 ```
 
 ## Make a config file
 
-Config files are in [TOML](todo.md) format.  Here is an example.
+Config files are in [TOML](https://toml.io) format.  Here is an example.
 
 *Note: all paths are relative to the directory in which you run the `InteinFinder` executable.
 

@@ -1,4 +1,4 @@
-# Yo
+# InteinFinder Output
 
 Let's talk about the pipeline's output.
 
@@ -56,9 +56,9 @@ The alignment file names contain the internal query ID, along with the InteinFin
 
 ## Logs
 
-The logs can be found in the `logs` directory.  
+The logs can be found in the `logs` directory.
 
-- `1_config.toml`: 
+- `1_config.toml`:
     - This is the original config file copied in to the output directory.
 	- It is here purely for convenience....I have found that it is easy for output directories and log files to get misplaced years after running a pipeline, so this should help you stay organized.
 - `2_pipeline_info.txt`
@@ -78,10 +78,10 @@ Here is an example of how the `2_pipeline_info.txt` file might look:
 Program Versions
 ================
 InteinFinder version: 1.0.0-SNAPSHOT [3bbadae-dirty].
-/usr/bin/mafft version: v7.490 (2021/Oct/30). 
-/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e. 
-/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
-/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+/usr/bin/mafft version: v7.490 (2021/Oct/30).
+/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e.
+/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
+/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
 
 Working Directory
 =================
@@ -111,7 +111,7 @@ Config
 There are three sections:
 
 - `Program Versions`: contains info about the executable binary file as well as versions for all of the programs used in the pipeline
-- `Working Directory`: 
+- `Working Directory`:
     - The working directory from which the `InteinFinder` executable was run
 	- This is useful if you want to rerun the pipeline using the same config file, as you are allowed to use relative file paths in the config files.
 - `Config`:  all the options as interpreted from the config file
