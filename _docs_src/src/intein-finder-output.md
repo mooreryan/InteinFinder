@@ -2,7 +2,7 @@
 
 Let's talk about the pipeline's output.
 
-Here is the example output from one of InteinFinder's [tests](https://github.com/mooreryan/InteinFinder/blob/work/test/cram/basic_usage/smoke_test.t/run.t).
+Here is the example output from one of InteinFinder's [tests](https://github.com/mooreryan/InteinFinder/blob/main/test/cram/basic_usage/smoke_test.t/run.t).
 
 By default, the intermediate alignment files are not shown, but this time, we show them.  Here it is:
 
@@ -32,19 +32,21 @@ if_out
 |   `-- if_log.DATE.mmseqs_search.txt
 |-- results
 |   |-- 1_putative_intein_regions.tsv
-|   |-- 2_intein_hit_info.tsv
 |   |-- 2_intein_hit_checks.tsv
 |   `-- 3_trimmed_inteins.faa
 `-- search
-    |-- 1_intein_db_search_out.tsv
-    |-- 1_cdm_db_search_out.tsv
-    |-- 2_intein_db_search_summary.tsv
-    `-- 2_cdm_db_search_summary.tsv
+    |-- cdm_db
+    |   |-- 1_cdm_db_search_out.tsv
+    |   `-- 2_cdm_db_search_summary.tsv
+    `-- intein_db
+        |-- 1_intein_db_search_out.tsv
+        |-- 2_intein_db_search_with_regions.tsv
+        `-- 3_intein_db_search_summary.tsv
 ```
 
 ## _done
 
-First, you see a file called `_done`.  It is an empty file, just there so you can see at a glance if the pipeline completed successfully.
+First, you see a file called `_done`.  It is an empty file, just there so you can see at a glance if the pipeline completed successfully.  This can also be useful for tracking progress of many InteinFinder runs when using a work scheduler on a shared compute cluster.
 
 ## Alignments
 
@@ -77,35 +79,36 @@ Here is an example of how the `2_pipeline_info.txt` file might look:
 ```text
 Program Versions
 ================
-InteinFinder version: 1.0.0-SNAPSHOT [3bbadae-dirty].
-/usr/bin/mafft version: v7.490 (2021/Oct/30).
-/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e.
-/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
-/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
+InteinFinder version: 1.0.0-SNAPSHOT [3da10c5].
+/usr/bin/mafft version: v7.490 (2021/Oct/30). 
+/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e. 
+/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
 
 Working Directory
 =================
-/home/ryan/projects/InteinFinder/test/cram/basic_usage/smoke_test.t
+/home/ryan/projects/InteinFinder/_examples/basic_usage
 
 Config
 ======
-((inteins_file ../../assets/all_derep.faa)
- (queries_file ../../assets/rnr_5.faa) (smp_dir ../../assets/smp)
- (out_dir if_out)
+((inteins_file ../../_assets/intein_sequences/all_derep.faa)
+ (queries_file queries.faa) (smp_dir ../../_assets/smp) (out_dir if_out)
  (checks
-  ((start_residue ((pass (A C P Q S T)) (maybe (F G L M N V))))
+  ((start_residue
+    ((A 1) (C 1) (F 2) (G 2) (L 2) (M 2) (N 2) (P 1) (Q 1) (S 1) (T 1) (V 2)))
    (end_residues
-    ((pass (FN GN GQ HN LD SN))
-     (maybe (AN CN DY HQ KN KQ LH NS NT PP PY RD SD SQ TH VH YN))))
-   (end_plus_one_residue ((pass (C S T)) (maybe ())))))
- (mafft ((exe /usr/bin/mafft) (max_concurrent_jobs 2)))
+    ((AN 2) (CN 2) (DY 2) (FN 1) (GN 1) (GQ 1) (HN 1) (HQ 2) (KN 2) (KQ 2)
+     (LD 1) (LH 2) (NS 2) (NT 2) (PP 2) (PY 2) (RD 2) (SD 2) (SN 1) (SQ 2)
+     (TH 2) (VH 2) (YN 2)))
+   (end_plus_one_residue ((C 1) (S 1) (T 1)))))
+ (mafft ((exe /usr/bin/mafft)))
  (makeprofiledb ((exe /usr/bin/makeprofiledb)))
  (mmseqs
   ((exe /home/ryan/software/mmseqs/bin/mmseqs) (evalue 0.001)
-   (num_iterations 2) (sensitivity 5.7) (threads 1)))
- (rpsblast ((exe /usr/bin/rpsblast+) (evalue 0.001) (num_splits 2)))
- (log_level info) (clip_region_padding 10) (min_query_length 100)
- (min_region_length 50) (remove_aln_files false))
+   (num_iterations 2) (sensitivity 5.7)))
+ (rpsblast ((exe /usr/bin/rpsblast+) (evalue 0.001))) (log_level info)
+ (clip_region_padding 10) (min_query_length 100) (min_region_length 100)
+ (remove_aln_files true) (threads 1))
 ```
 
 There are three sections:
@@ -114,7 +117,11 @@ There are three sections:
 - `Working Directory`:
     - The working directory from which the `InteinFinder` executable was run
 	- This is useful if you want to rerun the pipeline using the same config file, as you are allowed to use relative file paths in the config files.
-- `Config`:  all the options as interpreted from the config file
+- `Config`
+  - all the options as interpreted from the config file
+  - There will likely be more config parameters listed here than you included in your config file.
+    - Config files do not require you to specify optional arguments.
+	- But the optional arguments *do* show up in this data structure
 
 ## Results
 
@@ -172,6 +179,27 @@ Finally, two additional fields give the length of the query and target sequences
 Next, there is a file describing all the "checks" that InteinFinder does on the putative regions: `2_intein_hit_checks.tsv`.
 
 This file has a lot of columns and basically all of the important info that the pipeline puts out.
+
+| Name                       | i  |
+|----------------------------|----|
+| query                      | 1  |
+| region                     | 2  |
+| intein target              | 3  |
+| intein start minus one     | 4  |
+| intein start               | 5  |
+| intein penultimate         | 6  |
+| intein end                 | 7  |
+| intein end plus one        | 8  |
+| intein length              | 9  |
+| start residue check        | 10 |
+| end residues check         | 11 |
+| end plus one residue check | 12 |
+| start position check       | 13 |
+| end position check         | 14 |
+| region check               | 15 |
+| overall check              | 16 |
+
+And here are the names of the columns as they appear in the file.
 
 - `query`
 - `region`
