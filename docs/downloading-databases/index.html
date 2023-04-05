@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/cli/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/downloading-databases/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Command Line Interface - InteinFinder</title>
+    <title>Downloading Databases - InteinFinder</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Command Line Interface";
-        var mkdocs_page_input_path = "cli.md";
-        var mkdocs_page_url = "/InteinFinder/cli/";
+        var mkdocs_page_name = "Downloading Databases";
+        var mkdocs_page_input_path = "downloading-databases.md";
+        var mkdocs_page_url = "/InteinFinder/downloading-databases/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -40,22 +40,22 @@
   
 
 
-<meta property="og:site_name" content="Command Line Interface - InteinFinder" />
+<meta property="og:site_name" content="Downloading Databases - InteinFinder" />
 
 <meta property="og:type" content="website">
 
-<meta property="og:title" content="Command Line Interface - InteinFinder">
+<meta property="og:title" content="Downloading Databases - InteinFinder">
 
 <meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
 <meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
 <meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
 
-<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/cli/">
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/downloading-databases/">
 
 <meta property="og:locale" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Command Line Interface - InteinFinder">
+<meta name="twitter:title" content="Downloading Databases - InteinFinder">
 
   
 
@@ -84,7 +84,7 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
@@ -93,20 +93,18 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../downloading-databases/">Downloading Databases</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Downloading Databases</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#get-needed-assets">Get needed assets</a>
+    </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Command Line Interface</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#required-arguments">Required arguments</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#options">Options</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
                   </li>
@@ -134,10 +132,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Usage &raquo;</li>
-      <li>Command Line Interface</li>
+          <li>Installation &raquo;</li>
+      <li>Downloading Databases</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/cli.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/downloading-databases.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -145,24 +143,76 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="inteinfinder-command-line-interface">InteinFinder Command Line Interface</h1>
-<p>InteinFinder's command line interface is very simple.  There is only one required argument and two options.</p>
-<h2 id="required-arguments">Required arguments</h2>
+                <h1 id="downloading-inteinfinder-databases">Downloading InteinFinder Databases</h1>
+<h2 id="get-needed-assets">Get needed assets</h2>
+<p>You need a file of inteins and a file of conserved domain models.</p>
+<p>InteinFinder comes with these for your convenience.  But expert users may have their own set to use instead.</p>
+<p>Here are links to find them on GitHub</p>
 <ul>
-<li><code>config.toml</code>: the config file in <a href="https://toml.io">TOML</a> format</li>
+<li><a href="https://github.com/mooreryan/InteinFinder/raw/main/_assets/asset_bundle.tar.gz">database bundle</a><ul>
+<li>Use this link for an archive containing both the intein sequence DB and the conserved domain model DB.</li>
+<li>It's the same data, but in a form convenient for direct download.</li>
 </ul>
-<p>For more information about writing config files, see <a href="../config-files/">here</a>.</p>
-<h2 id="options">Options</h2>
-<ul>
-<li><code>--help</code>: display the help screen/man page</li>
-<li><code>--version</code>: display version of the InteinFinder pipeline</li>
+</li>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences">intein sequences</a><ul>
+<li>directory containing intein sequence DB</li>
+<li>In the manuscript, this is referred to as the ISDB (intein sequence database)</li>
 </ul>
+</li>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp">conserved domain models</a><ul>
+<li>directory containing conserved domain models</li>
+<li>In the manuscript, this is referred to as the CDMDB (conserved domain model data base)</li>
+</ul>
+</li>
+</ul>
+<p>Here is an example for downloading the assets using the bundled archive:</p>
+<pre><code>$ mkdir InteinFinder_db
+$ cd InteinFinder_db
+$ \curl -L \
+  https://github.com/mooreryan/InteinFinder/raw/main/_assets/asset_bundle.tar.gz \
+  | tar xz
+$ tree
+intein_sequences/
+└── all_derep.faa
+smp/
+├── cd00081.smp
+├── cd00085.smp
+├── cd09643.smp
+├── COG1372.smp
+├── COG1403.smp
+├── COG2356.smp
+├── pfam01844.smp
+├── pfam04231.smp
+├── pfam05204.smp
+├── pfam05551.smp
+├── pfam07510.smp
+├── pfam12639.smp
+├── pfam13391.smp
+├── pfam13392.smp
+├── pfam13395.smp
+├── pfam13403.smp
+├── pfam14414.smp
+├── pfam14527.smp
+├── pfam14528.smp
+├── pfam14623.smp
+├── pfam14890.smp
+├── PRK11295.smp
+├── PRK15137.smp
+├── smart00305.smp
+├── smart00306.smp
+├── smart00507.smp
+├── TIGR01443.smp
+├── TIGR01445.smp
+└── TIGR02646.smp
+
+0 directories, 29 files
+</code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../getting-started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../config-files/" class="btn btn-neutral float-right" title="Config files">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../installing-from-source/" class="btn btn-neutral float-left" title="Installing From Source"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../getting-started/" class="btn btn-neutral float-right" title="Getting Started">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -189,10 +239,10 @@
         </span>
     
     
-      <span><a href="../getting-started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../installing-from-source/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../config-files/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../getting-started/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

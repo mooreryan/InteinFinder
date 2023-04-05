@@ -2,62 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/cli/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/config-files/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://mooreryan.github.io/InteinFinder/downloading-databases/</loc>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/getting-started/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/installing-external-dependencies/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/installing-from-source/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/installing-precompiled-binaries/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/installing-with-docker/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/intein-finder-output/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/other-examples/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/todo/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://mooreryan.github.io/InteinFinder/tutorials/</loc>
-         <lastmod>2023-03-30</lastmod>
+         <lastmod>2023-04-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

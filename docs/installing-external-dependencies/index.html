@@ -83,10 +83,6 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
-                </li>
-              </ul>
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Installing External Software Dependencies</a>
@@ -123,9 +119,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../downloading-databases/">Downloading Databases</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
@@ -181,6 +181,9 @@
 <li>rpsblast+: 2.12.0+ (Package: blast 2.12.0)</li>
 </ul>
 <p>In other words, InteinFinder is continuously tested with those software versions.</p>
+<ul>
+<li>TODO: mac: https://apple.stackexchange.com/a/254381 (xcrun: error: invalid active developer path)</li>
+</ul>
 <h2 id="using-other-versions">Using other versions</h2>
 <p>Other versions will likely work too, but they may give slightly different output, causing the tests to fail if you run them locally.  (E.g., it's possible a different version of BLAST could give slightly different alignment of queries.)</p>
 <p>Occasionally, the command line interface of the external dependencies will change (e.g., <code>mmseqs</code> has changed a bit in the past).  So, if you discover an error due to that, please <a href="https://github.com/mooreryan/InteinFinder/issues">submit a bug report</a> (GitHub account required).</p>
@@ -244,7 +247,7 @@ $ rpsblast -query QUERY -db DB_OUT \
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../getting-started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral float-left" title="InteinFinder"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../installing-precompiled-binaries/" class="btn btn-neutral float-right" title="Installing Precompiled Binaries">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -272,7 +275,7 @@ $ rpsblast -query QUERY -db DB_OUT \
         </span>
     
     
-      <span><a href="../getting-started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../installing-precompiled-binaries/" style="color: #fcfcfc">Next &raquo;</a></span>

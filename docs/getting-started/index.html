@@ -83,20 +83,6 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
                 </li>
               </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting Started</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#install-inteinfinder">Install InteinFinder</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#get-needed-assets">Get needed assets</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#make-a-config-file">Make a config file</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">Run the pipeline</a>
-    </li>
-    </ul>
-                </li>
-              </ul>
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
@@ -107,9 +93,23 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../downloading-databases/">Downloading Databases</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
-              <ul>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Getting Started</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#install-inteinfinder">Install InteinFinder</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#download-databases">Download databases</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#make-a-config-file">Make a config file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">Run the pipeline</a>
+    </li>
+    </ul>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
@@ -138,6 +138,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Usage &raquo;</li>
       <li>Getting Started</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/getting-started.md" class="icon icon-github"> Edit on GitHub</a>
@@ -151,68 +152,16 @@
                 <h1 id="getting-started">Getting Started</h1>
 <h2 id="install-inteinfinder">Install InteinFinder</h2>
 <p>The quick start guide assumes you already have InteinFinder installed.  See <a href="../installing-external-dependencies/">installing external dependencies</a>, and <a href="../installing-precompiled-binaries/">installing precompiled binaries</a> for some quick info about installation.</p>
-<h2 id="get-needed-assets">Get needed assets</h2>
-<p>You need a file of inteins and a file of conserved domain models.</p>
-<p>InteinFinder comes with these for your convenience.  But expert users may have their own set to use instead.</p>
-<p>Here are links to find them on GitHub</p>
-<ul>
-<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences">intein sequences</a></li>
-<li>directory containing intein sequence DB</li>
-<li>In the manuscript, this is referred to as the ISDB (intein sequence database)</li>
-<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp">conserved domain models</a></li>
-<li>directory containing conserved domain models</li>
-<li>In the manuscript, this is referred to as the CDMDB (conserved domain model data base)</li>
-<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz">asset bundle</a></li>
-<li>Use this link for an archive containing both the intein sequence DB and the conserved domain model DB.</li>
-<li>It's the same data, but in a form convenient for direct download.</li>
-</ul>
-<p>Here is an example for downloading the assets using the bundled archive:</p>
-<pre><code>$ mkdir InteinFinder_assets
-$ cd InteinFinder_assets
-$ \curl -L \
-  https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz \
-  | tar xz
-$ tree
-intein_sequences/
-└── all_derep.faa
-smp/
-├── cd00081.smp
-├── cd00085.smp
-├── cd09643.smp
-├── COG1372.smp
-├── COG1403.smp
-├── COG2356.smp
-├── pfam01844.smp
-├── pfam04231.smp
-├── pfam05204.smp
-├── pfam05551.smp
-├── pfam07510.smp
-├── pfam12639.smp
-├── pfam13391.smp
-├── pfam13392.smp
-├── pfam13395.smp
-├── pfam13403.smp
-├── pfam14414.smp
-├── pfam14527.smp
-├── pfam14528.smp
-├── pfam14623.smp
-├── pfam14890.smp
-├── PRK11295.smp
-├── PRK15137.smp
-├── smart00305.smp
-├── smart00306.smp
-├── smart00507.smp
-├── TIGR01443.smp
-├── TIGR01445.smp
-└── TIGR02646.smp
-
-0 directories, 29 files
-</code></pre>
+<h2 id="download-databases">Download databases</h2>
+<p>You need to ensure that you have the intein and conserved domain databases that come with InteinFinder.  <a href="../downloading-databases/">This page</a> has info about obtaining them.</p>
+<p>Note that you can also use custom databases if you need to.</p>
 <h2 id="make-a-config-file">Make a config file</h2>
 <p>Config files are in <a href="https://toml.io">TOML</a> format.  Here is an example.</p>
 <p>*Note: all paths are relative to the directory in which you run the <code>InteinFinder</code> executable.</p>
-<p>TODO: does the <code>~</code> work in the paths?
-TODO: does the folder work with trailing slash?</p>
+<ul>
+<li>TODO: does the <code>~</code> work in the paths?</li>
+<li>TODO: does the folder work with trailing slash?</li>
+</ul>
 <p>Let's assume that I have the InteinFinder source directory in the <code>/home/ryan/projects/InteinFinder</code> directory, and that I left the <code>_assets</code> directory that I mention above in its original place in the source directory.</p>
 <p>Assume that in the current directory, I have <a href="https://raw.githubusercontent.com/mooreryan/InteinFinder/main/test/cram/assets/rnr_5.faa">this</a> fasta file: <code>rnr_5.faa</code>.  <em>Note: If you look at this file, you will see that it is pretty weird.  It has some "special" sequences constructed for use in InteinFinder's end-to-end tests.</em></p>
 <p>Assume you have saved this file as <code>config.toml</code> in the same directory in which you have the <code>rnr_5.faa</code> fasta file.</p>
@@ -232,6 +181,10 @@ out_dir = &quot;intein_finder_output&quot;
 threads = 4
 </code></pre>
 <h2 id="run-the-pipeline">Run the pipeline</h2>
+<ul>
+<li>TODO mention the path? (<code>which InteinFinder</code>)</li>
+<li>TODO "assuming the InteinFinder executable file is located in <code>~/bin/InteinFinder</code></li>
+</ul>
 <p>Assuming that the <code>InteinFinder</code> binary is somewhere on your <a href="http://www.linfo.org/path_env_var.html">path</a>, then you can run InteinFinder like so:</p>
 <pre><code>$ InteinFinder config.toml
 INFO [2023-01-24 20:12:01] Renaming queries
@@ -275,12 +228,17 @@ intein_finder_output/
 5 directories, 12 files
 </code></pre>
 <p>The various output files are described in more detail elsewhere in the manual.</p>
+<p>(TODO transition)</p>
+<p>If it is not on your path, then you will have to provide the path to the executable file itself.  E.g., if it is located in <code>~/Downloads/InteinFinder-linux/InteinFinder</code>, then you would need to run the command like this:</p>
+<p>Also assume that your config file is in <code>~/projects/my_config.toml</code></p>
+<pre><code>$ ~/Downloads/InteinFinder-linux/InteinFinder ~/projects/my_config.toml
+</code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="InteinFinder"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../installing-external-dependencies/" class="btn btn-neutral float-right" title="Installing External Software Dependencies">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../downloading-databases/" class="btn btn-neutral float-left" title="Downloading Databases"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cli/" class="btn btn-neutral float-right" title="Command Line Interface">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -307,10 +265,10 @@ intein_finder_output/
         </span>
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../downloading-databases/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../installing-external-dependencies/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../cli/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
