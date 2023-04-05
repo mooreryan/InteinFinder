@@ -45,10 +45,6 @@ threads = 4
 
 ## Run the pipeline
 
-- TODO mention the path? (`which InteinFinder`)
-- TODO "assuming the InteinFinder executable file is located in `~/bin/InteinFinder`
-
-
 Assuming that the `InteinFinder` binary is somewhere on your [path](http://www.linfo.org/path_env_var.html), then you can run InteinFinder like so:
 
 ```
@@ -99,11 +95,11 @@ intein_finder_output/
 
 The various output files are described in more detail elsewhere in the manual.
 
-(TODO transition)
+### Note about path environment variable
 
-If it is not on your path, then you will have to provide the path to the executable file itself.  E.g., if it is located in `~/Downloads/InteinFinder-linux/InteinFinder`, then you would need to run the command like this:
+For the above example, we assume that `InteinFinder` program is already on your [path](http://www.linfo.org/path_env_var.html).  If not, then replace `InteinFinder` with an absolute or relative path to the location that you have stored the InteinFinder executable file.
 
-Also assume that your config file is in `~/projects/my_config.toml`
+Now, let's assume that `InteinFinder` is located here, `~/Downloads/InteinFinder-linux/InteinFinder` and that your that your config file is located here, `~/projects/my_config.toml`. Then the above example would look like this:
 
 ```
 $ ~/Downloads/InteinFinder-linux/InteinFinder ~/projects/my_config.toml

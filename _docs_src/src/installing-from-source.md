@@ -39,7 +39,7 @@ If you want to run the tests, you can with
 $ opam exec -- make install_release
 ```
 
-Note that if you have different versions of the [external dependencies](todo.md), then the tests may fail for trivial reasons (like alignments being slightly different between MAFFT versions).
+Note that if you have different versions of the [external dependencies](./installing-external-dependencies.md), then the tests may fail for reasons due to changes in the dependencies (like alignments being slightly different between MAFFT versions).
 
 ## Sanity check
 

@@ -80,10 +80,10 @@ Here is an example of how the `2_pipeline_info.txt` file might look:
 Program Versions
 ================
 InteinFinder version: 1.0.0-SNAPSHOT [3da10c5].
-/usr/bin/mafft version: v7.490 (2021/Oct/30). 
-/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e. 
-/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
-/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+/usr/bin/mafft version: v7.490 (2021/Oct/30).
+/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e.
+/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
+/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
 
 Working Directory
 =================
@@ -142,9 +142,7 @@ While these regions will many times contain actual inteins, regions may often be
 
 ### Intein sequence hits
 
-TODO: this file should move to the search output
-
-Putative intein regions are defined by hits to both intein sequences and conserved domains.  Because hits to intein sequences are of particular importance, there is an output file, `2_intein_hit_info.tsv`, that gives info about the queries that had hits specifically to inteins from InteinFinder's databases, and the region in which those hits occurred.
+Putative intein regions are defined by hits to both intein sequences and conserved domains.  Because hits to intein sequences are of particular importance, there is an output file, `search/intein_db/2_intein_db_search_with_regions.tsv`, that gives info about the queries that had hits specifically to inteins from InteinFinder's databases, and the region in which those hits occurred.
 
 This file is similar to the blast tab output format 6, with some added info at the beginning and the end.
 
@@ -198,22 +196,3 @@ This file has a lot of columns and basically all of the important info that the 
 | end position check         | 14 |
 | region check               | 15 |
 | overall check              | 16 |
-
-And here are the names of the columns as they appear in the file.
-
-- `query`
-- `region`
-- `intein_target`
-- `intein_start_minus_one`
-- `intein_start`
-- `intein_penultimate`
-- `intein_end`
-- `intein_end_plus_one`
-- `intein_length`
-- `start_residue_check`
-- `end_residues_check`
-- `end_plus_one_residue_check`
-- `start_position_check`
-- `end_position_check`
-- `region_check`
-- `overall_check`

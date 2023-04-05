@@ -134,8 +134,9 @@ Both these options are **required**.
 	- In most cases, you will use the file [included](https://github.com/mooreryan/InteinFinder/blob/main/_assets/intein_sequences/all_derep.faa) with InteinFinder, but you can always use your own.
 - `smp_dir`
     - Path to the directory containing `SMP` files to search against
-	- This is the file format that rpsblast uses ([link](todo.md)).
+	- This is the file format that rpsblast uses ([link](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd_help.shtml)).
 	- In most cases, you will use the files [included](https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp) with InteinFinder, but you can always use your own.
+- You can get both the intein sequences and smp files using [this](https://github.com/mooreryan/InteinFinder/raw/main/_assets/asset_bundle.tar.gz) link.
 
 Both these options are **required**.
 
@@ -249,7 +250,7 @@ There is only one option for this table:
 
 - `exe`
     - The name of the executable program
-	- Also, you could pass in a path to the program (TODO add a test for this)
+	- Also, you could pass in a path to the program
     - default value: `makeprofiledb`
 	    - Note that this default value assumes that the program is on your [PATH](http://www.linfo.org/path_env_var.html)
 
@@ -259,7 +260,7 @@ There is only one option for this table:
 
 - `exe`
     - The name of the executable program
-	- Also, you could pass in a path to the program (TODO add a test for this)
+	- Also, you could pass in a path to the program
     - default value: `mafft`
 	    - Note that this default value assumes that the program is on your path
 
@@ -269,7 +270,7 @@ There is only one option for this table:
 
 - `exe`
     - The name of the executable program
-	- Also, you could pass in a path to the program (TODO add a test for this)
+	- Also, you could pass in a path to the program
     - default value: `mmseqs`
 	    - Note that this default value assumes that the program is on your path
 - `evalue`
@@ -283,9 +284,9 @@ There is only one option for this table:
 
 - `exe`
     - The name of the executable program
-	- Also, you could pass in a path to the program (TODO add a test for this)
+	- Also, you could pass in a path to the program
     - default value: `rpsblast+`
-	    - Note that this default value assumes that the program is on you [PATH](todo.md)
+	    - Note that this default value assumes that the program is on your path
 		- There is a good chance that you will change this to `rpsblast`.
 		    - On my system, it's called `rpsblast+`, but I'm not sure which is more common.
 - `evalue`
