@@ -4,68 +4,11 @@
 
 The quick start guide assumes you already have InteinFinder installed.  See [installing external dependencies](installing-external-dependencies.md), and [installing precompiled binaries](installing-precompiled-binaries.md) for some quick info about installation.
 
-## Get needed assets
+## Download databases
 
-You need a file of inteins and a file of conserved domain models.
+You need to ensure that you have the intein and conserved domain databases that come with InteinFinder.  [This page](./downloading-databases.md) has info about obtaining them.
 
-InteinFinder comes with these for your convenience.  But expert users may have their own set to use instead.
-
-Here are links to find them on GitHub
-
-- [intein sequences](https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences)
-  - directory containing intein sequence DB
-  - In the manuscript, this is referred to as the ISDB (intein sequence database)
-- [conserved domain models](https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp)
-  - directory containing conserved domain models
-  - In the manuscript, this is referred to as the CDMDB (conserved domain model data base)
-- [asset bundle](https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz)
-  - Use this link for an archive containing both the intein sequence DB and the conserved domain model DB.
-  - It's the same data, but in a form convenient for direct download.
-
-Here is an example for downloading the assets using the bundled archive:
-
-```
-$ mkdir InteinFinder_assets
-$ cd InteinFinder_assets
-$ \curl -L \
-  https://github.com/mooreryan/InteinFinder/tree/main/_assets/asset_bundle.tar.gz \
-  | tar xz
-$ tree
-intein_sequences/
-└── all_derep.faa
-smp/
-├── cd00081.smp
-├── cd00085.smp
-├── cd09643.smp
-├── COG1372.smp
-├── COG1403.smp
-├── COG2356.smp
-├── pfam01844.smp
-├── pfam04231.smp
-├── pfam05204.smp
-├── pfam05551.smp
-├── pfam07510.smp
-├── pfam12639.smp
-├── pfam13391.smp
-├── pfam13392.smp
-├── pfam13395.smp
-├── pfam13403.smp
-├── pfam14414.smp
-├── pfam14527.smp
-├── pfam14528.smp
-├── pfam14623.smp
-├── pfam14890.smp
-├── PRK11295.smp
-├── PRK15137.smp
-├── smart00305.smp
-├── smart00306.smp
-├── smart00507.smp
-├── TIGR01443.smp
-├── TIGR01445.smp
-└── TIGR02646.smp
-
-0 directories, 29 files
-```
+Note that you can also use custom databases if you need to.
 
 ## Make a config file
 
@@ -73,8 +16,8 @@ Config files are in [TOML](https://toml.io) format.  Here is an example.
 
 *Note: all paths are relative to the directory in which you run the `InteinFinder` executable.
 
-TODO: does the `~` work in the paths?
-TODO: does the folder work with trailing slash?
+- TODO: does the `~` work in the paths?
+- TODO: does the folder work with trailing slash?
 
 Let's assume that I have the InteinFinder source directory in the `/home/ryan/projects/InteinFinder` directory, and that I left the `_assets` directory that I mention above in its original place in the source directory.
 
@@ -100,6 +43,10 @@ threads = 4
 ```
 
 ## Run the pipeline
+
+- TODO mention the path? (`which InteinFinder`)
+- TODO "assuming the InteinFinder executable file is located in `~/bin/InteinFinder`
+
 
 Assuming that the `InteinFinder` binary is somewhere on your [path](http://www.linfo.org/path_env_var.html), then you can run InteinFinder like so:
 
@@ -150,3 +97,13 @@ intein_finder_output/
 ```
 
 The various output files are described in more detail elsewhere in the manual.
+
+(TODO transition)
+
+If it is not on your path, then you will have to provide the path to the executable file itself.  E.g., if it is located in `~/Downloads/InteinFinder-linux/InteinFinder`, then you would need to run the command like this:
+
+Also assume that your config file is in `~/projects/my_config.toml`
+
+```
+$ ~/Downloads/InteinFinder-linux/InteinFinder ~/projects/my_config.toml
+```

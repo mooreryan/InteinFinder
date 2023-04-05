@@ -6,13 +6,14 @@ site_description: Installation and usage instructions for InteinFinder, a progra
 site_author: Ryan M. Moore
 nav:
   - InteinFinder: index.md
-  - Getting Started: getting-started.md
   - Installation:
     - Installing External Software Dependencies: installing-external-dependencies.md
     - Installing Precompiled Binaries: installing-precompiled-binaries.md
     - Installing With Docker: installing-with-docker.md
     - Installing From Source: installing-from-source.md
+    - Downloading Databases: downloading-databases.md
   - Usage:
+    - Getting Started: getting-started.md
     - Command Line Interface: cli.md
     - Config files: config-files.md
     - Output: intein-finder-output.md
