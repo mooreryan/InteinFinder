@@ -46,3 +46,19 @@ test_coverage_open: test_coverage
 
 send_coverage: clean test_coverage
     bisect-ppx-report send-to Coveralls --coverage-path {{ cov_dir }}
+
+# Examples
+
+example_basic_usage:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
+    DIR=_examples/basic_usage
+    OUTDIR=if_out
+    CONFIG=config.toml
+
+    cd $DIR
+
+    if [ -d $OUTDIR ]; then rm -r $OUTDIR; fi
+
+    InteinFinder $CONFIG
