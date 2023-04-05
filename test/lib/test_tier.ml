@@ -70,24 +70,28 @@ module Test_tier_list = struct
     @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 3] ;
-    [%expect {| (Error "Expected tiers to start at one and increase by one, but got: (1 3)") |}] ;
+    [%expect
+      {| (Error "Expected tiers to start at one and increase by one, but got: (1 3)") |}] ;
     print_s
     @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [2; 3] ;
-    [%expect {| (Error "Expected tiers to start at one and increase by one, but got: (2 3)") |}] ;
+    [%expect
+      {| (Error "Expected tiers to start at one and increase by one, but got: (2 3)") |}] ;
     print_s
     @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 2; 3; 5] ;
-    [%expect {|
+    [%expect
+      {|
       (Error
        "Expected tiers to start at one and increase by one, but got: (1 2 3 5)") |}] ;
     print_s
     @@ [%sexp_of: Tier.Valid_list.t Or_error.t]
     @@ Tier.Valid_list.create
     @@ tl [1; 3; 2; 5] ;
-    [%expect {|
+    [%expect
+      {|
       (Error
        "Expected tiers to start at one and increase by one, but got: (1 2 3 5)") |}]
 end
