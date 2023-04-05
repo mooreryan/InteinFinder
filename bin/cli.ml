@@ -123,8 +123,6 @@ S = "T1"
 T = "T1"
 C = "T1"
 ```|}
-    ; `P "=== Pipeline Output"
-    ; `P "TODO"
     ; `S Manpage.s_bugs
     ; `P
         "Please report any bugs or issues on GitHub. \
