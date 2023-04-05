@@ -157,10 +157,11 @@
 <p>Note that you can also use custom databases if you need to.</p>
 <h2 id="make-a-config-file">Make a config file</h2>
 <p>Config files are in <a href="https://toml.io">TOML</a> format.  Here is an example.</p>
-<p>*Note: all paths are relative to the directory in which you run the <code>InteinFinder</code> executable.</p>
+<p>Notes</p>
 <ul>
-<li>TODO: does the <code>~</code> work in the paths?</li>
-<li>TODO: does the folder work with trailing slash?</li>
+<li>All paths are relative to the directory in which you run the <code>InteinFinder</code> executable.</li>
+<li>For file paths, you must not use <code>~</code> as an abbreviation for your home directory, it will not work.</li>
+<li>For directories, you may include a trailing slash.</li>
 </ul>
 <p>Let's assume that I have the InteinFinder source directory in the <code>/home/ryan/projects/InteinFinder</code> directory, and that I left the <code>_assets</code> directory that I mention above in its original place in the source directory.</p>
 <p>Assume that in the current directory, I have <a href="https://raw.githubusercontent.com/mooreryan/InteinFinder/main/test/cram/assets/rnr_5.faa">this</a> fasta file: <code>rnr_5.faa</code>.  <em>Note: If you look at this file, you will see that it is pretty weird.  It has some "special" sequences constructed for use in InteinFinder's end-to-end tests.</em></p>
