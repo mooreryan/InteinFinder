@@ -14,10 +14,11 @@ Note that you can also use custom databases if you need to.
 
 Config files are in [TOML](https://toml.io) format.  Here is an example.
 
-*Note: all paths are relative to the directory in which you run the `InteinFinder` executable.
+Notes
 
-- TODO: does the `~` work in the paths?
-- TODO: does the folder work with trailing slash?
+- All paths are relative to the directory in which you run the `InteinFinder` executable.
+- For file paths, you must not use `~` as an abbreviation for your home directory, it will not work.
+- For directories, you may include a trailing slash.
 
 Let's assume that I have the InteinFinder source directory in the `/home/ryan/projects/InteinFinder` directory, and that I left the `_assets` directory that I mention above in its original place in the source directory.
 
