@@ -16,6 +16,7 @@ Note:
 - Any line starting with a `#` is a comment.
   - That means that they are ignored.
   - You can use them for your own clarification, or whatever you need.
+- For file paths, you must not use `~` as an abbreviation for your home directory, it will not work.
 
 ```toml
 # General I/O

@@ -17,6 +17,8 @@ The InteinFinder pipeline's [continuous integration testing](https://github.com/
 
 In other words, InteinFinder is continuously tested with those software versions.
 
+- TODO: mac: https://apple.stackexchange.com/a/254381 (xcrun: error: invalid active developer path)
+
 ## Using other versions
 
 Other versions will likely work too, but they may give slightly different output, causing the tests to fail if you run them locally.  (E.g., it's possible a different version of BLAST could give slightly different alignment of queries.)

@@ -20,6 +20,8 @@ Don't forget that after downloading one of the binaries, you will need to adjust
 
 Before running InteinFinder, you will need to install the [external dependencies](./installing-external-dependencies.md) that `InteinFinder` relies on.
 
+Additionally, you may want to add the InteinFinder executable to your path.
+
 ## Example
 
 Here is an example of getting one of the `InteinFinder` binaries working:

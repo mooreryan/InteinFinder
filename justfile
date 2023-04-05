@@ -14,6 +14,9 @@ build_release:
 clean:
     dune clean
 
+docs_dev:
+    mkdocs serve -w _docs_src -f _docs_src/mkdocs.yml -a localhost:8888
+
 install_dev:
     INTEIN_FINDER_GIT_COMMIT_HASH=`{{ git_describe }}` \
     dune install --profile=dev

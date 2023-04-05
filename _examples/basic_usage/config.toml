@@ -1,0 +1,5 @@
+queries = "queries.faa"
+out_dir = "if_out"
+
+inteins = "../../_assets/intein_sequences/all_derep.faa"
+smp_dir = "../../_assets/smp"
