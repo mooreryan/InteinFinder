@@ -181,9 +181,6 @@
 <li>rpsblast+: 2.12.0+ (Package: blast 2.12.0)</li>
 </ul>
 <p>In other words, InteinFinder is continuously tested with those software versions.</p>
-<ul>
-<li>TODO: mac: https://apple.stackexchange.com/a/254381 (xcrun: error: invalid active developer path)</li>
-</ul>
 <h2 id="using-other-versions">Using other versions</h2>
 <p>Other versions will likely work too, but they may give slightly different output, causing the tests to fail if you run them locally.  (E.g., it's possible a different version of BLAST could give slightly different alignment of queries.)</p>
 <p>Occasionally, the command line interface of the external dependencies will change (e.g., <code>mmseqs</code> has changed a bit in the past).  So, if you discover an error due to that, please <a href="https://github.com/mooreryan/InteinFinder/issues">submit a bug report</a> (GitHub account required).</p>
@@ -213,6 +210,7 @@ $ rpsblast -query QUERY -db DB_OUT \
   | tar xz \
   &amp;&amp; cd mafft-*/core/ &amp;&amp; make clean &amp;&amp; make &amp;&amp; sudo make install
 </code></pre>
+<p>Note if you are using macOS, you may have to install developer tools for this to work.  <a href="https://apple.stackexchange.com/a/254381">Here</a> is an example on Apple StackExchange that may help.</p>
 <h3 id="mmseqs2">MMseqs2</h3>
 <p>Here is how to download pre-compiled MMseqs2 binaries from GitHub.</p>
 <h4 id="on-ubuntu">On Ubuntu</h4>

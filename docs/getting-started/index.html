@@ -107,6 +107,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#make-a-config-file">Make a config file</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">Run the pipeline</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#note-about-path-environment-variable">Note about path environment variable</a>
+    </li>
+        </ul>
     </li>
     </ul>
                   </li>
@@ -182,10 +186,6 @@ out_dir = &quot;intein_finder_output&quot;
 threads = 4
 </code></pre>
 <h2 id="run-the-pipeline">Run the pipeline</h2>
-<ul>
-<li>TODO mention the path? (<code>which InteinFinder</code>)</li>
-<li>TODO "assuming the InteinFinder executable file is located in <code>~/bin/InteinFinder</code></li>
-</ul>
 <p>Assuming that the <code>InteinFinder</code> binary is somewhere on your <a href="http://www.linfo.org/path_env_var.html">path</a>, then you can run InteinFinder like so:</p>
 <pre><code>$ InteinFinder config.toml
 INFO [2023-01-24 20:12:01] Renaming queries
@@ -229,9 +229,9 @@ intein_finder_output/
 5 directories, 12 files
 </code></pre>
 <p>The various output files are described in more detail elsewhere in the manual.</p>
-<p>(TODO transition)</p>
-<p>If it is not on your path, then you will have to provide the path to the executable file itself.  E.g., if it is located in <code>~/Downloads/InteinFinder-linux/InteinFinder</code>, then you would need to run the command like this:</p>
-<p>Also assume that your config file is in <code>~/projects/my_config.toml</code></p>
+<h3 id="note-about-path-environment-variable">Note about path environment variable</h3>
+<p>For the above example, we assume that <code>InteinFinder</code> program is already on your <a href="http://www.linfo.org/path_env_var.html">path</a>.  If not, then replace <code>InteinFinder</code> with an absolute or relative path to the location that you have stored the InteinFinder executable file.</p>
+<p>Now, let's assume that <code>InteinFinder</code> is located here, <code>~/Downloads/InteinFinder-linux/InteinFinder</code> and that your that your config file is located here, <code>~/projects/my_config.toml</code>. Then the above example would look like this:</p>
 <pre><code>$ ~/Downloads/InteinFinder-linux/InteinFinder ~/projects/my_config.toml
 </code></pre>
               

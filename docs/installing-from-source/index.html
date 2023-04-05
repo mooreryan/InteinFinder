@@ -172,7 +172,7 @@ opam install . --deps-only --with-doc --with-test
 <p>If you want to run the tests, you can with</p>
 <pre><code>$ opam exec -- make install_release
 </code></pre>
-<p>Note that if you have different versions of the <a href="../todo/">external dependencies</a>, then the tests may fail for trivial reasons (like alignments being slightly different between MAFFT versions).</p>
+<p>Note that if you have different versions of the <a href="../installing-external-dependencies/">external dependencies</a>, then the tests may fail for reasons due to changes in the dependencies (like alignments being slightly different between MAFFT versions).</p>
 <h2 id="sanity-check">Sanity check</h2>
 <p>If all went well, this should give you the path to the <code>InteinFinder</code> executable file.</p>
 <pre><code>$ which InteinFinder

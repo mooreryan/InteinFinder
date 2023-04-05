@@ -235,10 +235,10 @@ if_out
 <pre><code class="language-text">Program Versions
 ================
 InteinFinder version: 1.0.0-SNAPSHOT [3da10c5].
-/usr/bin/mafft version: v7.490 (2021/Oct/30). 
-/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e. 
-/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
-/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08. 
+/usr/bin/mafft version: v7.490 (2021/Oct/30).
+/home/ryan/software/mmseqs/bin/mmseqs version: 45111b641859ed0ddd875b94d6fd1aef1a675b7e.
+/usr/bin/rpsblast+ version: rpsblast+: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
+/usr/bin/makeprofiledb version: makeprofiledb: 2.12.0+.  Package: blast 2.12.0, build Mar  8 2022 16:19:08.
 
 Working Directory
 =================
@@ -294,8 +294,7 @@ Config
 <li><code>end</code>: 1-indexed, inclusive end coordinate</li>
 </ul>
 <h3 id="intein-sequence-hits">Intein sequence hits</h3>
-<p>TODO: this file should move to the search output</p>
-<p>Putative intein regions are defined by hits to both intein sequences and conserved domains.  Because hits to intein sequences are of particular importance, there is an output file, <code>2_intein_hit_info.tsv</code>, that gives info about the queries that had hits specifically to inteins from InteinFinder's databases, and the region in which those hits occurred.</p>
+<p>Putative intein regions are defined by hits to both intein sequences and conserved domains.  Because hits to intein sequences are of particular importance, there is an output file, <code>search/intein_db/2_intein_db_search_with_regions.tsv</code>, that gives info about the queries that had hits specifically to inteins from InteinFinder's databases, and the region in which those hits occurred.</p>
 <p>This file is similar to the blast tab output format 6, with some added info at the beginning and the end.</p>
 <p>The first few columns describe the query, the intein DB hit, and the region in which that hit occurred.</p>
 <ul>
@@ -400,25 +399,6 @@ Config
 </tr>
 </tbody>
 </table>
-<p>And here are the names of the columns as they appear in the file.</p>
-<ul>
-<li><code>query</code></li>
-<li><code>region</code></li>
-<li><code>intein_target</code></li>
-<li><code>intein_start_minus_one</code></li>
-<li><code>intein_start</code></li>
-<li><code>intein_penultimate</code></li>
-<li><code>intein_end</code></li>
-<li><code>intein_end_plus_one</code></li>
-<li><code>intein_length</code></li>
-<li><code>start_residue_check</code></li>
-<li><code>end_residues_check</code></li>
-<li><code>end_plus_one_residue_check</code></li>
-<li><code>start_position_check</code></li>
-<li><code>end_position_check</code></li>
-<li><code>region_check</code></li>
-<li><code>overall_check</code></li>
-</ul>
               
             </div>
           </div><footer>
