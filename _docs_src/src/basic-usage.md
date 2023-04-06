@@ -7,15 +7,74 @@ This tutorial covers basic usage of InteinFinder.
 - Checking the output
 - Generating intein free extein sequences
 
+## Download the data
+
+The data used in this tutorial is available on GitHub, with [this](https://raw.githubusercontent.com/mooreryan/InteinFinder/main/_examples/basic_usage.tar.gz) direct link.
+
+It contains the query sequences, config file, and database assets used in this example.
+
+Here is an example of how to download the data.  Note, you can skip the `tree` command that is shown.  It is simply to display the data for this example.
+
+```
+$ mkdir tutorials && cd tutorials
+$ \curl -L \
+  https://raw.githubusercontent.com/mooreryan/InteinFinder/main/_examples/basic_usage.tar.gz \
+  | tar xz
+$ cd basic_usage
+$ tree --charset=ascii
+.
+|-- cddb
+|   |-- cd00081.smp
+|   |-- cd00085.smp
+|   |-- cd09643.smp
+|   |-- COG1372.smp
+|   |-- COG1403.smp
+|   |-- COG2356.smp
+|   |-- pfam01844.smp
+|   |-- pfam04231.smp
+|   |-- pfam05204.smp
+|   |-- pfam05551.smp
+|   |-- pfam07510.smp
+|   |-- pfam12639.smp
+|   |-- pfam13391.smp
+|   |-- pfam13392.smp
+|   |-- pfam13395.smp
+|   |-- pfam13403.smp
+|   |-- pfam14414.smp
+|   |-- pfam14527.smp
+|   |-- pfam14528.smp
+|   |-- pfam14623.smp
+|   |-- pfam14890.smp
+|   |-- PRK11295.smp
+|   |-- PRK15137.smp
+|   |-- smart00305.smp
+|   |-- smart00306.smp
+|   |-- smart00507.smp
+|   |-- TIGR01443.smp
+|   |-- TIGR01445.smp
+|   `-- TIGR02646.smp
+|-- config.toml
+|-- isdb
+|   `-- all_derep.faa
+|-- queries.faa
+`-- README.md
+
+2 directories, 33 files
+```
+
 ## Make the config file
 
-Assuming that you have [installed](https://mooreryan.github.io/InteinFinder/installing-precompiled-binaries/) InteinFinder and all its dependencies, the next thing you need to do is to make a config file.
+Assuming that you have [installed](installing-precompiled-binaries.md) InteinFinder and all its [dependencies](installing-external-dependencies.md), the next thing you need to do is to make a config file.
 
-We use [TOML](https://toml.io) files to configure InteinFinder.
+Let's make the config file together now.  We use [TOML](https://toml.io) files to configure InteinFinder.
 
-Let's make the config file together now.
+### A note about relative paths
 
-Note that I am assuming that you are in the current directory when you run the InteinFinder program.
+For this tutorial, I am assuming that you will be in the current directory when you run the InteinFinder program.
+
+This matters when specifying the location of the files.  In the tutorial, we will be using file paths relative to *this* directory.  Because we use relative file paths, we must run InteinFinder in this directory, or it will not be able to find the files.
+
+If you want to avoid this restriction, you must use absolute file paths (e.g., `/home/ryan/downloads/config.toml`).  Doing this will allow you to run the `InteinFinder` executable from any directory.
 
 ### Queries
 
@@ -41,16 +100,18 @@ The above line tells InteinFinder that you want its output to go in a directory 
 
 ### Target databases
 
-InteinFinder needs two databases to run.  One is a FASTA file containing known intein sequences, and the other is a directory of SMP files containing conserved domains commonly associated with inteins.  While you can provide your own, for this tutorial, we will use those included in the InteinFinder git repository.
+InteinFinder needs two databases to run.  One is a FASTA file containing known intein sequences, and the other is a directory of SMP files containing conserved domains commonly associated with inteins.  While you can provide your own, for this tutorial, we will use those included in the InteinFinder git repository.  Note that in the manuscript, these are called the intein sequence database (ISDB), and the conserved domain database (CDDB).
 
-The assets are located at the root of the InteinFinder repository in a directory called `_assets`.  Again, I am assuming that you will be running InteinFinder in *this* directory, so we will specify the path of the assets *relative* to this directory.
+The intein sequences are in `isdb/all_derep.faa` and the SMP files are in `cddb`.  They are included in the tar file you downloaded earlier.
 
 Here is what it will look like:
 
 ```toml
-inteins = "../../_assets/intein_sequences/all_derep.faa"
-smp_dir = "../../_assets/smp"
+inteins = "isdb/all_derep.faa"
+smp_dir = "cddb/smp"
 ```
+
+Remember that these file paths are relative to the directory that we are currently in.
 
 ### Put it together
 
@@ -60,8 +121,8 @@ And that is all the required key/value pairs for the config file.  You can see t
 queries = "queries.faa"
 out_dir = "if_out"
 
-inteins = "../../_assets/intein_sequences/all_derep.faa"
-smp_dir = "../../_assets/smp"
+inteins = "isdb/all_derep.faa"
+smp_dir = "cddb/smp"
 ```
 
 ## Run the pipeline
@@ -127,7 +188,7 @@ if_out/
 5 directories, 12 files
 ```
 
-For more info about the output files, see the [docs](https://mooreryan.github.io/InteinFinder/intein-finder-output/).
+For more info about the output files, see the [docs](intein-finder-output.md).
 
 ### RemoveInteins
 
@@ -184,3 +245,7 @@ if_out/
 As you see, there is one additional file, `4_intein_free_queries.faa`, that contains intein-free query sequences.
 
 Note that only query sequences with at least one bonafide intein sequence will be printed, and that only inteins who scored an overall Pass will be removed from said extein sequences. Keep in mind that the printed sequences may not be completely intein-free, as a query could have multiple inteins, but not all of those predicetd inteins may have scored well enough to be automatically removed. For now, you will see a warning in cases like these.
+
+## Wrap up
+
+In this tutorial, we went over the basics of using InteinFinder, including writing a config file using mostly default options, and generating a set of intein-free sequences with the `RemoveInteins` program.

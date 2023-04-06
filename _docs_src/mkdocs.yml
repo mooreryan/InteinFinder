@@ -17,7 +17,8 @@ nav:
     - Command Line Interface: cli.md
     - Config files: config-files.md
     - Output: intein-finder-output.md
-  - Examples:
+  - Examples & Tutorials:
+    - Basic Usage: basic-usage.md
     - Tutorials: tutorials.md
     - Other Examples: other-examples.md
 theme:

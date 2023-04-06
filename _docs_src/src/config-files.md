@@ -136,7 +136,7 @@ Both these options are **required**.
     - Path to the directory containing `SMP` files to search against
 	- This is the file format that rpsblast uses ([link](https://www.ncbi.nlm.nih.gov/Structure/cdd/cdd_help.shtml)).
 	- In most cases, you will use the files [included](https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp) with InteinFinder, but you can always use your own.
-- You can get both the intein sequences and smp files using [this](https://github.com/mooreryan/InteinFinder/raw/main/_assets/asset_bundle.tar.gz) link.
+- You can get both the intein sequences and smp files using [this](https://github.com/mooreryan/InteinFinder/raw/main/_assets/intein_finder_databases.tar.gz) link.
 
 Both these options are **required**.
 
