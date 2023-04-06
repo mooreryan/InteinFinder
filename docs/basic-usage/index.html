@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ryan M. Moore" /><link rel="canonical" href="https://mooreryan.github.io/InteinFinder/basic-usage/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Basic Usage - InteinFinder</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Basic Usage";
+        var mkdocs_page_input_path = "basic-usage.md";
+        var mkdocs_page_url = "/InteinFinder/basic-usage/";
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/languages/toml.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+<meta property="og:site_name" content="Basic Usage - InteinFinder" />
+
+<meta property="og:type" content="website">
+
+<meta property="og:title" content="Basic Usage - InteinFinder">
+
+<meta property="description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta property="og:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+<meta name="twitter:description" content="Installation and usage instructions for InteinFinder, a program for identifying inteins in large protein datasets.">
+
+<meta property="og:url" content="https://mooreryan.github.io/InteinFinder/basic-usage/">
+
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Basic Usage - InteinFinder">
+
+  
+
+  
+
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> InteinFinder
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">InteinFinder</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-external-dependencies/">Installing External Software Dependencies</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-precompiled-binaries/">Installing Precompiled Binaries</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-with-docker/">Installing With Docker</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installing-from-source/">Installing From Source</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../downloading-databases/">Downloading Databases</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">Command Line Interface</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../config-files/">Config files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../intein-finder-output/">Output</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples & Tutorials</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Basic Usage</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#download-the-data">Download the data</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#make-the-config-file">Make the config file</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#a-note-about-relative-paths">A note about relative paths</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#queries">Queries</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output-directory">Output directory</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#target-databases">Target databases</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#put-it-together">Put it together</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-the-pipeline">Run the pipeline</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inteinfinder">InteinFinder</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#removeinteins">RemoveInteins</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#wrap-up">Wrap up</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../other-examples/">Other Examples</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">InteinFinder</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>Examples & Tutorials &raquo;</li>
+      <li>Basic Usage</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/mooreryan/InteinFinder/edit/main/_docs_src/src/basic-usage.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="basic-usage">Basic Usage</h1>
+<p>This tutorial covers basic usage of InteinFinder.</p>
+<ul>
+<li>Making a simple config file</li>
+<li>Running the software</li>
+<li>Checking the output</li>
+<li>Generating intein free extein sequences</li>
+</ul>
+<h2 id="download-the-data">Download the data</h2>
+<p>The data used in this tutorial is available on GitHub, with <a href="https://raw.githubusercontent.com/mooreryan/InteinFinder/main/_examples/basic_usage.tar.gz">this</a> direct link.</p>
+<p>It contains the query sequences, config file, and database assets used in this example.</p>
+<p>Here is an example of how to download the data.  Note, you can skip the <code>tree</code> command that is shown.  It is simply to display the data for this example.</p>
+<pre><code>$ mkdir tutorials &amp;&amp; cd tutorials
+$ \curl -L \
+  https://raw.githubusercontent.com/mooreryan/InteinFinder/main/_examples/basic_usage.tar.gz \
+  | tar xz
+$ cd basic_usage
+$ tree --charset=ascii
+.
+|-- cddb
+|   |-- cd00081.smp
+|   |-- cd00085.smp
+|   |-- cd09643.smp
+|   |-- COG1372.smp
+|   |-- COG1403.smp
+|   |-- COG2356.smp
+|   |-- pfam01844.smp
+|   |-- pfam04231.smp
+|   |-- pfam05204.smp
+|   |-- pfam05551.smp
+|   |-- pfam07510.smp
+|   |-- pfam12639.smp
+|   |-- pfam13391.smp
+|   |-- pfam13392.smp
+|   |-- pfam13395.smp
+|   |-- pfam13403.smp
+|   |-- pfam14414.smp
+|   |-- pfam14527.smp
+|   |-- pfam14528.smp
+|   |-- pfam14623.smp
+|   |-- pfam14890.smp
+|   |-- PRK11295.smp
+|   |-- PRK15137.smp
+|   |-- smart00305.smp
+|   |-- smart00306.smp
+|   |-- smart00507.smp
+|   |-- TIGR01443.smp
+|   |-- TIGR01445.smp
+|   `-- TIGR02646.smp
+|-- config.toml
+|-- isdb
+|   `-- all_derep.faa
+|-- queries.faa
+`-- README.md
+
+2 directories, 33 files
+</code></pre>
+<h2 id="make-the-config-file">Make the config file</h2>
+<p>Assuming that you have <a href="../installing-precompiled-binaries/">installed</a> InteinFinder and all its <a href="../installing-external-dependencies/">dependencies</a>, the next thing you need to do is to make a config file.</p>
+<p>Let's make the config file together now.  We use <a href="https://toml.io">TOML</a> files to configure InteinFinder.</p>
+<h3 id="a-note-about-relative-paths">A note about relative paths</h3>
+<p>For this tutorial, I am assuming that you will be in the current directory when you run the InteinFinder program.</p>
+<p>This matters when specifying the location of the files.  In the tutorial, we will be using file paths relative to <em>this</em> directory.  Because we use relative file paths, we must run InteinFinder in this directory, or it will not be able to find the files.</p>
+<p>If you want to avoid this restriction, you must use absolute file paths (e.g., <code>/home/ryan/downloads/config.toml</code>).  Doing this will allow you to run the <code>InteinFinder</code> executable from any directory.</p>
+<h3 id="queries">Queries</h3>
+<p>First, you need to specify the queries file.  You can use relative paths.  It will look like this:</p>
+<p>For this example, we will use a couple of sequences from UniProt as the query sequences.  The file is called <code>queries.faa</code>.</p>
+<pre><code class="language-toml">queries = &quot;queries.faa&quot;
+</code></pre>
+<p>The key is <code>queries</code> and the values is the name of the file.  In this case, it is a relative path to the file <code>queries.faa</code> located in this directory.  Note that the value is a string, and so it has double quotes (<code>"</code>) around it.</p>
+<h3 id="output-directory">Output directory</h3>
+<p>Next, you need to specify the output directory.  For that, you use the key <code>out_dir</code>.</p>
+<pre><code class="language-toml">out_dir = &quot;if_out&quot;
+</code></pre>
+<p>The above line tells InteinFinder that you want its output to go in a directory called <code>if_out</code>.  Again, it is a relative path, so the output file will be in the current directory.</p>
+<h3 id="target-databases">Target databases</h3>
+<p>InteinFinder needs two databases to run.  One is a FASTA file containing known intein sequences, and the other is a directory of SMP files containing conserved domains commonly associated with inteins.  While you can provide your own, for this tutorial, we will use those included in the InteinFinder git repository.  Note that in the manuscript, these are called the intein sequence database (ISDB), and the conserved domain database (CDDB).</p>
+<p>The intein sequences are in <code>isdb/all_derep.faa</code> and the SMP files are in <code>cddb</code>.  They are included in the tar file you downloaded earlier.</p>
+<p>Here is what it will look like:</p>
+<pre><code class="language-toml">inteins = &quot;isdb/all_derep.faa&quot;
+smp_dir = &quot;cddb/smp&quot;
+</code></pre>
+<p>Remember that these file paths are relative to the directory that we are currently in.</p>
+<h3 id="put-it-together">Put it together</h3>
+<p>And that is all the required key/value pairs for the config file.  You can see the whole config file saved as <code>config.toml</code> in this directory:</p>
+<pre><code class="language-toml">queries = &quot;queries.faa&quot;
+out_dir = &quot;if_out&quot;
+
+inteins = &quot;isdb/all_derep.faa&quot;
+smp_dir = &quot;cddb/smp&quot;
+</code></pre>
+<h2 id="run-the-pipeline">Run the pipeline</h2>
+<p>Technically, there are two parts to the pipeline.</p>
+<ul>
+<li>identifying inteins in the dataset (<code>InteinFinder</code> program)</li>
+<li>removing inteins from query sequences (<code>RemoveInteins</code> program)</li>
+</ul>
+<p>Eventually, these two steps will be merged into a single executable program, but for now they are separate.</p>
+<p>I'm going to assume that you have successfully installed it, and it is on your path.  Also, I'm assuming that you are running InteinFinder in this directory.</p>
+<h3 id="inteinfinder">InteinFinder</h3>
+<p><code>InteinFinder</code> is the main program.  It identifies intein regions on your query sequences and, for any "bonafide" inteins, it will give you the intein sequences.</p>
+<p>Let's run it now.</p>
+<pre><code>$ InteinFinder config.toml
+INFO [2023-03-27 23:49:50] Renaming queries
+INFO [2023-03-27 23:49:50] Splitting queries
+INFO [2023-03-27 23:49:50] Making profile DB
+INFO [2023-03-27 23:49:50] Running rpsblast
+INFO [2023-03-27 23:49:50] Running mmseqs
+INFO [2023-03-27 23:49:53] Getting query regions
+INFO [2023-03-27 23:49:53] Writing putative intein regions
+INFO [2023-03-27 23:49:53] Getting queries with intein seq hits
+INFO [2023-03-27 23:49:53] Making query_region_hits
+INFO [2023-03-27 23:49:53] Reading intein DB into memory
+INFO [2023-03-27 23:49:53] Processing regions
+INFO [2023-03-27 23:49:54] Writing name map
+INFO [2023-03-27 23:49:54] Renaming queries in btab files
+INFO [2023-03-27 23:49:54] Summarizing intein DB search
+INFO [2023-03-27 23:49:54] Summarizing conserved domain DB search
+INFO [2023-03-27 23:49:54] Done!
+</code></pre>
+<p>There you go!  Let's check out the output...</p>
+<pre><code>$ tree if_out/
+if_out/
+├── _done
+├── logs
+│   ├── 1_config.toml
+│   ├── 2_pipeline_info.txt
+│   └── if_log.2023-03-27_23-49-50.674508.mmseqs_search.txt
+├── results
+│   ├── 1_putative_intein_regions.tsv
+│   ├── 2_intein_hit_checks.tsv
+│   └── 3_trimmed_inteins.faa
+└── search
+    ├── cdm_db
+    │   ├── 1_cdm_db_search_out.tsv
+    │   └── 2_cdm_db_search_summary.tsv
+    └── intein_db
+        ├── 1_intein_db_search_out.tsv
+        ├── 2_intein_db_search_with_regions.tsv
+        └── 3_intein_db_search_summary.tsv
+
+5 directories, 12 files
+</code></pre>
+<p>For more info about the output files, see the <a href="../intein-finder-output/">docs</a>.</p>
+<h3 id="removeinteins">RemoveInteins</h3>
+<p>Sometimes, you want to process your query sequences to remove any inteins.  As of today (2023-03-28), this requires a separate program that is included with the InteinFinder distribution called <code>RemoveInteins</code>.  (Eventually, it will be merged in to the main <code>InteinFinder</code> program.)</p>
+<p>Here is the usage synopsis of the program:</p>
+<pre><code>RemoveInteins [OPTION]... HIT_CHECKS QUERIES
+</code></pre>
+<p>It takes the hit checks file output and the queries input from the <code>InteinFinder</code> run.</p>
+<p>Let's run it now.</p>
+<pre><code>$ RemoveInteins \
+    if_out/results/2_intein_hit_checks.tsv \
+    queries.faa &gt; \
+    if_out/results/4_intein_free_queries.faa
+
+DEBUG [2023-03-28 11:59:10] ((intein_hit_checks if_out/results/2_intein_hit_checks.tsv)(queries queries.faa))
+INFO [2023-03-28 11:59:10] Reading intein hit checks
+INFO [2023-03-28 11:59:10] Reading the query sequences
+</code></pre>
+<p>Alright, let's look at the output once more:</p>
+<pre><code>$ tree if_out
+if_out/
+├── _done
+├── logs
+│   ├── 1_config.toml
+│   ├── 2_pipeline_info.txt
+│   └── if_log.2023-03-28_11-46-22.139065.mmseqs_search.txt
+├── results
+│   ├── 1_putative_intein_regions.tsv
+│   ├── 2_intein_hit_checks.tsv
+│   ├── 3_trimmed_inteins.faa
+│   └── 4_intein_free_queries.faa
+└── search
+    ├── cdm_db
+    │   ├── 1_cdm_db_search_out.tsv
+    │   └── 2_cdm_db_search_summary.tsv
+    └── intein_db
+        ├── 1_intein_db_search_out.tsv
+        ├── 2_intein_db_search_with_regions.tsv
+        └── 3_intein_db_search_summary.tsv
+
+5 directories, 13 files
+</code></pre>
+<p>As you see, there is one additional file, <code>4_intein_free_queries.faa</code>, that contains intein-free query sequences.</p>
+<p>Note that only query sequences with at least one bonafide intein sequence will be printed, and that only inteins who scored an overall Pass will be removed from said extein sequences. Keep in mind that the printed sequences may not be completely intein-free, as a query could have multiple inteins, but not all of those predicetd inteins may have scored well enough to be automatically removed. For now, you will see a warning in cases like these.</p>
+<h2 id="wrap-up">Wrap up</h2>
+<p>In this tutorial, we went over the basics of using InteinFinder, including writing a config file using mostly default options, and generating a set of intein-free sequences with the <code>RemoveInteins</code> program.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../intein-finder-output/" class="btn btn-neutral float-left" title="Output"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../tutorials/" class="btn btn-neutral float-right" title="Tutorials">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/mooreryan/InteinFinder" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../intein-finder-output/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../tutorials/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

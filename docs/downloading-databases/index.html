@@ -111,8 +111,10 @@
                   <li class="toctree-l1"><a class="reference internal" href="../intein-finder-output/">Output</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Examples</span></p>
+              <p class="caption"><span class="caption-text">Examples & Tutorials</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../basic-usage/">Basic Usage</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../other-examples/">Other Examples</a>
@@ -149,63 +151,64 @@
 <p>InteinFinder comes with these for your convenience.  But expert users may have their own set to use instead.</p>
 <p>Here are links to find them on GitHub</p>
 <ul>
-<li><a href="https://github.com/mooreryan/InteinFinder/raw/main/_assets/asset_bundle.tar.gz">database bundle</a><ul>
+<li><a href="https://github.com/mooreryan/InteinFinder/raw/main/_assets/intein_finder_databases.tar.gz">database bundle</a><ul>
 <li>Use this link for an archive containing both the intein sequence DB and the conserved domain model DB.</li>
 <li>It's the same data, but in a form convenient for direct download.</li>
 </ul>
 </li>
-<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/intein_sequences">intein sequences</a><ul>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/isdb">intein sequences</a><ul>
 <li>directory containing intein sequence DB</li>
 <li>In the manuscript, this is referred to as the ISDB (intein sequence database)</li>
 </ul>
 </li>
-<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/smp">conserved domain models</a><ul>
+<li><a href="https://github.com/mooreryan/InteinFinder/tree/main/_assets/cddb">conserved domain models</a><ul>
 <li>directory containing conserved domain models</li>
-<li>In the manuscript, this is referred to as the CDMDB (conserved domain model data base)</li>
+<li>In the manuscript, this is referred to as the CDDB (conserved domain model data base)</li>
 </ul>
 </li>
 </ul>
-<p>Here is an example for downloading the assets using the bundled archive:</p>
+<p>Here is an example for downloading the assets using the bundled archive.  I will make a directory called <code>InteinFinder_db</code> to hold it, but you can name it whatever you want.</p>
 <pre><code>$ mkdir InteinFinder_db
 $ cd InteinFinder_db
 $ \curl -L \
-  https://github.com/mooreryan/InteinFinder/raw/main/_assets/asset_bundle.tar.gz \
+  https://github.com/mooreryan/InteinFinder/raw/main/_assets/intein_finder_databases.tar.gz \
   | tar xz
-$ tree
-intein_sequences/
-└── all_derep.faa
-smp/
-├── cd00081.smp
-├── cd00085.smp
-├── cd09643.smp
-├── COG1372.smp
-├── COG1403.smp
-├── COG2356.smp
-├── pfam01844.smp
-├── pfam04231.smp
-├── pfam05204.smp
-├── pfam05551.smp
-├── pfam07510.smp
-├── pfam12639.smp
-├── pfam13391.smp
-├── pfam13392.smp
-├── pfam13395.smp
-├── pfam13403.smp
-├── pfam14414.smp
-├── pfam14527.smp
-├── pfam14528.smp
-├── pfam14623.smp
-├── pfam14890.smp
-├── PRK11295.smp
-├── PRK15137.smp
-├── smart00305.smp
-├── smart00306.smp
-├── smart00507.smp
-├── TIGR01443.smp
-├── TIGR01445.smp
-└── TIGR02646.smp
-
-0 directories, 29 files
+$ tree --charset=ascii
+.
+|-- intein_finder_databases
+|   |-- cddb
+|   |   |-- cd00081.smp
+|   |   |-- cd00085.smp
+|   |   |-- cd09643.smp
+|   |   |-- COG1372.smp
+|   |   |-- COG1403.smp
+|   |   |-- COG2356.smp
+|   |   |-- pfam01844.smp
+|   |   |-- pfam04231.smp
+|   |   |-- pfam05204.smp
+|   |   |-- pfam05551.smp
+|   |   |-- pfam07510.smp
+|   |   |-- pfam12639.smp
+|   |   |-- pfam13391.smp
+|   |   |-- pfam13392.smp
+|   |   |-- pfam13395.smp
+|   |   |-- pfam13403.smp
+|   |   |-- pfam14414.smp
+|   |   |-- pfam14527.smp
+|   |   |-- pfam14528.smp
+|   |   |-- pfam14623.smp
+|   |   |-- pfam14890.smp
+|   |   |-- PRK11295.smp
+|   |   |-- PRK15137.smp
+|   |   |-- smart00305.smp
+|   |   |-- smart00306.smp
+|   |   |-- smart00507.smp
+|   |   |-- TIGR01443.smp
+|   |   |-- TIGR01445.smp
+|   |   `-- TIGR02646.smp
+|   |-- isdb
+|   |   `-- all_derep.faa
+|   `-- README.md
 </code></pre>
               
             </div>
