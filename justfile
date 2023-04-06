@@ -11,6 +11,22 @@ build_release:
     INTEIN_FINDER_GIT_COMMIT_HASH=`{{ git_describe }}` \
     dune build --profile=release
 
+bundle_assets:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    cd _assets
+
+    BUNDLE=intein_finder_databases.tar.gz
+    TMPDIR=intein_finder_databases
+    if [ -f $BUNDLE ]; then rm $BUNDLE; fi
+
+    mkdir -p $TMPDIR
+    cp -r cddb isdb README.md $TMPDIR
+
+    tar -czf $BUNDLE $TMPDIR
+
+    rm -r $TMPDIR
+
 clean:
     dune clean
 
@@ -49,16 +65,20 @@ send_coverage: clean test_coverage
 
 # Examples
 
-example_basic_usage:
+gen_basic_usage_example:
     #!/usr/bin/env bash
     set -euxo pipefail
 
-    DIR=_examples/basic_usage
-    OUTDIR=if_out
-    CONFIG=config.toml
+    TARGET_CDDB=_examples_data/basic_usage/cddb
+    TARGET_ISDB=_examples_data/basic_usage/isdb
 
-    cd $DIR
+    if [ -d $TARGET_CDDB ]; then rm -r $TARGET_CDDB; fi
+    if [ -d $TARGET_ISDB ]; then rm -r $TARGET_ISDB; fi
 
-    if [ -d $OUTDIR ]; then rm -r $OUTDIR; fi
+    cp -r _assets/cddb _assets/isdb _examples_data/basic_usage
 
-    InteinFinder $CONFIG
+    cd _examples_data
+
+    if [ -f basic_usage.tar.gz]; then rm basic_usage.tar.gz; fi
+    tar czf basic_usage.tar.gz basic_usage/
+    mv basic_usage.tar.gz ../_examples
