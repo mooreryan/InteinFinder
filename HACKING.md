@@ -51,7 +51,7 @@ blah | ../scripts/redact_git_hash /dev/stdin
 
 ## Version numbers
 
-When you increment the version, you need to change it in the `dune-project` and in `Config.Version.intein_finder_version`.
+When you increment the version, you need to change it in the `dune-project` and in `Config.Version.intein_finder_version`.  Make sure you also rebuild the project to update the opam file as well.
 
 ## Integer indexing
 
@@ -60,3 +60,16 @@ When you increment the version, you need to change it in the `dune-project` and 
 ## Building
 
 When building for release, use the `*_release` just tasks.  It adds the commit info.  Note that you will often need to run `just clean` first, to get a true build.
+
+The `*_dev` builds also add the git commit info now.  Running dune directly does not.
+
+## Dependencies
+
+If you modify a dependency in the `dune-project` (and so, the `opam` file). You will need to update the sandbox and the lock file.
+
+```
+opam install . --deps-only --with-doc --with-test
+opam lock ./InteinFinder.opam
+```
+
+Do *NOT* use `--locked` here...because the lock will probably be outdated.
