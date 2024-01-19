@@ -4,7 +4,7 @@
 
 (name InteinFinder)
 
-(version 1.0.0-SNAPSHOT)
+(version 24.0.0-SNAPSHOT)
 
 (maintainers "Ryan M. Moore")
 
@@ -21,7 +21,7 @@
 
 (package
  (name InteinFinder)
- (synopsis "TODO")
+ (synopsis "Automated intein detection from large protein datasets")
  (depends
   (ocaml
    (= "4.14.0"))
