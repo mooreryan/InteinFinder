@@ -67,11 +67,12 @@ depends: [
   "ocaml_intrinsics" {= "v0.16.0"}
   "ocamlbuild" {= "0.14.2"}
   "ocamlfind" {= "1.9.5"}
-  "ocamlformat" {= "0.23.0"}
+  "ocamlformat" {= "0.26.1"}
+  "ocamlformat-lib" {= "0.26.1"}
   "ocp-indent" {= "1.8.1"}
   "ocplib-endian" {= "1.2"}
   "odoc" {= "2.1.1" & with-doc}
-  "odoc-parser" {= "1.0.1"}
+  "odoc-parser" {= "1.0.1" & with-doc}
   "otoml" {= "1.0.4"}
   "parsexp" {= "v0.16.0"}
   "posixat" {= "v0.16.0"}
