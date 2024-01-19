@@ -101,11 +101,11 @@ let impossible' fmt =
       let msg = [%string "internal error (impossible state): %{s}"] in
       failwith msg )
     fmt
-  [@@coverage off]
+[@@coverage off]
 
 (** Raises failure. Like [failwith] but gives standardized message for things
     that should be impossible. *)
 let impossible msg =
   let msg = [%string "internal error (impossible state): %{msg}"] in
   failwith msg
-  [@@coverage off]
+[@@coverage off]

@@ -90,7 +90,7 @@ let write_name_map ~dir ~renamed_queries =
       print "new_name\told_name\n" ;
       Map.iteri
         renamed_queries.Filter_and_rename_queries.name_map
-        ~f:(fun ~key ~data -> print [%string "%{key}\t%{data}\n"]) )
+        ~f:(fun ~key ~data -> print [%string "%{key}\t%{data}\n"] ) )
 
 let write_done_file config =
   (* If you make it here everything should be good *)

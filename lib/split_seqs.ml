@@ -40,7 +40,7 @@ let num_seqs_or_n seq_file n =
     Bio_io.Fasta.In_channel.with_file_fold_records
       seq_file
       ~init:0
-      ~f:(fun i _ -> if i >= n then raise Exit else i + 1)
+      ~f:(fun i _ -> if i >= n then raise Exit else i + 1 )
   with
   | exception Exit ->
       n
