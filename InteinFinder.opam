@@ -9,7 +9,7 @@ doc: "https://mooreryan.github.io/InteinFinder/"
 bug-reports: "https://github.com/mooreryan/InteinFinder/issues"
 depends: [
   "dune" {>= "3.5"}
-  "ocaml" {= "4.14.0"}
+  "ocaml" {= "4.14.1"}
   "async" {>= "v0.16.0" & < "v0.17.0"}
   "async_unix" {>= "v0.16.0" & < "v0.17.0"}
   "bio_io" {>= "0.6.0" & < "0.7.0"}

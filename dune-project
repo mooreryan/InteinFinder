@@ -24,7 +24,7 @@
  (synopsis "Automated intein detection from large protein datasets")
  (depends
   (ocaml
-   (= "4.14.0"))
+   (= "4.14.1"))
   (async
    (and
     (>= "v0.16.0")
