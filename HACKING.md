@@ -68,7 +68,7 @@ The `*_dev` builds also add the git commit info now.  Running dune directly does
 If you modify a dependency in the `dune-project` (and so, the `opam` file). You will need to update the sandbox and the lock file.
 
 ```
-opam install . --deps-only --with-doc --with-test
+opam install . --deps-only --with-doc --with-test # May not need this depending on what you're doing.
 opam lock ./InteinFinder.opam
 ```
 
