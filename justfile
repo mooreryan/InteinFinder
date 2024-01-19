@@ -2,10 +2,10 @@ browser := "firefox"
 cov_dir := "/tmp/InteinFinder"
 cov_file := cov_dir / "InteinFinder"
 git_describe := "git describe --always --dirty --abbrev=7"
-with_commit_hash := "INTEIN_FINDER_GIT_COMMIT_HASH=`{{ git_describe }}`"
 
 build_dev:
-    {{ with_commit_hash }} dune build --profile=dev
+    INTEIN_FINDER_GIT_COMMIT_HASH=`{{ git_describe }}` \
+    dune build --profile=dev
 
 build_release:
     INTEIN_FINDER_GIT_COMMIT_HASH=`{{ git_describe }}` \
