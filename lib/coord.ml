@@ -481,7 +481,7 @@ end = struct
 
   [@@@coverage on]
 
-  let add_exn m ~key ~data = Int.Map.add_exn m ~key:(to_int key) ~data
+  let add_exn m ~key ~data = Map.add_exn m ~key:(to_int key) ~data
 
-  let find_exn m key = Int.Map.find_exn m (to_int key)
+  let find_exn m key = Map.find_exn m (to_int key)
 end

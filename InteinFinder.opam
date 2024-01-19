@@ -10,23 +10,23 @@ bug-reports: "https://github.com/mooreryan/InteinFinder/issues"
 depends: [
   "dune" {>= "3.5"}
   "ocaml" {= "4.14.0"}
-  "async" {>= "v0.15.0" & < "v0.16.0"}
-  "async_unix" {>= "v0.15.0" & < "v0.16.0"}
+  "async" {>= "v0.16.0" & < "v0.17.0"}
+  "async_unix" {>= "v0.16.0" & < "v0.17.0"}
   "bio_io" {>= "0.6.0" & < "0.7.0"}
   "cmdliner" {>= "1.2.0" & < "1.3.0"}
-  "core" {>= "v0.15.0" & < "v0.16.0"}
-  "core_unix" {>= "v0.15.0" & < "v0.16.0"}
-  "expect_test_helpers_core" {with-test & >= "v0.15.0" & < "v0.16.0"}
+  "core" {>= "v0.16.0" & < "v0.17.0"}
+  "core_unix" {>= "v0.16.0" & < "v0.17.0"}
+  "expect_test_helpers_core" {with-test & >= "v0.16.0" & < "v0.17.0"}
   "logs" {>= "0.7.0" & < "0.8.0"}
   "fmt" {>= "0.9.0" & < "0.10.0"}
   "ocamlformat" {= "0.23.0"}
   "otoml" {>= "1.0.0" & < "1.1.0"}
   "ppx_const" {>= "2.0" & < "2.1"}
   "ppx_getenv" {>= "2.1" & < "2.2"}
-  "ppx_jane" {>= "v0.15.0" & < "v0.16.0"}
+  "ppx_jane" {>= "v0.16.0" & < "v0.17.0"}
   "re" {>= "1.11" & < "1.12"}
-  "sexp" {with-test & >= "v0.15.0" & < "v0.16.0"}
-  "shexp" {>= "v0.15.0" & < "v0.16.0"}
+  "sexp" {with-test & >= "v0.16.0" & < "v0.17.0"}
+  "shexp" {>= "v0.16.0" & < "v0.17.0"}
   "tiny_toml" {>= "0.0.1"}
   "odoc" {with-doc}
 ]

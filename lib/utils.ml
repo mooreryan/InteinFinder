@@ -54,13 +54,15 @@ let eval_sh log proc = Sh.eval @@ redirect_out_err log proc
 (** On systems without the local timezone set up properly (e.g., alpine linux
     docker images), we fallback to UTC timezone. *)
 let zone () =
-  try Lazy.force Time_unix.Zone.local with Sys_error _ -> Time_unix.Zone.utc
+  try Lazy.force Time_float_unix.Zone.local
+  with Sys_error _ -> Time_float_unix.Zone.utc
 
 let now_coarse () =
-  let now = Time.now () in
-  Time_unix.format now "%Y-%m-%d %H:%M:%S" ~zone:(zone ())
+  let now = Time_float_unix.now () in
+  Time_float_unix.format now "%Y-%m-%d %H:%M:%S" ~zone:(zone ())
 
-let now () = Time.to_filename_string ~zone:(zone ()) @@ Time.now ()
+let now () =
+  Time_float_unix.to_filename_string ~zone:(zone ()) @@ Time_float_unix.now ()
 
 let log_name ~log_base ~desc =
   let now = now () in

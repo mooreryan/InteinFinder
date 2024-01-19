@@ -104,7 +104,10 @@ module Valid_list = struct
 
   (** Ensures tiers are sorted, unique, start at 1, and increase by 1. *)
   let create tiers =
-    let tiers = Set.of_list tiers |> Set.to_list in
+    (* Using Core.Set.to_list to get a list sorted in the order specified by the
+       compartor. Set.Make functor result no doesn't give the Accessor functions
+       as of Core v0.16, so you must use the Core.Set directly. *)
+    let tiers = Set.of_list tiers |> Core.Set.to_list in
     let sorted = List.sort tiers ~compare:Int.compare in
     let not_starts_at_one_and_increases_by_one l =
       List.existsi l ~f:(fun i tier -> tier <> i + 1)
