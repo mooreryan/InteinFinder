@@ -129,8 +129,8 @@ depends: [
   "textutils_kernel" {= "v0.15.0"}
   "time_now" {= "v0.15.0"}
   "timezone" {= "v0.15.0"}
-  "tiny_config" {= "0.0.1"}
-  "tiny_toml" {= "0.0.1"}
+  "tiny_config" {= "0.0.2"}
+  "tiny_toml" {= "0.0.2"}
   "topkg" {= "1.0.6"}
   "typerep" {= "v0.15.0"}
   "tyxml" {= "4.5.0" & with-doc}
@@ -161,11 +161,11 @@ pin-depends: [
   "https://github.com/mooreryan/bio_io/archive/refs/tags/0.6.0.tar.gz"
 ]
   [
-  "tiny_config.0.0.1"
-  "https://github.com/mooreryan/tiny_config/archive/refs/tags/0.0.1.tar.gz"
+  "tiny_config.0.0.2"
+  "https://github.com/mooreryan/tiny_config/archive/refs/tags/0.0.2.tar.gz"
 ]
   [
-  "tiny_toml.0.0.1"
-  "https://github.com/mooreryan/tiny_config/archive/refs/tags/0.0.1.tar.gz"
+  "tiny_toml.0.0.2"
+  "https://github.com/mooreryan/tiny_config/archive/refs/tags/0.0.2.tar.gz"
 ]
 ]
