@@ -6,7 +6,6 @@ on:
       - "main"
       - "staging"
       - "dev"
-      - "just"
 
   pull_request:
     branches:
