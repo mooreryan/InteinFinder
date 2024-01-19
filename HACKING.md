@@ -73,3 +73,12 @@ opam lock ./InteinFinder.opam
 ```
 
 Do *NOT* use `--locked` here...because the lock will probably be outdated.
+
+### tiny_config
+
+You will need to pin this whenever it updates (change the version), and also update the lock file as needed.
+
+```
+opam pin add tiny_config https://github.com/mooreryan/tiny_config/archive/refs/tags/0.0.2.tar.gz
+opam pin add tiny_toml https://github.com/mooreryan/tiny_config/archive/refs/tags/0.0.2.tar.gz
+```
