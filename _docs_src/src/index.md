@@ -23,7 +23,7 @@ Given the increased interest in inteins, more studies are focusing on identifyin
 [![license MIT or Apache
 2.0](https://img.shields.io/badge/license-MIT%20or%20Apache%202.0-blue)](https://github.com/mooreryan/InteinFinder)
 
-Copyright (c) 2018 - 2023 Ryan M. Moore
+Copyright (c) 2018 - 2024 Ryan M. Moore
 
 Licensed under the Apache License, Version 2.0 or the MIT license, at your option. This program may not be copied, modified, or distributed except according to those terms.
 
@@ -33,6 +33,6 @@ Licensed under the Apache License, Version 2.0 or the MIT license, at your optio
 <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
 </a>
 
-Copyright (c) 2022 - 2023 Ryan M. Moore.
+Copyright (c) 2022 - 2024 Ryan M. Moore.
 
 This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.

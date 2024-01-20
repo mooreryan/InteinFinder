@@ -304,7 +304,7 @@ module Version = struct
 
   let intein_finder_version =
     (* git describe --always --dirty --abbrev=7 *)
-    let base = "1.0.0-SNAPSHOT" in
+    let base = "2024.0.0" in
     let git_hash =
       match%const [%getenv "INTEIN_FINDER_GIT_COMMIT_HASH"] with
       | "" ->
